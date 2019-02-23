@@ -11,7 +11,7 @@
 
 using namespace glm;
 
-Node::Node(const std::string &name) : name(name) {
+Node::Node(const std::string &name) : name(name), trans(1), inv(1) {
 }
 
 Node::~Node() {
@@ -34,18 +34,41 @@ void Node::rotate(char axis, float angle) {
 		default:
 			break;
 	}
-	mat4 rot_matrix = glm::rotate(glm::radians(angle), rot_axis);
+	mat4 rot = glm::rotate(glm::radians(angle), rot_axis);
+	updateTrans(rot);
+
 }
 
 void Node::scale(const glm::vec3& amount) {
+	updateTrans(glm::scale(amount));
 }
 
 void Node::translate(const glm::vec3& amount) {
+	updateTrans(glm::translate(amount));
 }
 
-bool Node::intersect(const Ray &r, float &t, glm::vec4 &normal) const {
+bool Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
+	Ray transRay(inv * r.from, inv * r.v);
+	glm::vec4 localP;
+	glm::vec4 localNormal;
+
+	bool res =  intersectImpl(transRay, localP, localNormal);
+	p = trans * localP;
+	normal = localNormal * glm::transpose(inv);
+
+	return res;
+}
+
+bool Node::intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
 	for (auto childIt = children.begin(); childIt != children.end(); ++childIt) {
-		// TODO: apply translations
-		(*childIt)->intersect(r, t, normal);
+		Node *child = *childIt;
+		child->intersect(r, p, normal);
 	}
+
+	return false;
+}
+
+void Node::updateTrans(const glm::mat4 &mat) {
+	trans = mat * trans;
+	inv = glm::inverse(trans);
 }

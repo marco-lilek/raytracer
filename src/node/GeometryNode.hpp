@@ -4,11 +4,11 @@
 #include "Primitive.hpp"
 
 class GeometryNode : public Node {
-  const Primitive* const p;
+  const Primitive* const prim;
 
 public:
   GeometryNode(const std::string &name, const Primitive * const p) : 
-    Node(name), p(p) {}
+    Node(name), prim(p) {}
 
-  virtual bool intersect(const Ray &r, float &t, glm::vec4 &normal) const;
+  virtual bool intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
 };

@@ -4,13 +4,12 @@
 
 struct Ray {
   const glm::vec4 from;
-  const glm::vec4 to;
+  const glm::vec4 v;
 
-  Ray(const glm::vec4 &from, const glm::vec4 &to) : 
-    from(from), to(to) {}
+  Ray(const glm::vec4 &from, const glm::vec4 &v) : 
+    from(from), v(v) {}
 
   glm::vec4 pointAt(const float &t) const {
-    glm::vec4 d = to - from;
-    return from + d * t;
+    return from + v * t;
   }
 };

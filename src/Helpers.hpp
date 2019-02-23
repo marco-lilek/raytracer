@@ -4,4 +4,5 @@
 
 namespace constants {
   extern const glm::vec4 POINT;
+  extern const float EPSILON;
 };

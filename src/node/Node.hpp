@@ -19,6 +19,7 @@ class Node {
   std::vector<Node *> children;
 
   glm::mat4 trans;
+  glm::mat4 inv;
 
 public:
   Node(const std::string &name);
@@ -27,8 +28,11 @@ public:
   void rotate(char axis, float angle);
   void scale(const glm::vec3& amount);
   void translate(const glm::vec3& amount);
+  void updateTrans(const glm::mat4 &mat);
 
-  virtual bool intersect(const Ray &r, float &t, glm::vec4 &normal) const;
+  bool intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+
+  virtual bool intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
 };
 
 #endif /* SRC_NODE_NODE_H_ */

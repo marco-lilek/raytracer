@@ -4,8 +4,7 @@
 bool Sphere::intersect(const Ray &r, float &t, glm::vec4 &normal) const {
   // NOTE: Making the assumption that c = 0
   glm::dvec3 a(r.from);
-  glm::dvec3 b(r.to);
-  glm::dvec3 d(b-a);
+  glm::dvec3 d(r.v);
   float A = glm::dot(d, d);
   float B = 2 * glm::dot(d, a);
   float C = glm::dot(a, a) - radius * radius;

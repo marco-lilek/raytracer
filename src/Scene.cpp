@@ -1,7 +1,10 @@
 #include "Scene.hpp"
 #include "Helpers.hpp"
 
-Scene::Scene(const Node * const root) : root(root) {}
+Scene::Scene(const Node * const root, 
+  const std::vector<const Light *> &lights) : 
+  root(root), lights(lights) {}
+
 Ray Scene::constructRay(int x, int y, int width, int height) {
   glm::vec4 from = constants::POINT;
   float onWindowX = (float)x / width - 0.5;
@@ -11,13 +14,13 @@ Ray Scene::constructRay(int x, int y, int width, int height) {
 
   glm::vec4 shift(0,0,5,0);
 
-  return Ray(from - shift, to - shift);
+  return Ray(from - shift, to - from);
 }
 
 Color Scene::fireRay(const Ray &r) {
-  float t;
+  glm::vec4 p;
   glm::vec4 normal;
-  if (root->intersect(r, t, normal)) {
+  if (root->intersect(r, p, normal)) {
     return Color(1);
   } else {
     return Color(glm::vec4(0,0,0,1));
