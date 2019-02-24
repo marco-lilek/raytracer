@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Ray.hpp"
+#include "Material.hpp"
 
 class Node {
   std::string name;
@@ -30,9 +31,9 @@ public:
   void translate(const glm::vec3& amount);
   void updateTrans(const glm::mat4 &mat);
 
-  bool intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+  const Material *intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
 
-  virtual bool intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+  virtual const Material *intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
 };
 
 #endif /* SRC_NODE_NODE_H_ */

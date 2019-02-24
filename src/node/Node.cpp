@@ -8,6 +8,7 @@
 #include <glm/ext.hpp>
 
 #include "node/Node.hpp"
+#include "Material.hpp"
 
 using namespace glm;
 
@@ -47,25 +48,28 @@ void Node::translate(const glm::vec3& amount) {
 	updateTrans(glm::translate(amount));
 }
 
-bool Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
+const Material *Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
 	Ray transRay(inv * r.from, inv * r.v);
 	glm::vec4 localP;
 	glm::vec4 localNormal;
 
-	bool res =  intersectImpl(transRay, localP, localNormal);
+	const Material *res =  intersectImpl(transRay, localP, localNormal);
 	p = trans * localP;
-	normal = localNormal * glm::transpose(inv);
+	normal = localNormal * inv;
 
 	return res;
 }
 
-bool Node::intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
+const Material *Node::intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
 	for (auto childIt = children.begin(); childIt != children.end(); ++childIt) {
 		Node *child = *childIt;
-		child->intersect(r, p, normal);
+		const Material *mat = child->intersect(r, p, normal);
+		if (mat) {
+			return mat;
+		}
 	}
 
-	return false;
+	return nullptr;
 }
 
 void Node::updateTrans(const glm::mat4 &mat) {

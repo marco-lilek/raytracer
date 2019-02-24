@@ -11,15 +11,18 @@ using namespace std;
 int main() {
   cout << "it works!" << endl;
   Sphere s(1);
-  GeometryNode g("cool", &s);
+  GeometryNode g("cool", &s, Material(
+    glm::vec3(0,0.5,0),
+    glm::vec3(0,0.5,0), 1));
   g.scale(glm::vec3(2, 1,1));
   g.rotate('z', 45);
 
   const Light l(
     glm::vec3(1.0, 0.5, 0.5), 
-    glm::vec4(0,2,-5, 1));
+    glm::vec4(0,5,-5, 1));
   
   std::vector<const Light *> lights;
+  lights.push_back(&l);
 
   Image img(200, 200);
   Scene scene(&g, lights);
