@@ -13,7 +13,7 @@ int main() {
   Sphere s(1);
   GeometryNode g("cool", &s, Material(
     glm::vec3(0,0.5,0),
-    glm::vec3(0,0.5,0), 1));
+    glm::vec3(0,0,1), 10));
   g.scale(glm::vec3(2, 1,1));
   g.rotate('z', 45);
 

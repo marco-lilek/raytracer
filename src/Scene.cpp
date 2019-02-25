@@ -43,13 +43,17 @@ Color Scene::fireRay(const Ray &r) {
         continue; // We hit something before reaching the light
       }
 
-      float normDot = helpers::normDot(shadowRay.v, normal);
-      if (normDot < 0) {
-        LOG_F(INFO, "Broken %f", normDot);
-        std::cerr << "p " << glm::to_string(p) << " shadowRay " << glm::to_string(shadowRay.v) << " " << glm::to_string(normal) << std::endl;
-      }
-      glm::vec3 diffuse(normDot * m->kd);
+      // Diffuse lighting
+      float diffuseFactor = helpers::normalizedDot(shadowRay.v, normal);
+      glm::vec3 diffuse(diffuseFactor * m->kd);
       finalColor += diffuse;
+
+      // Specular lighting
+      glm::vec4 halfway = helpers::halfwayVector(shadowRay.v, r.v);
+      float hDotn = helpers::normalizedDot(halfway, normal);
+      float specularFactor = glm::pow(hDotn, m->shininess);
+      glm::vec3 specular(specularFactor * m->ks);
+      finalColor += specular;
     }
   }
 

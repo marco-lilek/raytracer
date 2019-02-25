@@ -53,9 +53,9 @@ const Material *Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) c
 	glm::vec4 localP;
 	glm::vec4 localNormal;
 
-	const Material *res =  intersectImpl(transRay, localP, localNormal);
+	const Material *res = intersectImpl(transRay, localP, localNormal);
 	p = trans * localP;
-	normal = localNormal * inv;
+	normal = glm::transpose(inv) * localNormal;
 
 	return res;
 }

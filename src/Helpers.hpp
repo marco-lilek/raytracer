@@ -8,5 +8,6 @@ namespace constants {
 };
 
 namespace helpers {
-  float normDot(const glm::vec4 &a, const glm::vec4 &b);
+  float normalizedDot(const glm::vec4 &a, const glm::vec4 &b);
+  glm::vec4 halfwayVector(const glm::vec4 &a, const glm::vec4 &b);
 }
