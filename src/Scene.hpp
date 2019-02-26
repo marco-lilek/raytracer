@@ -9,9 +9,10 @@ class Scene {
   const Node * const root;
   const std::vector<const Light *> lights;
   const glm::vec3 ambientLight;
+  const glm::vec3 fireRay(const Ray &r, const int depth) const;
 
 public:
   Scene(const Node * const root, const std::vector<const Light *> &lights);
-  static Ray constructRay(int x, int y, int width, int height);
-  Color fireRay(const Ray &r);
+  static const Ray constructRay(int x, int y, int width, int height);
+  const Color getColor(const Ray &r) const;
 };

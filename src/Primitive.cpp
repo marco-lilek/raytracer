@@ -27,8 +27,11 @@ bool Sphere::intersect(const Ray &r, float &t, glm::vec4 &normal) const {
   }
 
   glm::vec4 P = r.pointAt(t);
+  float dist = glm::distance(P, glm::vec4(0,0,0,1));
 
-  normal = glm::normalize(P - glm::vec4(0,0,0,1)); // from center to point on the sphere
+  // Don't need to normalize it (and we shouldn't to avoid acc error),
+  // just do the normalization when its actually used
+  normal = glm::vec4(glm::vec3(P) - glm::vec3(0),0); // from center to point on the sphere
   return true;
 
 }

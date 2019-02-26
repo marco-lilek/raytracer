@@ -31,6 +31,10 @@ public:
   void translate(const glm::vec3& amount);
   void updateTrans(const glm::mat4 &mat);
 
+  void addChildren(Node *child) {
+    children.push_back(child);
+  }
+
   const Material *intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
 
   virtual const Material *intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;

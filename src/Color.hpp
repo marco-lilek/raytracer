@@ -20,8 +20,13 @@ struct Color {
     b(encode(c)), 
     a(encode(c)) {}
 
+  // friend Color operator+ (Color& lhs,const Color& rhs) {
+  //   return Color(lhs.r+rhs.r,lhs.g+rhs.g,lhs.b+rhs.b, lhs.a+rhs.a);
+  // }
+
 private:
   uint8_t encode(float v) {
+    assert(v >= 0 && v <= 1);
     return v * 255;
   }
 };

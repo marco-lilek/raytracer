@@ -12,5 +12,5 @@ float helpers::normalizedDot(const glm::vec4 &a, const glm::vec4 &b) {
 
 glm::vec4 helpers::halfwayVector(const glm::vec4 &a, const glm::vec4 &b) {
   const glm::vec4 c = a+b;
-  return c / glm::length(c);
+  return c / (glm::length(c) + constants::EPSILON);
 }
