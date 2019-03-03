@@ -16,28 +16,29 @@
 #include "Material.hpp"
 
 class Node {
-  std::string name;
   std::vector<Node *> children;
 
   glm::mat4 trans;
   glm::mat4 inv;
 
 public:
+  std::string name;
+
   Node(const std::string &name);
   virtual ~Node();
 
   void rotate(char axis, float angle);
-  void scale(const glm::vec3& amount);
-  void translate(const glm::vec3& amount);
+  void scale(const glm::dvec3& amount);
+  void translate(const glm::dvec3& amount);
   void updateTrans(const glm::mat4 &mat);
 
   void addChildren(Node *child) {
     children.push_back(child);
   }
 
-  const Material *intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+  const Material *intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 
-  virtual const Material *intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+  virtual const Material *intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 };
 
 #endif /* SRC_NODE_NODE_H_ */

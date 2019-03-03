@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 
 struct Light {
-  const glm::vec3 color;
-  const glm::vec4 pos;
-  Light(const glm::vec3 &color, glm::vec4 pos) : 
+  const glm::dvec3 color;
+  const glm::dvec4 pos;
+  Light(const glm::dvec3 &color, glm::dvec4 pos) : 
     color(color), pos(pos) {}
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "node/Node.hpp"
-#include "Primitive.hpp"
+#include "primitive/Primitive.hpp"
 #include "Material.hpp"
 
 class GeometryNode : public Node {
@@ -13,5 +13,5 @@ public:
     const Primitive * const p, const Material &m) : 
     Node(name), prim(p), material(m) {}
 
-  virtual const Material *intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const;
+  virtual const Material *intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 };

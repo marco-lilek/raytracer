@@ -8,7 +8,7 @@ struct Color {
   Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : 
    r(r), g(g), b(b), a(a) {}
 
-  Color(const glm::vec4 &f) : 
+  Color(const glm::dvec4 &f) : 
     r(encode(f[0])), 
     g(encode(f[1])), 
     b(encode(f[2])), 

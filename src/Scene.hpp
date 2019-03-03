@@ -8,8 +8,8 @@
 class Scene {
   const Node * const root;
   const std::vector<const Light *> lights;
-  const glm::vec3 ambientLight;
-  const glm::vec3 fireRay(const Ray &r, const int depth) const;
+  const glm::dvec3 ambientLight;
+  const glm::dvec3 fireRay(const Ray &r, const int depth) const;
 
 public:
   Scene(const Node * const root, const std::vector<const Light *> &lights);

@@ -3,13 +3,13 @@
 #include <glm/glm.hpp>
 
 struct Ray {
-  const glm::vec4 from;
-  const glm::vec4 v;
+  const glm::dvec4 from;
+  const glm::dvec4 v;
 
-  Ray(const glm::vec4 &from, const glm::vec4 &v) : 
+  Ray(const glm::dvec4 &from, const glm::dvec4 &v) : 
     from(from), v(v) {}
 
-  glm::vec4 pointAt(const float &t) const {
-    return from + v * t;
+  static glm::dvec4 pointAt(const Ray &r, const double &t) {
+    return r.from + r.v * t;
   }
 };

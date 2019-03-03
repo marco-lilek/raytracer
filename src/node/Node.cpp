@@ -7,11 +7,14 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/ext.hpp>
 #include <algorithm>
+#include <iostream>
+#include <loguru/loguru.hpp>
 
 #include "node/Node.hpp"
 #include "Material.hpp"
 
 using namespace glm;
+using namespace std;
 
 Node::Node(const std::string &name) : name(name), trans(1), inv(1) {
 }
@@ -41,18 +44,18 @@ void Node::rotate(char axis, float angle) {
 
 }
 
-void Node::scale(const glm::vec3& amount) {
+void Node::scale(const glm::dvec3& amount) {
 	updateTrans(glm::scale(amount));
 }
 
-void Node::translate(const glm::vec3& amount) {
+void Node::translate(const glm::dvec3& amount) {
 	updateTrans(glm::translate(amount));
 }
 
-const Material *Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
+const Material *Node::intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
 	Ray transRay(inv * r.from, inv * r.v);
-	glm::vec4 localP;
-	glm::vec4 localNormal;
+	glm::dvec4 localP;
+	glm::dvec4 localNormal;
 
 	const Material *res = intersectImpl(transRay, localP, localNormal);
 	p = trans * localP;
@@ -61,31 +64,32 @@ const Material *Node::intersect(const Ray &r, glm::vec4 &p, glm::vec4 &normal) c
 	return res;
 }
 
-const Material *Node::intersectImpl(const Ray &r, glm::vec4 &p, glm::vec4 &normal) const {
+const Material *Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
 	const Material *toRet = nullptr;
 	float closestDistance = 0;
-	glm::vec4 bestp;
-	glm::vec4 bestnormal;
+	glm::dvec4 bestp;
+	glm::dvec4 bestnormal;
 
 	for (auto childIt = children.begin(); childIt != children.end(); ++childIt) {
 		Node *child = *childIt;
-		glm::vec4 thisp;
-		glm::vec4 thisnormal;
+		glm::dvec4 thisp;
+		glm::dvec4 thisnormal;
 		const Material *fromChild = child->intersect(r, thisp, thisnormal);
 
 		if (fromChild) {
-			float thisDistance = std::max(0.0f, glm::distance(thisp, r.from));
+			float thisDistance = std::max(0.0, glm::distance(thisp, r.from));
 			if (toRet == nullptr || thisDistance < closestDistance) {
 				toRet = fromChild;
 				bestp = thisp;
 				bestnormal = thisnormal;
+				closestDistance = thisDistance;
 			}
 		}
 	}
 
 	p = bestp;
 	normal = bestnormal;
-
+  DLOG_F(INFO, "best is %p", (void*)toRet);
 	return toRet;
 }
 

@@ -17,7 +17,9 @@ Image::Image(int width, int height) :
 
 void Image::render(const std::string& fname) {
   unsigned error = lodepng::encode(fname, data, width, height);
-  LOG_F(INFO, "Render error %s", lodepng_error_text(error));
+  if (error) {
+    DLOG_F(INFO, "Render error %s", lodepng_error_text(error));
+  }
 }
 
 void Image::drawPixel(

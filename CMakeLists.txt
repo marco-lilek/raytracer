@@ -6,6 +6,8 @@ add_library(lodepng STATIC ${THIRDPARTY}/lodepng/lodepng.cpp ${THIRDPARTY}/lodep
 
 add_library(loguru ${THIRDPARTY}/loguru/loguru.cpp ${THIRDPARTY}/loguru/loguru.hpp)
 
+add_library(polyroots ${THIRDPARTY}/polyroots.cpp ${THIRDPARTY}/polyroots.hpp)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(loguru Threads::Threads dl)
@@ -19,4 +21,4 @@ target_include_directories(raytracer PUBLIC src)
 target_compile_definitions(raytracer
     PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_link_libraries(raytracer lodepng loguru)
+target_link_libraries(raytracer lodepng loguru polyroots)
