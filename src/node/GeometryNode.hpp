@@ -5,7 +5,7 @@
 #include "Material.hpp"
 
 class GeometryNode : public Node {
-  const Primitive* const prim; // TODO put on the stack
+  const Primitive* const prim;
   const Material material;
 
 public:

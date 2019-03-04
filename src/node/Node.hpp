@@ -14,6 +14,7 @@
 
 #include "Ray.hpp"
 #include "Material.hpp"
+#include "Helpers.hpp"
 
 class Node {
   std::vector<Node *> children;
@@ -27,12 +28,20 @@ public:
   Node(const std::string &name);
   virtual ~Node();
 
+  void scaleList(const std::vector<double>& amount) {
+    scale(helpers::stdtoglm3(amount));
+  }
+  void translateList(const std::vector<double>& amount) {
+    translate(helpers::stdtoglm4(amount));
+  }
+
   void rotate(char axis, float angle);
   void scale(const glm::dvec3& amount);
   void translate(const glm::dvec3& amount);
+
   void updateTrans(const glm::mat4 &mat);
 
-  void addChildren(Node *child) {
+  void addChild(Node *child) {
     children.push_back(child);
   }
 

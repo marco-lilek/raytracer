@@ -12,6 +12,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(loguru Threads::Threads dl)
 
+find_package(Lua "5.3" REQUIRED)
+
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp src/*.h)
 
 add_executable(raytracer ${SOURCES})
@@ -21,4 +23,4 @@ target_include_directories(raytracer PUBLIC src)
 target_compile_definitions(raytracer
     PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_link_libraries(raytracer lodepng loguru polyroots)
+target_link_libraries(raytracer lodepng loguru polyroots ${LUA_LIBRARIES})

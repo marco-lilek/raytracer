@@ -44,50 +44,48 @@ const glm::dvec3 Scene::fireRay(const Ray &rayFromEye, const int depth) const {
   if (distToHit < constants::EPSILON) return finalColor;
   if (m == nullptr) return finalColor;
 
-  if (true) {
+  finalColor += ambientLight * m->kd;
 
-    finalColor += ambientLight * m->kd;
+  for (auto lightIt = lights.begin(); lightIt != lights.end(); ++lightIt) {
+    const Light *light = *lightIt;
+    const Ray rayToLight(sceneHit, light->pos - sceneHit);
 
-    for (auto lightIt = lights.begin(); lightIt != lights.end(); ++lightIt) {
-      const Light *light = *lightIt;
-      const Ray rayToLight(sceneHit, light->pos - sceneHit);
-
-      // //cerr << glm::to_string(rayToLight.v) << " " << glm::to_string(rayToLight.from) << endl;
-      glm::dvec4 shadowHit;
-      glm::dvec4 shadowHitNormal;
-      const Material *intersectScene = root->intersect(
-        rayToLight, shadowHit, shadowHitNormal);
-      if (intersectScene) {
-        // //cerr << glm::to_string(shadowHit) << endl;
-        double lengthOfShadowRay = glm::distance(sceneHit, shadowHit);
-        double distanceToLight = glm::distance(light->pos, sceneHit);
-        if (lengthOfShadowRay < distanceToLight) {
-          continue; // We hit something before reaching the light
-        }
+    // //cerr << glm::to_string(rayToLight.v) << " " << glm::to_string(rayToLight.from) << endl;
+    glm::dvec4 shadowHit;
+    glm::dvec4 shadowHitNormal;
+    const Material *intersectScene = root->intersect(
+      rayToLight, shadowHit, shadowHitNormal);
+    if (intersectScene) {
+      // //cerr << glm::to_string(shadowHit) << endl;
+      double lengthOfShadowRay = glm::distance(sceneHit, shadowHit);
+      double distanceToLight = glm::distance(light->pos, sceneHit);
+      if (lengthOfShadowRay < distanceToLight) {
+        continue; // We hit something before reaching the light
       }
+    }
 
-      {
-        // Diffuse lighting
-        double diffuseFactor = helpers::normalizedDot(rayToLight.v, sceneHitNormal);
-        /* //cerr << "diffuseFactor " << diffuseFactor << endl; */
-        const glm::dvec3 diffuse(diffuseFactor * m->kd * light->color);
-        finalColor += diffuse;
-      }
+    {
+      // Diffuse lighting
+      double diffuseFactor = helpers::normalizedDot(rayToLight.v, sceneHitNormal);
+      /* //cerr << "diffuseFactor " << diffuseFactor << endl; */
+      const glm::dvec3 diffuse(diffuseFactor * m->kd * light->color);
+      finalColor += diffuse;
+    }
 
-      {
-        // Specular lighting
-        glm::dvec4 halfway = helpers::halfwayVector(rayToLight.v, -rayFromEye.v);
-        double hDotn = helpers::normalizedDot(halfway, sceneHitNormal);
-        double specularFactor = glm::pow(hDotn, m->shininess);
-        /* //cerr << "specularFactor " << specularFactor << endl; */
-        const glm::dvec3 specular(specularFactor * m->ks * light->color);
-        finalColor += specular;
-      }
-
+    {
+      // Specular lighting
+      glm::dvec4 halfway = helpers::halfwayVector(rayToLight.v, -rayFromEye.v);
+      double hDotn = helpers::normalizedDot(halfway, sceneHitNormal);
+      double specularFactor = glm::pow(hDotn, m->shininess);
+      /* //cerr << "specularFactor " << specularFactor << endl; */
+      const glm::dvec3 specular(specularFactor * m->ks * light->color);
+      finalColor += specular;
     }
   }
 
-  if (depth > 0) {
+  finalColor = finalColor * (1 - m->reflectiveness);
+
+  if (depth > 0 && m->reflectiveness > 0) { // Skip the extra step if were not reflective
     // This was a huge pain point: for the reflection to work correctly you need to normalize the normal
     // and note we also don't normalize the incident/reflected vectors to avoid acc error
     const glm::dvec4 reflectedDir = glm::reflect(rayFromEye.v, glm::normalize(sceneHitNormal));
@@ -95,13 +93,10 @@ const glm::dvec3 Scene::fireRay(const Ray &rayFromEye, const int depth) const {
     //cerr << "incoming " << glm::to_string(rayFromEye.v) << endl;
     //cerr << "relfectedDir " << glm::to_string(reflectedDir) << " " << glm::to_string(sceneHit) << endl;
     //cerr << "angle " << glm::degrees(glm::angle(sceneHitNormal, rayFromEye.v)) << endl;
-    if (glm::dot(sceneHitNormal, rayFromEye.v)) {
-
+    if (glm::dot(sceneHitNormal, rayFromEye.v) != 0) { // Perpendicular
       const Ray reflectedRay(sceneHit, reflectedDir);
-      finalColor += fireRay(reflectedRay, depth-1);
-
+      finalColor += fireRay(reflectedRay, depth-1) * m->reflectiveness;
     }
-    //cerr << "bitchass" << std::abs(glm::angle(glm::normalize(sceneHitNormal), glm::normalize(rayFromEye.v))-90) << endl;
   }
 
   //cerr << "finalColor " << glm::to_string(finalColor) << endl;
