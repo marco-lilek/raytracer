@@ -1,15 +1,20 @@
 #pragma once
 
 #include "Ray.hpp"
-#include "node/Node.hpp"
 #include "Color.hpp"
 #include "Light.hpp"
+#include <vector>
 
-class Scene {
+class Node;
+
+struct Scene {
   const Node * const root;
   const std::vector<const Light *> lights;
-  const glm::dvec3 ambientLight;
-  const glm::dvec3 fireRay(const Ray &r, const int depth) const;
+  const glm::dvec3 fireRay(
+      const Ray &r,
+      const int depth,
+      const double curRefractionIndex
+      ) const;
 
 public:
   Scene(const Node * const root, const std::vector<const Light *> &lights);

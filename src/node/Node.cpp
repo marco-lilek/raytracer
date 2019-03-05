@@ -11,7 +11,7 @@
 #include <loguru/loguru.hpp>
 
 #include "node/Node.hpp"
-#include "Material.hpp"
+#include "material/Material.hpp"
 
 using namespace glm;
 using namespace std;
@@ -64,7 +64,7 @@ const Material *Node::intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal)
 	return res;
 }
 
-const Material *Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
+const Material * Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
 	const Material *toRet = nullptr;
 	float closestDistance = 0;
 	glm::dvec4 bestp;
@@ -74,7 +74,7 @@ const Material *Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &nor
 		Node *child = *childIt;
 		glm::dvec4 thisp;
 		glm::dvec4 thisnormal;
-		const Material *fromChild = child->intersect(r, thisp, thisnormal);
+		const Material * fromChild = child->intersect(r, thisp, thisnormal);
 
 		if (fromChild) {
 			float thisDistance = std::max(0.0, glm::distance(thisp, r.from));

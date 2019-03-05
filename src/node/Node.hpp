@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "Ray.hpp"
-#include "Material.hpp"
+#include "material/Material.hpp"
 #include "Helpers.hpp"
 
 class Node {
@@ -47,7 +47,7 @@ public:
 
   const Material *intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 
-  virtual const Material *intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
+  virtual const Material * intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 };
 
 #endif /* SRC_NODE_NODE_H_ */

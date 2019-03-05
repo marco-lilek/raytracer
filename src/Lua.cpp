@@ -19,6 +19,8 @@ extern "C" {
 #include <LuaBridge/LuaBridge.h>
 #include <LuaBridge/Vector.h>
 
+#include "material/PhongMaterial.hpp"
+
 using namespace luabridge;
 using namespace std;
 
@@ -40,11 +42,14 @@ void initNamespace(lua_State *L) {
       .endClass()
 
       .beginClass<Material>("Material")
+        .addFunction("intersect", &Material::intersect)
+      .endClass()
+
+      .deriveClass<PhongMaterial, Material>("PhongMaterial")
         .addConstructor<void (*)(
-            const std::vector<double> &kd,
-            const std::vector<double> &ks,
-            const double &shininess,
-            const double &reflectiveness)>()
+            const std::vector<double> &,
+            const std::vector<double> &,
+            const double &)>()
       .endClass()
 
       .beginClass<Node>("Node")
@@ -57,7 +62,9 @@ void initNamespace(lua_State *L) {
       .endClass()
 
       .deriveClass<GeometryNode, Node>("GeometryNode")
-        .addConstructor<void (*) (const std::string&, const Primitive * const, const Material &)>()
+        .addConstructor<void (*) (const std::string&,
+            const Primitive * const,
+            const Material *)>()
       .endClass()
 
       .beginClass<RayTracer>("RayTracer")
