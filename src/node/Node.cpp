@@ -89,7 +89,7 @@ const Material * Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &no
 
 	p = bestp;
 	normal = bestnormal;
-  DLOG_F(INFO, "best is %p", (void*)toRet);
+        //DLOG_F(INFO, "best is %p", (void*)toRet);
 	return toRet;
 }
 

@@ -12,7 +12,7 @@ void RayTracer::render(const Node *rootNode) {
 
   const Light l(
     glm::dvec3(0.5, 0.5, 0.5), 
-    glm::dvec4(0,0,-3, 1));
+    glm::dvec4(0,0,0, 1));
   
   std::vector<const Light *> lights;
   lights.push_back(&l);
