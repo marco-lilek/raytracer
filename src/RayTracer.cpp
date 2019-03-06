@@ -3,7 +3,12 @@
 #include "Scene.hpp"
 #include "Light.hpp"
 
+#include <iostream>
+
+using namespace std;
+
 void RayTracer::render(const Node *rootNode) {
+  cout << "Running!" << endl;
 
   const Light l(
     glm::dvec3(0.5, 0.5, 0.5), 

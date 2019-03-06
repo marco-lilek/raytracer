@@ -26,7 +26,7 @@ const Ray Scene::constructRay(int x, int y, int width, int height) {
 
   const glm::dvec4 to(onWindowX, onWindowY, 1, 1);
 
-  const glm::dvec4 shift(0,0,-5,0);
+  const glm::dvec4 shift(0,0,0,0);
 
   return Ray(from + shift, to - from);
 }

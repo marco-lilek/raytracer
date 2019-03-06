@@ -2,9 +2,8 @@
 
 #include "primitive/Primitive.hpp"
 
-class Sphere : public Primitive {
+class Cube : public Primitive {
 public:
-  virtual ~Sphere() {}
+  virtual ~Cube() {}
   virtual bool intersect(const Ray &r, float &t, glm::dvec4 &normal) const;
 };
-

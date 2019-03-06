@@ -12,6 +12,7 @@ using namespace std;
 using namespace glm;
 
 int main(int argc, char *argv[]) {
+  
   cout << "it works!" << endl;
   /* Sphere s(1); */
   /* GeometryNode g("green one", &s, Material( */

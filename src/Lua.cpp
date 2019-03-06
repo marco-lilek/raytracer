@@ -5,6 +5,7 @@
 
 #include "primitive/Primitive.hpp"
 #include "primitive/Sphere.hpp"
+#include "primitive/Cube.hpp"
 
 #include "node/GeometryNode.hpp"
 #include "node/Node.hpp"
@@ -38,7 +39,11 @@ void initNamespace(lua_State *L) {
       .endClass()
 
       .deriveClass<Sphere, Primitive>("Sphere")
-        .addConstructor<void (*) (const double &radius)>()
+        .addConstructor<void (*) (void)>()
+      .endClass()
+
+      .deriveClass<Cube, Primitive>("Cube")
+        .addConstructor<void (*) (void)>()
       .endClass()
 
       .beginClass<Material>("Material")

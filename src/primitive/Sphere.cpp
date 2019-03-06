@@ -14,7 +14,7 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
 
   float A = glm::dot(d, d);
   float B = 2 * glm::dot(d, a);
-  float C = glm::dot(a, a) - radius * radius;
+  float C = glm::dot(a, a) - 1; // Just assume the radius is 1
 
   double roots[2];
   size_t numRoots = quadraticRoots(A, B, C, roots);
