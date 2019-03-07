@@ -14,11 +14,7 @@ struct Color {
     b(encode(f[2])), 
     a(encode(f[3])) {}
   
-  Color(float c) : 
-    r(encode(c)), 
-    g(encode(c)), 
-    b(encode(c)), 
-    a(encode(c)) {}
+  Color(double c) : Color(glm::dvec4(c)) {}
 
   // friend Color operator+ (Color& lhs,const Color& rhs) {
   //   return Color(lhs.r+rhs.r,lhs.g+rhs.g,lhs.b+rhs.b, lhs.a+rhs.a);

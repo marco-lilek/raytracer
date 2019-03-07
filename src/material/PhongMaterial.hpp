@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 #include "material/Material.hpp"
-#include "Helpers.hpp"
 
 #include <iostream>
 
@@ -12,11 +11,11 @@ struct PhongMaterial : public Material {
   const double shininess;
 
   PhongMaterial(
-      const std::vector<double> &kd, 
-      const std::vector<double> &ks,
+      const glm::dvec3 &kd, 
+      const glm::dvec3 &ks,
       const double &shininess) : 
-    kd(helpers::stdtoglm3(kd)),
-    ks(helpers::stdtoglm3(ks)),
+    kd(kd),
+    ks(ks),
     shininess(shininess)
     {}
 

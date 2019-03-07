@@ -5,18 +5,24 @@
 #include <loguru/loguru.hpp>
 
 #include "Scene.hpp"
-#include "Helpers.hpp"
+#include "Math.hpp"
+#include "Constants.hpp"
 #include "material/Material.hpp"
 #include "node/Node.hpp"
+#include "PrintGlm.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-Scene::Scene(const Node * const root, 
-  const std::vector<const Light *> &lights) : 
+Scene::Scene(
+             const Node * const root, 
+             const std::vector<const Light *> &lights,
+             const glm::dvec3 &ambient
+             ) : 
   root(root), 
-  lights(lights)
+  lights(lights),
+  ambientLight(ambient)
 {}
 
 const Ray Scene::constructRay(int x, int y, int width, int height) {
@@ -25,10 +31,7 @@ const Ray Scene::constructRay(int x, int y, int width, int height) {
   float onWindowY = (float)y / height * 2 - 1;
 
   const glm::dvec4 to(onWindowX, onWindowY, 1, 1);
-
-  const glm::dvec4 shift(0,0,0,0);
-
-  return Ray(from + shift, to - from);
+  return Ray(from, to-from);
 }
 
 const Color Scene::getColor(const Ray &rayFromEye) const {

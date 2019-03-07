@@ -2,10 +2,10 @@
 prim_sphere = g.Sphere()
 prim_cube = g.Cube()
 
-mat_red = g.PhongMaterial({0.5,0,0}, {0,0,0}, 10, 0)
-mat_blue = g.PhongMaterial({0,0,0.5}, {0,0,0}, 10, 0)
-mat_green = g.PhongMaterial({0,0.5,0}, {0,0,0}, 10, 0)
-mat_white = g.PhongMaterial({0.5,0.5,0.5}, {0,0,0}, 10, 0)
+mat_red = g.PhongMaterial({0.5,0,0}, {0.2,0.2,0.2}, 10, 0)
+mat_blue = g.PhongMaterial({0,0,0.5}, {0.2,0.2,0.2}, 10, 0)
+mat_green = g.PhongMaterial({0,0.5,0}, {0.2,0.2,0.2}, 10, 0)
+mat_white = g.PhongMaterial({0.5,0.5,0.5}, {0.2,0.2,0.2}, 10, 0)
 
 print('side walls')
 side_materials = {mat_red, mat_white, mat_blue, mat_white}

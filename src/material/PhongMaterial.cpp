@@ -1,3 +1,4 @@
+#include "Math.hpp"
 #include "Ray.hpp"
 #include "Light.hpp"
 #include "material/PhongMaterial.hpp"
@@ -12,7 +13,8 @@ glm::dvec3 PhongMaterial::intersect(
   const glm::dvec4 &sceneHitNormal) const {
   glm::dvec3 finalColor(0);
 
-  finalColor += 0.3 * kd;
+  return glm::dvec3(1);
+  finalColor += scene.ambientLight * kd;
 
   for (auto lightIt = scene.lights.begin(); lightIt != scene.lights.end(); ++lightIt) {
     const Light *light = *lightIt;
@@ -34,7 +36,7 @@ glm::dvec3 PhongMaterial::intersect(
 
     {
       // Diffuse lighting
-      double diffuseFactor = helpers::normalizedDot(rayToLight.v, sceneHitNormal);
+      double diffuseFactor = math::normalizedDot(rayToLight.v, sceneHitNormal);
       /* //cerr << "diffuseFactor " << diffuseFactor << endl; */
       const glm::dvec3 diffuse(diffuseFactor * kd * light->color);
       finalColor += diffuse;
@@ -42,8 +44,8 @@ glm::dvec3 PhongMaterial::intersect(
 
     {
       // Specular lighting
-      glm::dvec4 halfway = helpers::halfwayVector(rayToLight.v, -rayFromEye.v);
-      double hDotn = helpers::normalizedDot(halfway, sceneHitNormal);
+      glm::dvec4 halfway = math::halfwayVector(rayToLight.v, -rayFromEye.v);
+      double hDotn = math::normalizedDot(halfway, sceneHitNormal);
       double specularFactor = glm::pow(hDotn, shininess);
       /* //cerr << "specularFactor " << specularFactor << endl; */
       const glm::dvec3 specular(specularFactor * ks * light->color);

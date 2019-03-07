@@ -2,23 +2,33 @@
 #include "Image.hpp"
 #include "Scene.hpp"
 #include "Light.hpp"
+#include "PrintGlm.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-void RayTracer::render(const Node *rootNode) {
-  cout << "Running!" << endl;
+void RayTracer::render(
+  const Node *rootNode,
+  const std::vector<const Light *> &lights,
+  const std::string &fname,
+  const int width,
+  const int height,
+  //const glm::dvec3 &eye,
+  //const glm::dvec3 &view,
+  //double fovy,
+  const glm::dvec3 &ambient
+                       ) {
+  cout << "Running with arguments"
+       << "lights " << lights.size() << endl
+       << "fname " << fname << endl
+       << "width " << width << endl
+       << "height " << height << endl
+       << "ambient " << ambient << endl
+    ;
 
-  const Light l(
-    glm::dvec3(0.5, 0.5, 0.5), 
-    glm::dvec4(0,0,0, 1));
-  
-  std::vector<const Light *> lights;
-  lights.push_back(&l);
-
-  Image img(200, 200);
-  const Scene scene(rootNode, lights);
+  Image img(width, height);
+  const Scene scene(rootNode, lights, ambient);
 
   int startX = 0;
   int startY = 0;
@@ -34,5 +44,6 @@ void RayTracer::render(const Node *rootNode) {
     }
   }
 
-  img.render("result.png");
+  img.render(fname);
+  cout << "DONE" << endl;
 }

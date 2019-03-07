@@ -16,12 +16,13 @@
 using namespace glm;
 using namespace std;
 
-Node::Node(const std::string &name) : name(name), trans(1), inv(1) {
-}
+Node::Node(const std::string &name) :
+  name(name),
+  trans(1),
+  inv(1)
+{}
 
-Node::~Node() {
-  // TODO
-}
+Node::~Node() {}
 
 void Node::rotate(char axis, float angle) {
 	vec3 rot_axis;
@@ -57,14 +58,14 @@ const Material *Node::intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal)
 	glm::dvec4 localP;
 	glm::dvec4 localNormal;
 
-	const Material *res = intersectImpl(transRay, localP, localNormal);
+	const Material *res = _intersect(transRay, localP, localNormal);
 	p = trans * localP;
 	normal = inv * localNormal;
 
 	return res;
 }
 
-const Material * Node::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
+const Material * Node::_intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
 	const Material *toRet = nullptr;
 	float closestDistance = 0;
 	glm::dvec4 bestp;

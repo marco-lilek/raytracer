@@ -14,7 +14,6 @@
 
 #include "Ray.hpp"
 #include "material/Material.hpp"
-#include "Helpers.hpp"
 
 class Node {
   std::vector<Node *> children;
@@ -28,13 +27,6 @@ public:
   Node(const std::string &name);
   virtual ~Node();
 
-  void scaleList(const std::vector<double>& amount) {
-    scale(helpers::stdtoglm3(amount));
-  }
-  void translateList(const std::vector<double>& amount) {
-    translate(helpers::stdtoglm4(amount));
-  }
-
   void rotate(char axis, float angle);
   void scale(const glm::dvec3& amount);
   void translate(const glm::dvec3& amount);
@@ -47,7 +39,7 @@ public:
 
   const Material *intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 
-  virtual const Material * intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
+  virtual const Material * _intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
 };
 
 #endif /* SRC_NODE_NODE_H_ */

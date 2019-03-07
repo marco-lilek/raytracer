@@ -1,11 +1,11 @@
 #include "GeometryNode.hpp"
-#include "Helpers.hpp"
+#include "Constants.hpp"
 #include <iostream>
 #include <loguru/loguru.hpp>
 
 using namespace std;
 
-const Material * GeometryNode::intersectImpl(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
+const Material * GeometryNode::_intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
   float t;
   bool res = prim->intersect(r, t, normal);
   if (res) {
