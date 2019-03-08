@@ -11,7 +11,8 @@ struct Material {
     const int depth,
     const int curRefractionIndex,
     const glm::dvec4 &sceneHit,
-    const glm::dvec4 &sceneHitNormal) const 
+    const glm::dvec4 &sceneHitNormal
+                               ) const 
   {
     return glm::dvec3(1);
   };

@@ -13,5 +13,9 @@ public:
     const Primitive * const p, const Material *m) : 
     Node(name), prim(p), material(m) {}
 
-  virtual const Material *_intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
+  virtual const Material *_intersect(
+                                     const Ray &r,
+                                     glm::dvec4 &p,
+                                     glm::dvec4 &normal
+                                     ) const;
 };

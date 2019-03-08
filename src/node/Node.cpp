@@ -53,7 +53,10 @@ void Node::translate(const glm::dvec3& amount) {
 	updateTrans(glm::translate(amount));
 }
 
-const Material *Node::intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
+const Material *Node::intersect(const Ray &r,
+                                glm::dvec4 &p,
+                                glm::dvec4 &normal
+                                ) const {
 	Ray transRay(inv * r.from, inv * r.v);
 	glm::dvec4 localP;
 	glm::dvec4 localNormal;
@@ -65,7 +68,10 @@ const Material *Node::intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal)
 	return res;
 }
 
-const Material * Node::_intersect(const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const {
+const Material * Node::_intersect(const Ray &r,
+                                  glm::dvec4 &p,
+                                  glm::dvec4 &normal
+                                  ) const {
 	const Material *toRet = nullptr;
 	float closestDistance = 0;
 	glm::dvec4 bestp;

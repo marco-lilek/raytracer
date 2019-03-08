@@ -42,7 +42,8 @@ const Color Scene::getColor(const Ray &rayFromEye) const {
 const glm::dvec3 Scene::fireRay(
     const Ray &rayFromEye,
     const int depth,
-    const double curRefractionIndex) const {
+    const double curRefractionIndex
+                                ) const {
   glm::dvec4 sceneHit; // A point
   glm::dvec4 sceneHitNormal;
   const Material *m = root->intersect(rayFromEye, sceneHit, sceneHitNormal);

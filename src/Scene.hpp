@@ -21,7 +21,8 @@ struct Scene {
 public:
   Scene(const Node * const root,
         const std::vector<const Light *> &lights,
-        const glm::dvec3 &ambient);
+        const glm::dvec3 &ambient
+        );
   static const Ray constructRay(int x, int y, int width, int height);
   const Color getColor(const Ray &r) const;
 };

@@ -13,7 +13,8 @@ struct PhongMaterial : public Material {
   PhongMaterial(
       const glm::dvec3 &kd, 
       const glm::dvec3 &ks,
-      const double &shininess) : 
+      const double &shininess
+                ) : 
     kd(kd),
     ks(ks),
     shininess(shininess)
@@ -25,5 +26,6 @@ struct PhongMaterial : public Material {
     const int depth,
     const int curRefractionIndex,
     const glm::dvec4 &sceneHit,
-    const glm::dvec4 &sceneHitNormal) const;
+    const glm::dvec4 &sceneHitNormal
+                               ) const;
 };

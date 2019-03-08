@@ -7,7 +7,8 @@ struct SphereNode : GeometryNode {
   Sphere s;
 
   SphereNode(const std::string &name, 
-             const Material *m) : 
+             const Material *m
+             ) : 
     GeometryNode(name, &s, m)
   {}
 };
