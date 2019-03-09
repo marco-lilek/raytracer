@@ -3,7 +3,9 @@
 #include "Scene.hpp"
 #include "Light.hpp"
 #include "Printglm.hpp"
+#include "RuntimeConfig.hpp"
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 using namespace std;
@@ -40,10 +42,13 @@ void RayTracer::render(
   int endX = img.width;
   int endY = img.height;
 
-  // int startX = img.width / 2;
-  // int startY = img.height / 2;
-  // int endX = img.width/2+1;
-  // int endY = img.height/2+1;
+  if (rc::get().singlePixel) {
+    spdlog::info("shooting single pixel");
+    startX = img.width / 2;
+    startY = img.height / 2;
+    endX = img.width/2+1;
+    endY = img.height/2+1;
+  }
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {

@@ -1,5 +1,0 @@
-#pragma once
-
-struct LightRay : public Ray {
-  const double sourceRfrIndex;
-};
