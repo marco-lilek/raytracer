@@ -11,8 +11,9 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
-#include "Ray.hpp"
+#include "ray/Ray.hpp"
 #include "material/Material.hpp"
 
 class Node {
@@ -37,15 +38,24 @@ public:
     children.push_back(child);
   }
 
-  const Material *intersect(const Ray &r,
+  const Node *intersect(const Ray &r,
                             glm::dvec4 &p,
                             glm::dvec4 &normal
                             ) const;
 
-  virtual const Material * _intersect(const Ray &r,
+  virtual const Node * _intersect(const Ray &r,
                                       glm::dvec4 &p,
                                       glm::dvec4 &normal
                                       ) const;
+
+  virtual glm::dvec3 getColor(const Scene &scene,
+                              const LightRay &incomingRay,
+                              const glm::dvec4 &sceneHit,
+                              const glm::dvec4 &sceneHitNormal
+                              ) const
+  {
+    throw std::logic_error("called getColor on Node");
+  }
 };
 
 #endif /* SRC_NODE_NODE_H_ */

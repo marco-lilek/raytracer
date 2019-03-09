@@ -1,4 +1,4 @@
-mat_white = g.PhongMaterial({0.5,0.5,0.5}, {0.2,0.2,0.2}, 10)
+mat_white = g.DebugMaterial()
 
 print('node')
 root = g.Node('root')

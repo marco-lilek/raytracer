@@ -12,7 +12,8 @@ struct Color {
     r(encode(f[0])), 
     g(encode(f[1])), 
     b(encode(f[2])), 
-    a(encode(f[3])) {}
+    a(encode(f[3])) {
+  }
   
   Color(double c) : Color(glm::dvec4(c)) {}
 

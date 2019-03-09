@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Ray.hpp"
+#include "ray/Ray.hpp"
 
 class Primitive {
 public:

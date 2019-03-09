@@ -22,9 +22,7 @@ struct PhongMaterial : public Material {
 
   virtual glm::dvec3 intersect(
     const Scene &scene,
-    const Ray &rayFromEye,
-    const int depth,
-    const int curRefractionIndex,
+    const LightRay &rayFromEye,
     const glm::dvec4 &sceneHit,
     const glm::dvec4 &sceneHitNormal
                                ) const;

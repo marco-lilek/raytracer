@@ -8,10 +8,10 @@
 #include <glm/ext.hpp>
 #include <algorithm>
 #include <iostream>
-#include <loguru/loguru.hpp>
 
 #include "node/Node.hpp"
 #include "material/Material.hpp"
+#include "Printglm.hpp"
 
 using namespace glm;
 using namespace std;
@@ -53,38 +53,46 @@ void Node::translate(const glm::dvec3& amount) {
 	updateTrans(glm::translate(amount));
 }
 
-const Material *Node::intersect(const Ray &r,
+const Node *Node::intersect(const Ray &r,
                                 glm::dvec4 &p,
                                 glm::dvec4 &normal
                                 ) const {
+  // cerr << "wrapper" << endl;
+  // cerr << glm::to_string(inv) << endl;
 	Ray transRay(inv * r.from, inv * r.v);
 	glm::dvec4 localP;
 	glm::dvec4 localNormal;
 
-	const Material *res = _intersect(transRay, localP, localNormal);
+	const Node *res = _intersect(transRay, localP, localNormal);
 	p = trans * localP;
 	normal = inv * localNormal;
 
 	return res;
 }
 
-const Material * Node::_intersect(const Ray &r,
+const Node * Node::_intersect(const Ray &r,
                                   glm::dvec4 &p,
                                   glm::dvec4 &normal
                                   ) const {
-	const Material *toRet = nullptr;
-	float closestDistance = 0;
+	const Node *toRet = nullptr;
+	double closestDistance = 0;
 	glm::dvec4 bestp;
 	glm::dvec4 bestnormal;
+        // cerr << "intersect !" << r.v << endl;
 
 	for (auto childIt = children.begin(); childIt != children.end(); ++childIt) {
 		Node *child = *childIt;
+
+                // cerr << "child " << child->name <<endl;
 		glm::dvec4 thisp;
 		glm::dvec4 thisnormal;
-		const Material * fromChild = child->intersect(r, thisp, thisnormal);
+                // cerr << "r.p, r.v" << r.from << " " << r.v << endl;
+		const Node * fromChild = child->intersect(r, thisp, thisnormal);
 
 		if (fromChild) {
-			float thisDistance = std::max(0.0, glm::distance(thisp, r.from));
+                  // cerr << fromChild->name <<endl;
+			double thisDistance = std::max(0.0, glm::distance(thisp, r.from));
+                        // cerr << thisDistance << endl;
 			if (toRet == nullptr || thisDistance < closestDistance) {
 				toRet = fromChild;
 				bestp = thisp;
@@ -96,7 +104,9 @@ const Material * Node::_intersect(const Ray &r,
 
 	p = bestp;
 	normal = bestnormal;
-        //DLOG_F(INFO, "best is %p", (void*)toRet);
+
+        // if (toRet) cerr << "ya it hit" << endl;
+
 	return toRet;
 }
 

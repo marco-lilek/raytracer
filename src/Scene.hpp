@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Ray.hpp"
+#include "ray/LightRay.hpp"
 #include "Color.hpp"
 #include "Light.hpp"
 #include <vector>
@@ -13,9 +13,7 @@ struct Scene {
   const glm::dvec3 ambientLight;
 
   const glm::dvec3 fireRay(
-      const Ray &r,
-      const int depth,
-      const double curRefractionIndex
+      const LightRay &r
       ) const;
 
 public:
@@ -23,6 +21,6 @@ public:
         const std::vector<const Light *> &lights,
         const glm::dvec3 &ambient
         );
-  static const Ray constructRay(int x, int y, int width, int height);
-  const Color getColor(const Ray &r) const;
+  static const LightRay constructRay(int x, int y, int width, int height);
+  const Color getColor(const LightRay &r) const;
 };

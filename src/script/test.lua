@@ -1,32 +1,19 @@
-g.echo()
+mat_white = g.PhongMaterial({0.5,0.5,0.5}, {0.2,0.2,0.2}, 10)
+mat_glass = g.ReflectiveMaterial(1.5)
 
-prim_sphere = g.Sphere()
-prim_square = g.Cube()
--- mat_mirror = g.Material({0.5,0.5,0.5}, {0.5,0.5,0.5}, 10, 0.9)
+print('node')
+root = g.Node('root')
+s = g.SphereNode('sphere', mat_white)
+root:addChild(s)
+s:translate({0.1,0,4.5})
 
-mat_green = g.PhongMaterial({0,0.5,0}, {0.5,0,0}, 10, 0)
+print('mirrorey')
+mirrorey = g.SphereNode('mirrorey', mat_glass)
+root:addChild(mirrorey)
+mirrorey:translate({-0.5,0,3})
 
-node_root = g.Node("node_root")
-
-node_center = g.GeometryNode("node_center", prim_square, mat_green)
-node_center:scale({3,3,1})
-node_center:rotate('y', 45)
---node_center:rotate('z', 45)
-node_root:addChild(node_center)
-
-function makebehind(xt, yt)
-  local node_behind = g.GeometryNode(
-    "node_behind" .. xt .. yt, prim_sphere, mat_green)
-  node_behind:scale({3,3,1})
-  node_behind:translate({xt,yt,-6})
-  return node_behind
-end
-
-left = makebehind(-10, 0)
-right = makebehind(5, 5)
-node_root:addChild(left)
-node_root:addChild(right)
-
-rayTracer = g.RayTracer()
-rayTracer:render(node_root)
-
+lights = {}
+print('tracer')
+tracer = g.RayTracer()
+print('render')
+tracer:render(root, lights, 'test.png', 256, 256, {0.3, 0.3, 0.3})

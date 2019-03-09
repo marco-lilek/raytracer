@@ -6,7 +6,7 @@
  */
 
 #include <lodepng/lodepng.h>
-#include <loguru/loguru.hpp>
+//#include <loguru/loguru.hpp>
 
 #include "Image.hpp"
 
@@ -17,9 +17,9 @@ Image::Image(int width, int height) :
 
 void Image::render(const std::string& fname) {
   unsigned error = lodepng::encode(fname, data, width, height);
-  if (error) {
-    DLOG_F(INFO, "Render error %s", lodepng_error_text(error));
-  }
+  // if (error) {
+  //   cerr <"Render error %s", lodepng_error_text(error));
+  // }
 }
 
 void Image::drawPixel(

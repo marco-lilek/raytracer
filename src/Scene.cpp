@@ -2,14 +2,12 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#include <loguru/loguru.hpp>
-
 #include "Scene.hpp"
 #include "Math.hpp"
 #include "Constants.hpp"
 #include "material/Material.hpp"
 #include "node/Node.hpp"
-#include "PrintGlm.hpp"
+#include "Printglm.hpp"
 
 #include <iostream>
 
@@ -25,35 +23,33 @@ Scene::Scene(
   ambientLight(ambient)
 {}
 
-const Ray Scene::constructRay(int x, int y, int width, int height) {
+const LightRay Scene::constructRay(int x, int y, int width, int height) {
   glm::dvec4 from = constants::ORIGIN;
   float onWindowX = (float)x / width * 2 - 1;
   float onWindowY = (float)y / height * 2 - 1;
 
   const glm::dvec4 to(onWindowX, onWindowY, 1, 1);
-  return Ray(from, to-from);
+  const double startingRefractionIndex = 1;
+  const int startingDepth = 2;
+  return LightRay(from, to-from, startingRefractionIndex, startingDepth); // TODO
 }
 
-const Color Scene::getColor(const Ray &rayFromEye) const {
-  float numBounces = 2;
-  return Color(glm::dvec4(fireRay(rayFromEye, numBounces - 1, 1), 1));
+const Color Scene::getColor(const LightRay &rayFromEye) const {
+  return Color(glm::dvec4(fireRay(rayFromEye), 1));
 }
 
 const glm::dvec3 Scene::fireRay(
-    const Ray &rayFromEye,
-    const int depth,
-    const double curRefractionIndex
+    const LightRay &rayFromEye
                                 ) const {
   glm::dvec4 sceneHit; // A point
   glm::dvec4 sceneHitNormal;
-  const Material *m = root->intersect(rayFromEye, sceneHit, sceneHitNormal);
+  const Node *hitNode = root->intersect(rayFromEye, sceneHit, sceneHitNormal);
 
   const double distToHit = glm::distance(rayFromEye.from, sceneHit);
   if (distToHit < constants::EPSILON) return glm::dvec3(0);
-  if (m == nullptr) return glm::dvec3(0);
+  if (hitNode == nullptr) return glm::dvec3(0);
 
-  return m->intersect(
-      *this, rayFromEye, depth, curRefractionIndex, sceneHit, sceneHitNormal);
+  return hitNode->getColor(*this, rayFromEye, sceneHit, sceneHitNormal);
 
 /*   finalColor = finalColor * (1 - m->reflectiveness); */
 

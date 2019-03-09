@@ -10,7 +10,7 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
   glm::dvec3 a(r.from);
   glm::dvec3 d(r.v);
 
-  //cerr << "a " << glm::to_string(a) << " d " << glm::to_string(d) << endl;
+  // cerr << "a " << glm::to_string(a) << " d " << glm::to_string(d) << endl;
 
   float A = glm::dot(d, d);
   float B = 2 * glm::dot(d, a);
@@ -18,7 +18,7 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
 
   double roots[2];
   size_t numRoots = quadraticRoots(A, B, C, roots);
-  //cerr << "numroots " << numRoots << endl;
+  // cerr << "numroots " << numRoots << endl;
 
   if (numRoots == 0) return false;
   if (numRoots == 1) t = roots[0];
@@ -35,7 +35,7 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
     }
   }
 
-  //cerr << "t " << t << endl;
+  // cerr << "t " << t << endl;
   glm::dvec4 P = Ray::pointAt(r, t);
   float dist = glm::distance(P, glm::dvec4(0,0,0,1));
 

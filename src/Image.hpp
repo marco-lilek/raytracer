@@ -14,13 +14,12 @@
 
 class Image {
 	std::vector<uint8_t> data;
-
 public:
 
 	int width, height;
 	Image(int width, int height);
 
-	void render(const std::string &fname);
+  void render(const std::string &fname);
 	void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 	virtual ~Image();

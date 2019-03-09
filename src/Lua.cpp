@@ -21,8 +21,9 @@ extern "C" {
 
 #include "material/PhongMaterial.hpp"
 #include "material/DebugMaterial.hpp"
+#include "material/ReflectiveMaterial.hpp"
 #include "node/SphereNode.hpp"
-#include "PrintGlm.hpp"
+#include "Printglm.hpp"
 
 using namespace luabridge;
 using namespace std;
@@ -83,8 +84,14 @@ void initNamespace(lua_State *L) {
         .addFunction("intersect", &Material::intersect)
       .endClass()
 
-      .beginClass<DebugMaterial>("DebugMaterial")
-        .addFunction("intersect", &DebugMaterial::intersect)
+      .deriveClass<DebugMaterial, Material>("DebugMaterial")
+        .addConstructor<void (*) ()>()
+      .endClass()
+
+      .deriveClass<ReflectiveMaterial, Material>("ReflectiveMaterial")
+        .addConstructor<void (*)(
+                                 const double &refractionIndex
+                                 )>()
       .endClass()
 
       .deriveClass<PhongMaterial, Material>("PhongMaterial")
