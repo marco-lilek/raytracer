@@ -24,19 +24,21 @@ void RayTracer::render(
                        ) {
   cout << "Running with arguments" << endl
        << "lights " << lights.size() << endl
-       << "fname " << fname << endl
+    ;
+
+  for (auto lightIt = lights.begin(); lightIt != lights.end(); lightIt++) {
+    const Light *l = *lightIt;
+    cerr << "light: color " << l->color << " pos " << l->pos << endl;
+  }
+
+  cout << "fname " << fname << endl
        << "width " << width << endl
        << "height " << height << endl
        << "ambient " << ambient << endl
-    ;
-
-  // TODO move once luabridge fixed
-  const Light l(glm::dvec3(1,1,1), glm::dvec3(0,0,0));
-  std::vector<const Light *> llights;
-  llights.push_back(&l);
+  ;
 
   Image img(width, height);
-  const Scene scene(rootNode, llights, ambient);
+  const Scene scene(rootNode, lights, ambient);
 
   int startX = 0;
   int startY = 0;

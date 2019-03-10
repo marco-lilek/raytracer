@@ -19,7 +19,9 @@ mirrorey = g.SphereNode('mirrorey', mat_glass)
 root:addChild(mirrorey)
 mirrorey:translate({-1,0,3})
 
-lights = {}
+l1 = g.Light({1,1,1}, {0,0,0})
+
+lights = {l1}
 print('tracer')
 tracer = g.RayTracer()
 print('render')

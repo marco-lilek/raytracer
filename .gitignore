@@ -3,4 +3,6 @@ build
 compile_commands.json
 *.png
 *~
+thirdparty-sources
+
 
