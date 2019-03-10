@@ -4,8 +4,10 @@
 struct RuntimeConfig {
   static std::unique_ptr<RuntimeConfig>rc;
 
+  bool debug;
   bool singlePixel;
-  RuntimeConfig(bool singlePixel) :
+  RuntimeConfig(bool debug, bool singlePixel) :
+    debug(debug),
     singlePixel(singlePixel)
   {}
 

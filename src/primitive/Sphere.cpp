@@ -2,6 +2,8 @@
 #include <iostream>
 #include <polyroots.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include "Constants.hpp"
+#include "Debug.hpp"
 
 using namespace std;
 
@@ -18,6 +20,7 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
 
   double roots[2];
   size_t numRoots = quadraticRoots(A, B, C, roots);
+  spdlog::debug("numRoots {}", numRoots);
   // cerr << "numroots " << numRoots << endl;
 
   if (numRoots == 0) return false;
@@ -26,9 +29,9 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
     float l, r;
     l = roots[0];
     r = roots[1];
-    //cerr << "l " << l << " r " << r << endl;
-    if (l < 0 && r < 0) return false; // No roots?
-    if (l < 0 || r < 0) {
+    spdlog::debug("roots {} {}", l, r);
+    if (l < constants::EPSILON && r < constants::EPSILON) return false; // No roots?
+    if (l < constants::EPSILON || r < constants::EPSILON) {
       t = glm::max(l,r); // The non-neg one
     } else {
       t = glm::min(l, r); // Intersection thats closer to the origin
@@ -36,6 +39,8 @@ bool Sphere::intersect(const Ray &r, float &t, glm::dvec4 &normal) const {
   }
 
   // cerr << "t " << t << endl;
+  spdlog::debug("best {}", t);
+
   glm::dvec4 P = Ray::pointAt(r, t);
   float dist = glm::distance(P, glm::dvec4(0,0,0,1));
 

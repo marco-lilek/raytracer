@@ -11,7 +11,7 @@
 
 #include "node/Node.hpp"
 #include "material/Material.hpp"
-#include "Printglm.hpp"
+#include "Debug.hpp"
 
 using namespace glm;
 using namespace std;
@@ -57,6 +57,7 @@ const Node *Node::intersect(const Ray &r,
                                 glm::dvec4 &p,
                                 glm::dvec4 &normal
                                 ) const {
+  spdlog::debug("trying {}", name);
   // cerr << "wrapper" << endl;
   // cerr << glm::to_string(inv) << endl;
 	Ray transRay(inv * r.from, inv * r.v);
@@ -106,6 +107,11 @@ const Node * Node::_intersect(const Ray &r,
 	normal = bestnormal;
 
         // if (toRet) cerr << "ya it hit" << endl;
+        if (toRet) {
+            spdlog::debug("best {}", toRet->name);
+        } else {
+            spdlog::debug("no best");
+        }
 
 	return toRet;
 }

@@ -8,7 +8,7 @@
 #include "Scene.hpp"
 #include "Light.hpp"
 #include "Lua.hpp"
-#include "RuntimeConfig.hpp"
+#include "Debug.hpp"
 
 using namespace std;
 using namespace glm;
@@ -21,7 +21,13 @@ int main(int argc, char *argv[]) {
   ;
   auto result = options.parse(argc, argv);
 
-  rc::init(new RuntimeConfig(
+  //spdlog::set_pattern("[thread %t][%l][%@ %!] %v");
+  bool debug = result["debug"].as<bool>();
+  if (debug) {
+    spdlog::set_level(spdlog::level::debug);
+  }
+
+  rc::init(new RuntimeConfig(debug,
                              result["singlePixel"].as<bool>()
   ));
   Lua::runScript(argv[1]);

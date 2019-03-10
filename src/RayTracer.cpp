@@ -4,6 +4,7 @@
 #include "Light.hpp"
 #include "Printglm.hpp"
 #include "RuntimeConfig.hpp"
+#include "Debug.hpp"
 
 #include <spdlog/spdlog.h>
 #include <iostream>
@@ -52,7 +53,7 @@ void RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      //cerr << "############################pixel x " << i << " y " << j << endl;
+      spdlog::debug("############ PIXEL {} {}", i, j);
       const LightRay r = Scene::constructRay(i, j, img.width, img.height);
       const Color color = scene.getColor(r);
       img.drawPixel(i, j, color.r, color.g, color.b, color.a);
