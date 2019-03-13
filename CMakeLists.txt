@@ -14,6 +14,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 find_package(Lua "5.3" REQUIRED)
+find_package(Assimp "4.1" REQUIRED)
 
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp src/*.h)
 
@@ -26,5 +27,6 @@ target_include_directories(raytracer PUBLIC src)
 target_compile_definitions(raytracer
     PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_link_libraries(raytracer lodepng polyroots ${LUA_LIBRARIES})
+target_link_libraries(raytracer lodepng polyroots 
+    ${LUA_LIBRARIES} ${ASSIMP_LIBRARIES})
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES) 

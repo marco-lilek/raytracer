@@ -5,6 +5,7 @@
 #include "Printglm.hpp"
 #include "RuntimeConfig.hpp"
 #include "Debug.hpp"
+#include "ObjLoader.hpp"
 
 #include <spdlog/spdlog.h>
 #include <iostream>
@@ -36,6 +37,15 @@ void RayTracer::render(
        << "height " << height << endl
        << "ambient " << ambient << endl
   ;
+  {
+    vector<glm::vec3> positions;
+    vector<glm::vec3> normals;
+    vector<glm::vec2> uvCoords;
+    vector<glm::vec3> tangents;
+    importModel("../src/models/sphere-square-uv.obj",
+                positions, normals, uvCoords, tangents);
+
+  }
 
   Image img(width, height);
   const Scene scene(rootNode, lights, ambient);

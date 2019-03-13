@@ -9,7 +9,9 @@ glm::dvec3 PhongMaterial::intersect(
   const Scene &scene,
   const LightRay &rayFromEye,
   const glm::dvec4 &sceneHit,
-  const glm::dvec4 &sceneHitNormal) const {
+  const glm::dvec4 &sceneHitNormal
+                                    ) const
+{
   glm::dvec3 finalColor(0);
 
   finalColor += scene.ambientLight * kd;

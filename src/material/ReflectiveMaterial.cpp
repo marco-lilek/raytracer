@@ -12,7 +12,8 @@ const double computeReflectionCoeff(
                                     double angle,
                                     double inRefrIdx,
                                     double outRefrIdx
-                                    ) {
+                                    )
+{
   spdlog::debug("angle for schlick {}", angle);
   // Based on Schlick's approximation
   double refrIdxRatio =
