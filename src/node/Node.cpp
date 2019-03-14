@@ -57,7 +57,7 @@ const Node *Node::intersect(const Ray &r,
                                 glm::dvec4 &p,
                                 glm::dvec4 &normal
                                 ) const {
-  spdlog::debug("trying {}", name);
+  Log::debug("trying {}", name);
   // cerr << "wrapper" << endl;
   // cerr << glm::to_string(inv) << endl;
 	Ray transRay(inv * r.from, inv * r.v);
@@ -108,9 +108,9 @@ const Node * Node::_intersect(const Ray &r,
 
         // if (toRet) cerr << "ya it hit" << endl;
         if (toRet) {
-            spdlog::debug("best {}", toRet->name);
+            Log::debug("best {}", toRet->name);
         } else {
-            spdlog::debug("no best");
+            Log::debug("no best");
         }
 
 	return toRet;

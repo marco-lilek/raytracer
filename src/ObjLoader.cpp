@@ -1,4 +1,4 @@
-#include "Debug.hpp"
+#include "Log.hpp"
 #include "ObjLoader.hpp"
 
 using namespace std;
@@ -19,14 +19,14 @@ void importModel(
                                            aiProcess_FixInfacingNormals |
                                            aiProcess_FindInvalidData);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-    spdlog::error("Assimp import of model {} failed", fname);
+    Log::error("Assimp import of model {} failed", fname);
     assert(0);
   }
 
-  spdlog::debug("Loading model {}", fname);
+  Log::debug("Loading model {}", fname);
   aiMesh *mesh = scene->mMeshes[0];
   const int nv = mesh->mNumVertices;
-  spdlog::debug("Found {} vertices", nv);
+  Log::debug("Found {} vertices", nv);
 
   positions.resize(nv);
   uvCoords.resize(nv);

@@ -7,7 +7,6 @@
 #include "Debug.hpp"
 #include "ObjLoader.hpp"
 
-#include <spdlog/spdlog.h>
 #include <iostream>
 
 using namespace std;
@@ -37,15 +36,6 @@ void RayTracer::render(
        << "height " << height << endl
        << "ambient " << ambient << endl
   ;
-  {
-    vector<glm::vec3> positions;
-    vector<glm::vec3> normals;
-    vector<glm::vec2> uvCoords;
-    vector<glm::vec3> tangents;
-    importModel("../src/models/sphere-square-uv.obj",
-                positions, normals, uvCoords, tangents);
-
-  }
 
   Image img(width, height);
   const Scene scene(rootNode, lights, ambient);
@@ -56,7 +46,7 @@ void RayTracer::render(
   int endY = img.height;
 
   if (rc::get().singlePixel) {
-    spdlog::info("shooting single pixel");
+    Log::info("shooting single pixel");
     startX = img.width / 2;
     startY = img.height / 2;
     endX = img.width/2+1;
@@ -65,7 +55,7 @@ void RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      spdlog::debug("############ PIXEL {} {}", i, j);
+      Log::debug("############ PIXEL {} {}", i, j);
       const LightRay r = Scene::constructRay(i, j, img.width, img.height);
       const Color color = scene.getColor(r);
       img.drawPixel(i, j, color.r, color.g, color.b, color.a);

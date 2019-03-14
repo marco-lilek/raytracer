@@ -7,7 +7,7 @@
 #include "Constants.hpp"
 #include "material/Material.hpp"
 #include "node/Node.hpp"
-#include "Debug.hpp"
+#include "Log.hpp"
 
 #include <iostream>
 
@@ -40,7 +40,7 @@ const Color Scene::getColor(const LightRay &rayFromEye) const {
 const glm::dvec3 Scene::fireRay(
     const LightRay &rayFromEye
                                 ) const {
-  spdlog::debug("firing ray {} {}", to_string(rayFromEye.from), to_string(rayFromEye.v));
+  Log::debug("firing ray {} {}", to_string(rayFromEye.from), to_string(rayFromEye.v));
   glm::dvec4 sceneHit; // A point
   glm::dvec4 sceneHitNormal;
   const Node *hitNode = root->intersect(rayFromEye, sceneHit, sceneHitNormal);
@@ -48,7 +48,7 @@ const glm::dvec3 Scene::fireRay(
   const double distToHit = glm::distance(rayFromEye.from, sceneHit);
   if (hitNode == nullptr) return glm::dvec3(0);
   //if (distToHit < constants::EPSILON) return glm::dvec3(0);
-  spdlog::debug("hit {}", hitNode->name);
+  Log::debug("hit {}", hitNode->name);
 
   return hitNode->getColor(*this, rayFromEye, sceneHit, sceneHitNormal);
 }

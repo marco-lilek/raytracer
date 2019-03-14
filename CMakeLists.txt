@@ -10,6 +10,8 @@ add_library(lodepng STATIC ${THIRDPARTY}/lodepng/lodepng.cpp ${THIRDPARTY}/lodep
 
 add_library(polyroots ${THIRDPARTY}/polyroots.cpp ${THIRDPARTY}/polyroots.hpp)
 
+add_library(fmtlib ${THIRDPARTY}/format.cc)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
@@ -27,6 +29,6 @@ target_include_directories(raytracer PUBLIC src)
 target_compile_definitions(raytracer
     PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_link_libraries(raytracer lodepng polyroots 
+target_link_libraries(raytracer lodepng polyroots fmtlib
     ${LUA_LIBRARIES} ${ASSIMP_LIBRARIES})
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES) 

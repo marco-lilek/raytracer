@@ -24,8 +24,9 @@ int main(int argc, char *argv[]) {
   //spdlog::set_pattern("[thread %t][%l][%@ %!] %v");
   bool debug = result["debug"].as<bool>();
   if (debug) {
-    spdlog::set_level(spdlog::level::debug);
+    Log::level = Log::DEBUG;
   }
+  
 
   rc::init(new RuntimeConfig(debug,
                              result["singlePixel"].as<bool>()

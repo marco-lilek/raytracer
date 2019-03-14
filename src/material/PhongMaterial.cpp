@@ -20,7 +20,7 @@ glm::dvec3 PhongMaterial::intersect(
     const Light *light = *lightIt;
     const Ray rayToLight(sceneHit, light->pos - sceneHit);
 
-    spdlog::debug("shadowRay {} {}", to_string(rayToLight.from), to_string(rayToLight.v));
+    Log::debug("shadowRay {} {}", to_string(rayToLight.from), to_string(rayToLight.v));
     // //cerr << glm::to_string(rayToLight.v) << " " << glm::to_string(rayToLight.from) << endl;
     glm::dvec4 shadowHit;
     glm::dvec4 shadowHitNormal;
@@ -54,6 +54,6 @@ glm::dvec3 PhongMaterial::intersect(
     }
   }
 
-  spdlog::debug("finalColor {}", to_string(finalColor));
+  Log::debug("finalColor {}", to_string(finalColor));
   return glm::min(glm::dvec3(finalColor), glm::dvec3(1));
 }

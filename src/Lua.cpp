@@ -5,10 +5,12 @@
 
 #include "primitive/Primitive.hpp"
 #include "primitive/Sphere.hpp"
+#include "primitive/Mesh.hpp"
 #include "primitive/Cube.hpp"
 
 #include "node/GeometryNode.hpp"
 #include "node/Node.hpp"
+#include "Log.hpp"
 
 extern "C" {
 # include <lua5.3/lua.h>
@@ -22,7 +24,6 @@ extern "C" {
 #include "material/PhongMaterial.hpp"
 #include "material/DebugMaterial.hpp"
 #include "material/ReflectiveMaterial.hpp"
-#include "node/SphereNode.hpp"
 #include "Printglm.hpp"
 
 using namespace luabridge;
@@ -80,6 +81,14 @@ void initNamespace(lua_State *L) {
         .addFunction("intersect", &Primitive::intersect)
       .endClass()
 
+      .deriveClass<Sphere, Primitive>("Sphere")
+        .addConstructor<void (*) ()>()
+      .endClass()
+
+      .deriveClass<Mesh, Primitive>("Mesh")
+        .addConstructor<void (*) (const std::string&name)>()
+      .endClass()
+
       .beginClass<Material>("Material")
         .addFunction("intersect", &Material::intersect)
       .endClass()
@@ -119,13 +128,6 @@ void initNamespace(lua_State *L) {
                                   )>()
       .endClass()
 
-      .deriveClass<SphereNode, Node>("SphereNode")
-        .addConstructor<void (*) (
-                                  const std::string&,
-                                  const Material *
-                                  )>()
-      .endClass()
-
       .beginClass<RayTracer>("RayTracer")
         .addConstructor<void (*) (void)>()
         .addData("renderReflection", &RayTracer::renderReflection)
@@ -136,6 +138,8 @@ void initNamespace(lua_State *L) {
 
 static int traceback(lua_State *L) { 
   // @1 is the error message
+  cerr << lua_gettop(L) << endl;
+  cerr << lua_type(L, 1) << endl;
   if (!lua_isstring(L,1)) return 1;
 
   lua_pushglobaltable(L);
@@ -143,14 +147,21 @@ static int traceback(lua_State *L) {
     lua_pop(L, 1);
     return 1;
   }
-  lua_getfield(L, -1, "traceback");
-  if (!lua_isfunction(L, -1)) {
-    lua_pop(L, 2); // pop gt and traceback
+
+  lua_getfield(L, -1, "debug");
+  if (!lua_istable(L, -1)) {
+    lua_pop(L, 1);
     return 1;
   }
+
+  lua_getfield(L, -1, "traceback");
+  if (!lua_isfunction(L, -1)) {
+    lua_pop(L, 2);
+    return 1;
+  }
+
   lua_pushvalue(L, 1);
-  lua_pushinteger(L, 2);
-  lua_call(L, 2, 1);
+  lua_call(L, 1, 1);
   return 1;
 }
 
@@ -160,7 +171,19 @@ void Lua::runScript(const char * fname) {
   luaL_openlibs(L);
   initNamespace(L);
 
-  luaL_dofile(L, fname);
   lua_pushcfunction(L, traceback);
-  lua_pcall(L, 0, 0, -1);
+
+  int ec;
+  ec = luaL_loadfile(L, fname);
+  if (ec) {
+    Log::error("Load file {} error: {}",
+                  fname, lua_tostring(L,-1));
+    assert(0);
+  }
+
+  ec = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
+  if (ec) {
+    Log::error("Lua error {}", lua_tostring(L, -1));
+    assert(0);
+  }
 }
