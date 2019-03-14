@@ -5,6 +5,7 @@ prim_mesh = g.Mesh("sphere-square-uv.obj")
 print('node')
 root = g.Node('root')
 d = g.GeometryNode('debug', prim_mesh, mat_debug)
+root:addChild(d)
 d:translate({0,0,2})
 
 l1 = g.Light({1,1,1}, {0,0,0})

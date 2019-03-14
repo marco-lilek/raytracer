@@ -1,24 +1,26 @@
-#include "Log.hpp"
 #include "ObjLoader.hpp"
+#include "Log.hpp"
 
 using namespace std;
 using namespace glm;
 
-void importModel(
-                 const string &fname,
-                 std::vector<vec3> &positions,
-                 std::vector<vec3> &normals,
-                 std::vector<vec2> &uvCoords,
-                 std::vector<vec3> &tangents
-                 )
+void
+importModel(
+  const string &fname,
+  std::vector<vec3> &positions,
+  std::vector<vec3> &normals,
+  std::vector<vec2> &uvCoords,
+  std::vector<vec3> &tangents)
 {
   Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(fname,
-                                           aiProcess_FlipUVs |
-                                           aiProcess_GenSmoothNormals |
-                                           aiProcess_FixInfacingNormals |
-                                           aiProcess_FindInvalidData);
-  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+  const aiScene *scene = importer.ReadFile(
+    fname,
+    aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
+      aiProcess_FixInfacingNormals |
+      aiProcess_FindInvalidData);
+  if (
+    !scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+    !scene->mRootNode) {
     Log::error("Assimp import of model {} failed", fname);
     assert(0);
   }
@@ -44,11 +46,13 @@ void importModel(
   }
 
   // Needs to be done after all other post processing
-  scene = importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
+  scene = importer.ApplyPostProcessing(
+    aiProcess_CalcTangentSpace);
 
-  for (int i = 0; i < nv;i++) {
+  for (int i = 0; i < nv; i++) {
     auto tangent = mesh->mTangents[i];
-    tangents[i] = glm::vec3(tangent.x, tangent.y, tangent.z);
-    //assert(glm::dot(tangents[i], normals[i]) == 0);
+    tangents[i] =
+      glm::vec3(tangent.x, tangent.y, tangent.z);
+    // assert(glm::dot(tangents[i], normals[i]) == 0);
   }
 }

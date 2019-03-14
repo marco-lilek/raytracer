@@ -13,16 +13,22 @@
 #include <vector>
 
 class Image {
-	std::vector<uint8_t> data;
-public:
+  std::vector<uint8_t> data;
 
-	int width, height;
-	Image(int width, int height);
+public:
+  int width, height;
+  Image(int width, int height);
 
   void render(const std::string &fname);
-	void drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+  void drawPixel(
+    int x,
+    int y,
+    uint8_t r,
+    uint8_t g,
+    uint8_t b,
+    uint8_t a);
 
-	virtual ~Image();
+  virtual ~Image();
 };
 
 #endif /* SRC_IMAGE_HPP_ */

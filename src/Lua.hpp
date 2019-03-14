@@ -3,5 +3,5 @@
 #include <string>
 
 namespace Lua {
-  void runScript(const char * fname);
+void runScript(const char *fname);
 };

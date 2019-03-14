@@ -7,6 +7,6 @@
 class Primitive {
 public:
   virtual ~Primitive() {}
-  virtual bool intersect(const Ray &r, float &t, glm::dvec4 &normal) const = 0;
+  virtual bool intersect(
+    const Ray &r, float &t, glm::dvec4 &normal) const = 0;
 };
-

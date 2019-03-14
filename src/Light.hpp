@@ -7,8 +7,8 @@
 struct Light {
   const glm::dvec3 color;
   const glm::dvec4 pos;
-  Light(const glm::dvec3 &color, glm::dvec3 pos) : 
-    color(color),
-    pos(glm::dvec4(pos,1))
-  {}
+  Light(const glm::dvec3 &color, glm::dvec3 pos)
+      : color(color), pos(glm::dvec4(pos, 1))
+  {
+  }
 };

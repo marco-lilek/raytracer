@@ -1,8 +1,8 @@
 #pragma once
 
 #include "primitive/Primitive.hpp"
-#include <vector>
 #include <string>
+#include <vector>
 
 class Mesh : public Primitive {
   std::vector<glm::vec3> positions;
@@ -12,7 +12,6 @@ class Mesh : public Primitive {
 
 public:
   Mesh(const std::string &name);
-  virtual bool intersect(const Ray &r,
-                         float &t,
-                         glm::dvec4 &normal) const;
+  virtual bool intersect(
+    const Ray &r, float &t, glm::dvec4 &normal) const;
 };

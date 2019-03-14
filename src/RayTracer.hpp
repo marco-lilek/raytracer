@@ -5,8 +5,7 @@
 struct RayTracer {
   bool renderReflection;
 
-  RayTracer() : 
-    renderReflection(true) {}
+  RayTracer() : renderReflection(true) {}
 
   void render(
     const Node *rootNode,
@@ -14,10 +13,8 @@ struct RayTracer {
     const std::string &fname,
     const int width,
     const int height,
-    //const glm::dvec3 &eye, // TODO
-    //const glm::dvec3 &view,
-    //double fovy,
-    const glm::dvec3 &ambient
-              );
-
+    // const glm::dvec3 &eye, // TODO
+    // const glm::dvec3 &view,
+    // double fovy,
+    const glm::dvec3 &ambient);
 };

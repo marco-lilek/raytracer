@@ -1,0 +1,12 @@
+IndentWidth: 2
+ContinuationIndentWidth: 2
+ColumnLimit: 60
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortCaseLabelsOnASingleLine: true
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterEnum: true
+  AfterFunction: true
+AlwaysBreakAfterDefinitionReturnType: All
