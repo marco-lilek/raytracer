@@ -1,6 +1,10 @@
 #pragma once
 
-#include "node/Node.hpp"
+#include <string>
+#include <vector>
+
+#include "Node.hpp"
+#include "Light.hpp"
 
 struct RayTracer {
   bool renderReflection;
@@ -12,9 +16,5 @@ struct RayTracer {
     const std::vector<const Light *> &lights,
     const std::string &fname,
     const int width,
-    const int height,
-    // const glm::dvec3 &eye, // TODO
-    // const glm::dvec3 &view,
-    // double fovy,
-    const glm::dvec3 &ambient);
+    const int height);
 };

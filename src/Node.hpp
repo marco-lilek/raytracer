@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
-#include "material/Material.hpp"
-#include "ray/Ray.hpp"
+#include "Material.hpp"
+#include "Ray.hpp"
 
 class Node {
   std::vector<Node *> children;
@@ -54,6 +54,17 @@ public:
     const glm::dvec4 &sceneHitNormal) const
   {
     throw std::logic_error("called getColor on Node");
+  }
+};
+
+template <>
+struct fmt::formatter<Node> {
+  template <typename ParseContext>
+  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  template <typename FormatContext>
+  auto format(const Node &n, FormatContext &ctx) {
+    return format_to(ctx.out(), "[Node {}]", n.name);
   }
 };
 

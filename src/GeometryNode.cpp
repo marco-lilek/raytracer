@@ -12,7 +12,7 @@ GeometryNode::_intersect(
   float t;
   bool res = prim->intersect(r, t, normal);
   if (res) {
-    p = Ray::pointAt(r, t);
+    //p = Ray::pointAt(r, t);
     // DLOG_F(INFO, "hit %s %p", name.c_str(),
     // (void*)&material);
     return this;

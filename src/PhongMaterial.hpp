@@ -1,6 +1,6 @@
 #pragma once
 
-#include "material/Material.hpp"
+#include "Material.hpp"
 #include <glm/glm.hpp>
 
 #include <iostream>

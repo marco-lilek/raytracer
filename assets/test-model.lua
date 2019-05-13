@@ -1,11 +1,12 @@
-mat_debug = g.DebugMaterial()
+mat = g.PhongMaterial({0.5,0.5,0.5}, {0.2,0.2,0.2}, 10)
 
-prim_mesh = g.Mesh("sphere-square-uv.obj")
+prim_mesh = g.UVMesh("icosa.obj")
 
 print('node')
 root = g.Node('root')
-d = g.GeometryNode('debug', prim_mesh, mat_debug)
+d = g.GeometryNode('debug', prim_mesh, mat)
 root:addChild(d)
+d:rotate('y', 15)
 d:translate({0,0,2})
 
 l1 = g.Light({1,1,1}, {0,0,0})

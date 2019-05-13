@@ -7,8 +7,8 @@
 #include "Light.hpp"
 #include "Lua.hpp"
 #include "Scene.hpp"
-#include "node/GeometryNode.hpp"
-#include "primitive/Sphere.hpp"
+#include "GeometryNode.hpp"
+#include "Sphere.hpp"
 
 using namespace std;
 using namespace glm;
@@ -28,7 +28,7 @@ main(int argc, char *argv[])
     Log::level = Log::DEBUG;
   }
 
-  rc::init(new RuntimeConfig(
+  RuntimeConfig::init(new RuntimeConfig(
     debug, result["singlePixel"].as<bool>()));
   Lua::runScript(argv[1]);
 }

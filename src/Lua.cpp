@@ -2,15 +2,15 @@
 
 #include "Lua.hpp"
 #include "RayTracer.hpp"
-
-#include "primitive/Cube.hpp"
-#include "primitive/Mesh.hpp"
-#include "primitive/Primitive.hpp"
-#include "primitive/Sphere.hpp"
+#include "Cube.hpp"
+#include "Mesh.hpp"
+#include "UVMesh.hpp"
+#include "Primitive.hpp"
+#include "Sphere.hpp"
 
 #include "Log.hpp"
-#include "node/GeometryNode.hpp"
-#include "node/Node.hpp"
+#include "GeometryNode.hpp"
+#include "Node.hpp"
 
 extern "C" {
 #include <lua5.3/lauxlib.h>
@@ -18,51 +18,51 @@ extern "C" {
 #include <lua5.3/lualib.h>
 }
 
+
 #include <LuaBridge/LuaBridge.h>
 #include <LuaBridge/Vector.h>
 
 #include "Printglm.hpp"
-#include "material/DebugMaterial.hpp"
-#include "material/PhongMaterial.hpp"
-#include "material/ReflectiveMaterial.hpp"
+#include "DebugMaterial.hpp"
+#include "PhongMaterial.hpp"
+#include "ReflectiveMaterial.hpp"
 
 using namespace luabridge;
 using namespace std;
 
-namespace luabridge {
+// template <> struct Stack<const glm::dvec3 &> {
+//   static void
+//   push(lua_State *L, const glm::dvec3 &a)
+//   {
+//     assert(lua_checkstack(L, 3));
+//     lua_createtable(L, 3, 0);
+//     for (int i = 0; i < 3; i++) {
+//       lua_pushinteger(
+//         L,
+//         i + 1); // lua lists are 1-indexed :^)
+//       lua_pushnumber(L, a[i]);
+//       lua_settable(L, -3);
+//     }
+//   }
 
-template <> struct Stack<const glm::dvec3 &> {
-  static void
-  push(lua_State *L, const glm::dvec3 &a)
-  {
-    assert(lua_checkstack(L, 3));
-    lua_createtable(L, 3, 0);
-    for (int i = 0; i < 3; i++) {
-      lua_pushinteger(
-        L,
-        i + 1); // lua lists are 1-indexed :^)
-      lua_pushnumber(L, a[i]);
-      lua_settable(L, -3);
-    }
-  }
+//   static const glm::dvec3
+//   get(lua_State *L, int index)
+//   {
+//     assert(lua_istable(L, index));
+//     glm::dvec3 res;
+//     for (int i = 0; i < 3; i++) {
+//       lua_pushinteger(L, i + 1);
+//       lua_gettable(L, index);
+//       assert(lua_isnumber(L, -1));
+//       res[i] = lua_tonumber(L, -1);
+//     }
+//     cerr << res << endl;
+//     return res;
+//   }
+// };
 
-  static const glm::dvec3
-  get(lua_State *L, int index)
-  {
-    assert(lua_istable(L, index));
-    glm::dvec3 res;
-    for (int i = 0; i < 3; i++) {
-      lua_pushinteger(L, i + 1);
-      lua_gettable(L, index);
-      assert(lua_isnumber(L, -1));
-      res[i] = lua_tonumber(L, -1);
-    }
-    cerr << res << endl;
-    return res;
-  }
-};
+// }; // namespace luabridge
 
-}; // namespace luabridge
 void
 echo()
 {
@@ -76,59 +76,63 @@ initNamespace(lua_State *L)
     .beginNamespace("g")
     .addFunction("echo", echo)
 
-    .beginClass<Light>("Light")
-    .addConstructor<void (*)(
-      const glm::dvec3 &color, const glm::dvec3 &pos)>()
-    .endClass()
+    // .beginClass<Light>("Light")
+    // .addConstructor<void (*)(
+    //   const glm::dvec3 &color, const glm::dvec3 &pos)>()
+    // .endClass()
 
-    .beginClass<Primitive>("Primitive")
-    .addFunction("intersect", &Primitive::intersect)
-    .endClass()
+    // .beginClass<Primitive>("Primitive")
+    // .addFunction("intersect", &Primitive::intersect)
+    // .endClass()
 
-    .deriveClass<Sphere, Primitive>("Sphere")
-    .addConstructor<void (*)()>()
-    .endClass()
+    // .deriveClass<Sphere, Primitive>("Sphere")
+    // .addConstructor<void (*)()>()
+    // .endClass()
 
-    .deriveClass<Mesh, Primitive>("Mesh")
-    .addConstructor<void (*)(const std::string &name)>()
-    .endClass()
+    // .deriveClass<Mesh, Primitive>("Mesh")
+    // .addConstructor<void (*)(const std::string &name)>()
+    // .endClass()
 
-    .beginClass<Material>("Material")
-    .addFunction("intersect", &Material::intersect)
-    .endClass()
+    // .deriveClass<UVMesh, Mesh>("UVMesh")
+    // .addConstructor<void (*)(const std::string &name)>()
+    // .endClass()
 
-    .deriveClass<DebugMaterial, Material>("DebugMaterial")
-    .addConstructor<void (*)()>()
-    .endClass()
+    // .beginClass<Material>("Material")
+    // .addFunction("intersect", &Material::intersect)
+    // .endClass()
 
-    .deriveClass<ReflectiveMaterial, Material>(
-      "ReflectiveMaterial")
-    .addConstructor<void (*)(
-      const double &refractionIndex)>()
-    .endClass()
+    // .deriveClass<DebugMaterial, Material>("DebugMaterial")
+    // .addConstructor<void (*)()>()
+    // .endClass()
 
-    .deriveClass<PhongMaterial, Material>("PhongMaterial")
-    .addConstructor<void (*)(
-      const glm::dvec3 &,
-      const glm::dvec3 &,
-      const double &)>()
-    .endClass()
+    // .deriveClass<ReflectiveMaterial, Material>(
+    //   "ReflectiveMaterial")
+    // .addConstructor<void (*)(
+    //   const double &refractionIndex)>()
+    // .endClass()
+
+    // .deriveClass<PhongMaterial, Material>("PhongMaterial")
+    // .addConstructor<void (*)(
+    //   const glm::dvec3 &,
+    //   const glm::dvec3 &,
+    //   const double &)>()
+    // .endClass()
 
     .beginClass<Node>("Node")
     .addConstructor<void (*)(const std::string &)>()
-    .addFunction("scale", &Node::scale)
-    .addFunction("rotate", &Node::rotate)
-    .addFunction("translate", &Node::translate)
-    .addFunction("addChild", &Node::addChild)
-    .addFunction("intersect", &Node::intersect)
+    // .addFunction("scale", &Node::scale)
+    // .addFunction("rotate", &Node::rotate)
+    // .addFunction("translate", &Node::translate)
+    // .addFunction("addChild", &Node::addChild)
+    // .addFunction("intersect", &Node::intersect)
     .endClass()
 
-    .deriveClass<GeometryNode, Node>("GeometryNode")
-    .addConstructor<void (*)(
-      const std::string &,
-      const Primitive *const,
-      const Material *)>()
-    .endClass()
+    // .deriveClass<GeometryNode, Node>("GeometryNode")
+    // .addConstructor<void (*)(
+    //   const std::string &,
+    //   const Primitive *const,
+    //   const Material *)>()
+    // .endClass()
 
     .beginClass<RayTracer>("RayTracer")
     .addConstructor<void (*)(void)>()
@@ -142,9 +146,11 @@ initNamespace(lua_State *L)
 static int
 traceback(lua_State *L)
 {
+  const char *LOCATION = "traceback";
   // @1 is the error message
-  cerr << lua_gettop(L) << endl;
-  cerr << lua_type(L, 1) << endl;
+  Log::error(LOCATION, "Error message: {}", lua_gettop(L));
+  Log::error(LOCATION, "Error type: {}", lua_type(L, -1));
+
   if (!lua_isstring(L, 1))
     return 1;
 
@@ -174,24 +180,30 @@ traceback(lua_State *L)
 void
 Lua::runScript(const char *fname)
 {
+  const char *LOCATION = "Lua::runScript";
+  // Init the lua system
   lua_State *L = luaL_newstate();
 
+  // Load in standard libraries
   luaL_openlibs(L);
+
+  // Load all user defined methods
   initNamespace(L);
 
+  // Add the traceback function
   lua_pushcfunction(L, traceback);
 
-  int ec;
-  ec = luaL_loadfile(L, fname);
-  if (ec) {
-    Log::error(
-      "Load file {} error: {}", fname, lua_tostring(L, -1));
+  int errorCode = luaL_loadfile(L, fname);
+  if (errorCode) {
+    Log::error(LOCATION,
+        "Load file {} error: {}", fname, lua_tostring(L, -1));
     assert(0);
   }
 
-  ec = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
-  if (ec) {
-    Log::error("Lua error {}", lua_tostring(L, -1));
+  errorCode = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
+  if (errorCode) {
+    Log::error(LOCATION, 
+        "Lua error {}", lua_tostring(L, -1));
     assert(0);
   }
 }

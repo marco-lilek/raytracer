@@ -1,6 +1,6 @@
 #pragma once
 
-#include "primitive/Primitive.hpp"
+#include "Primitive.hpp"
 
 class Sphere : public Primitive {
 public:

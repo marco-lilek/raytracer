@@ -1,13 +1,10 @@
 #include "RayTracer.hpp"
-#include "Debug.hpp"
-#include "Image.hpp"
-#include "Light.hpp"
-#include "ObjLoader.hpp"
-#include "Printglm.hpp"
-#include "RuntimeConfig.hpp"
 #include "Scene.hpp"
-
-#include <iostream>
+#include "Image.hpp"
+#include "Log.hpp"
+#include "RayGun.hpp"
+#include "Camera.hpp"
+#include "RuntimeConfig.hpp"
 
 using namespace std;
 
@@ -17,38 +14,45 @@ RayTracer::render(
   const std::vector<const Light *> &lights,
   const std::string &fname,
   const int width,
-  const int height,
-  // const glm::dvec3 &eye,
-  // const glm::dvec3 &view,
-  // double fovy,
-  const glm::dvec3 &ambient)
+  const int height)
 {
-  cout << "Running with arguments" << endl
-       << "lights " << lights.size() << endl;
+  const char * LOCATION = "RayTracer::render";
+  // TODO: assert rootnode not null
+
+  Log::info(LOCATION, 
+      "args: rootNode {} lights {} fname {} width {} height {}",
+      *rootNode, lights.size(), fname, width, height);
 
   for (auto lightIt = lights.begin();
        lightIt != lights.end();
        lightIt++) {
     const Light *l = *lightIt;
-    cerr << "light: color " << l->color << " pos " << l->pos
-         << endl;
+    Log::info(LOCATION, "light {}: {}", 
+        lightIt - lights.begin(), 
+        *l);
   }
 
-  cout << "fname " << fname << endl
-       << "width " << width << endl
-       << "height " << height << endl
-       << "ambient " << ambient << endl;
-
+  // Initialize the image we're rendering to
   Image img(width, height);
-  const Scene scene(rootNode, lights, ambient);
+  
+  // Initialize the scene
+  const Scene scene(rootNode, lights);
+
+  // Initialize the camera
+  int distanceFromEyeToScreen = 1;
+  const Camera camera(Point(0,0,0) /* eye */, 
+      Vector(0,1,0) /* up */,
+      Vector(0,0,1) /* towards */,
+      width,
+      height);
 
   int startX = 0;
   int startY = 0;
   int endX = img.width;
   int endY = img.height;
 
-  if (rc::get().singlePixel) {
-    Log::info("shooting single pixel");
+  if (RuntimeConfig::get().singlePixel) {
+    Log::info(LOCATION, "shooting single pixel");
     startX = img.width / 2;
     startY = img.height / 2;
     endX = img.width / 2 + 1;
@@ -57,15 +61,13 @@ RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      Log::debug("############ PIXEL {} {}", i, j);
-      const LightRay r =
-        Scene::constructRay(i, j, img.width, img.height);
-      const Color color = scene.getColor(r);
-      img.drawPixel(
-        i, j, color.r, color.g, color.b, color.a);
+      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
+      const Color pixelColor = scene.getColor(rayFromEyeToScreen);
+      img.drawPixel(i, j, pixelColor);
     }
   }
 
+  // Write the drawn image out to fname
+  Log::info(LOCATION, "rendering to {}", fname);
   img.render(fname);
-  cout << "DONE" << endl;
 }

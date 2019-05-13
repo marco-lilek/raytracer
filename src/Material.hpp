@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Scene.hpp"
-#include "ray/LightRay.hpp"
+#include "LightRay.hpp"
 #include <glm/glm.hpp>
 
 struct Material {
+
   virtual glm::dvec3 intersect(
     const Scene &scene,
     const LightRay &rayFromEye,

@@ -2,7 +2,7 @@
 #include <memory>
 
 struct RuntimeConfig {
-  static std::unique_ptr<RuntimeConfig> rc;
+static std::unique_ptr<RuntimeConfig> rc;
 
   bool debug;
   bool singlePixel;
@@ -24,4 +24,3 @@ struct RuntimeConfig {
   }
 };
 
-typedef RuntimeConfig rc;

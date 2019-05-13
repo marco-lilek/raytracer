@@ -1,11 +1,11 @@
 #pragma once
 
-#include "material/Material.hpp"
-#include "node/Node.hpp"
-#include "primitive/Primitive.hpp"
+#include "Material.hpp"
+#include "Node.hpp"
+#include "Primitive.hpp"
 
 class GeometryNode : public Node {
-  const Primitive *const prim;
+const Primitive *const prim;
   const Material *material;
 
 public:

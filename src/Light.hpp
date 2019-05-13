@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <fmt/format.h>
 
 struct Light {
   const glm::dvec3 color;
@@ -12,3 +13,15 @@ struct Light {
   {
   }
 };
+
+template <>
+struct fmt::formatter<Light> {
+  template <typename ParseContext>
+  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  template <typename FormatContext>
+  auto format(const Light &o, FormatContext &ctx) {
+    return format_to(ctx.out(), "[Light {} {}]", o.color, o.pos);
+  }
+};
+

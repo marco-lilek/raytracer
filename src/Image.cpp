@@ -2,16 +2,16 @@
  * Image.cpp
  *
  *  Created on: Feb 19, 2019
- *      Author: mllilek
+      Author: mllilek
  */
 
 #include <lodepng/lodepng.h>
-//#include <loguru/loguru.hpp>
 
 #include "Image.hpp"
+#include "Log.hpp"
 
 Image::Image(int width, int height)
-    : width(width), height(height),
+  : width(width), height(height),
       data(width * height * 4, 0)
 {
 }
@@ -19,11 +19,13 @@ Image::Image(int width, int height)
 void
 Image::render(const std::string &fname)
 {
+  const char *LOCATION = "Image::render";
   unsigned error =
     lodepng::encode(fname, data, width, height);
-  // if (error) {
-  //   cerr <"Render error %s", lodepng_error_text(error));
-  // }
+  if (error) {
+    Log::error(LOCATION, "render error {}", lodepng_error_text(error));
+    assert(0);
+  }
 }
 
 void
@@ -36,5 +38,14 @@ Image::drawPixel(
   data[pos + 2] = b;
   data[pos + 3] = a;
 }
+
+void Image::drawPixel(
+  int x,
+  int y,
+  Color c)
+{
+  drawPixel(x,y,c.r,c.g,c.b,c.a);
+}
+
 
 Image::~Image() {}
