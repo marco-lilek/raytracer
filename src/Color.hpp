@@ -2,32 +2,44 @@
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <array>
 
-struct Color {
-  const uint8_t r, g, b, a;
-  Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-      : r(r), g(g), b(b), a(a)
-  {
-  }
+#include "Object.hpp"
 
-  Color(const glm::dvec4 &f)
-      : r(encode(f[0])), g(encode(f[1])), b(encode(f[2])),
-        a(encode(f[3]))
-  {
-  }
+class Color : public Object {
+public:
+  glm::dvec4 rgba;
+  Color(glm::dvec3 rgb)
+      : rgba(rgb, 1)
+  { }
+
+  Color(double r, double g, double b)
+      : rgba(r, g, b, 1)
+  { }
 
   Color(double c) : Color(glm::dvec4(c)) {}
+
+  std::array<uint8_t, 4> toBytes() {
+    return {enc(rgba[0]), enc(rgba[1]), enc(rgba[2]), enc(rgba[3])};
+  }
+
+  virtual const char * type() const {
+    return "Color";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    o << glm::to_string(rgba);
+    return o;
+  }
 
   // friend Color operator+ (Color& lhs,const Color& rhs) {
   //   return Color(lhs.r+rhs.r,lhs.g+rhs.g,lhs.b+rhs.b,
   //   lhs.a+rhs.a);
   // }
-
 private:
-  uint8_t
-  encode(float v)
-  {
+  uint8_t enc(double v) {
     assert(v >= 0 && v <= 1);
-    return v * 255;
+    return 255 * v;
   }
 };

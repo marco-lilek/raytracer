@@ -5,6 +5,7 @@
       Author: mllilek
  */
 
+#include <array>
 #include <lodepng/lodepng.h>
 
 #include "Image.hpp"
@@ -44,7 +45,14 @@ void Image::drawPixel(
   int y,
   Color c)
 {
-  drawPixel(x,y,c.r,c.g,c.b,c.a);
+  array<uint8_t, 4> asBytes = c.toBytes();
+
+  int pos = (x + y * width) * 4;
+  data[pos+0] = asBytes[0];
+  data[pos+1] = asBytes[1];
+  data[pos+2] = asBytes[2];
+  data[pos+3] = asBytes[3];
+
 }
 
 

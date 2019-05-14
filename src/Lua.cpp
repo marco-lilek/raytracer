@@ -77,6 +77,11 @@ initNamespace(lua_State *L)
     .beginNamespace("g")
     .addFunction("echo", echo)
 
+    .beginClass<Color>("Color")
+    .addConstructor<void (*)(
+      double x, double y, double z)>()
+    .endClass()
+
     .beginClass<Point>("Point")
     .addConstructor<void (*)(
       double x, double y, double z)>()
@@ -84,7 +89,7 @@ initNamespace(lua_State *L)
 
     .beginClass<Light>("Light")
     .addConstructor<void (*)(
-      const glm::dvec3 &color, const Point &pos)>()
+      const Color &color, const Point &pos)>()
     .endClass()
 
     // .beginClass<Primitive>("Primitive")

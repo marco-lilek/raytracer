@@ -3,12 +3,13 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include "Color.hpp"
 #include "Point.hpp"
 
 struct Light : public Object {
-  const glm::dvec3 color;
+  const Color color;
   const Point pos;
-  Light(const glm::dvec3 &color, Point pos)
+  Light(const Color &color, const Point &pos)
       : color(color), pos(pos)
   {
   }
@@ -18,8 +19,7 @@ struct Light : public Object {
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    o << "color " << glm::to_string(color) << " pos ";
-    pos.dump(o);
+    o << "color " << color << " pos " << pos;
     return o;
   }
 };
