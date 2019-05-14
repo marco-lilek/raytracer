@@ -30,38 +30,39 @@ extern "C" {
 using namespace luabridge;
 using namespace std;
 
-// template <> struct Stack<const glm::dvec3 &> {
-//   static void
-//   push(lua_State *L, const glm::dvec3 &a)
-//   {
-//     assert(lua_checkstack(L, 3));
-//     lua_createtable(L, 3, 0);
-//     for (int i = 0; i < 3; i++) {
-//       lua_pushinteger(
-//         L,
-//         i + 1); // lua lists are 1-indexed :^)
-//       lua_pushnumber(L, a[i]);
-//       lua_settable(L, -3);
-//     }
-//   }
+namespace luabridge {
 
-//   static const glm::dvec3
-//   get(lua_State *L, int index)
-//   {
-//     assert(lua_istable(L, index));
-//     glm::dvec3 res;
-//     for (int i = 0; i < 3; i++) {
-//       lua_pushinteger(L, i + 1);
-//       lua_gettable(L, index);
-//       assert(lua_isnumber(L, -1));
-//       res[i] = lua_tonumber(L, -1);
-//     }
-//     cerr << res << endl;
-//     return res;
-//   }
-// };
+template <> struct Stack<const glm::dvec3 &> {
+  static void
+  push(lua_State *L, const glm::dvec3 &a)
+  {
+    assert(lua_checkstack(L, 3));
+    lua_createtable(L, 3, 0);
+    for (int i = 0; i < 3; i++) {
+      lua_pushinteger(
+        L,
+        i + 1); // lua lists are 1-indexed :^)
+      lua_pushnumber(L, a[i]);
+      lua_settable(L, -3);
+    }
+  }
 
-// }; // namespace luabridge
+  static const glm::dvec3 
+  get(lua_State *L, int index)
+  {
+    assert(lua_istable(L, index));
+    double res[3];
+    for (int i = 0; i < 3; i++) {
+      lua_pushinteger(L, i + 1);
+      lua_gettable(L, index);
+      assert(lua_isnumber(L, -1));
+      res[i] = lua_tonumber(L, -1);
+    }
+    return glm::dvec3(res[0], res[1], res[2]);
+  }
+};
+
+}; // END namespace luabridge
 
 void
 echo()
@@ -76,10 +77,15 @@ initNamespace(lua_State *L)
     .beginNamespace("g")
     .addFunction("echo", echo)
 
-    // .beginClass<Light>("Light")
-    // .addConstructor<void (*)(
-    //   const glm::dvec3 &color, const glm::dvec3 &pos)>()
-    // .endClass()
+    .beginClass<Point>("Point")
+    .addConstructor<void (*)(
+      double x, double y, double z)>()
+    .endClass()
+
+    .beginClass<Light>("Light")
+    .addConstructor<void (*)(
+      const glm::dvec3 &color, const Point &pos)>()
+    .endClass()
 
     // .beginClass<Primitive>("Primitive")
     // .addFunction("intersect", &Primitive::intersect)
