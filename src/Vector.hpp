@@ -1,8 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include "Object.hpp"
 
-class Vector {
+class Vector : public Object {
   const glm::dvec3 v;
 
 public:
@@ -14,4 +16,12 @@ public:
 
   Vector operator *(double factor) const;
   Vector operator +(const Vector &other) const;
+
+  virtual const char * type() const {
+    return "Vector";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    return o << glm::to_string(v);
+  }
 };

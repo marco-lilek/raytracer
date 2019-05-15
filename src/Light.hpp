@@ -19,7 +19,7 @@ struct Light : public Object {
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    o << "color " << color << " pos " << pos;
+    o << "color: " << color << " pos: " << pos;
     return o;
   }
 };

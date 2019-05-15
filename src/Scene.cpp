@@ -45,6 +45,8 @@ Scene::Scene(
 const Color
 Scene::getColor(const Ray &rayFromEye) const
 {
+  const char *METHOD = "Scene::getColor";
+  Log::trace(METHOD, "rayFromEye: {}", rayFromEye);
   return Color(glm::dvec4(0));
 }
 

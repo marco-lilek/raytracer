@@ -21,7 +21,11 @@ public:
   Color(double c) : Color(glm::dvec4(c)) {}
 
   std::array<uint8_t, 4> toBytes() {
-    return {enc(rgba[0]), enc(rgba[1]), enc(rgba[2]), enc(rgba[3])};
+    std::array<uint8_t, 4> asBytes;
+    for (int i = 0; i < 4; i++) {
+      asBytes[i] = enc(rgba[i]);
+    }
+    return asBytes;
   }
 
   virtual const char * type() const {

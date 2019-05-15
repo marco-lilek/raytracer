@@ -7,12 +7,22 @@
 struct Log {
   enum Level
   {
+    TRACE,
     DEBUG,
     INFO,
     ERROR
   };
 
   static Level level;
+
+  template <typename... Args>
+  static void
+  trace(const char *location, const char *s, const Args &... args)
+  {
+
+    log(Log::TRACE, location, s, args...);
+  }
+
 
   template <typename... Args>
   static void
@@ -43,7 +53,7 @@ private:
   name(const Level &level)
   {
     return (const char *[]){
-      "debug", "info", "error"}[level];
+      "TRC", "DBG", "INF", "ERR"}[level];
   }
 
   template <typename... Args>

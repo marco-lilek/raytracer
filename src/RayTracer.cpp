@@ -20,7 +20,7 @@ RayTracer::render(
   // TODO: assert rootnode not null
 
   Log::info(LOCATION, 
-      "args: rootNode {} lights {} fname {} width {} height {}",
+      "rootNode: {} lights: {} fname: {} width: {} height: {}",
       *rootNode, lights.size(), fname, width, height);
 
   for (auto lightIt = lights.begin();
@@ -68,6 +68,6 @@ RayTracer::render(
   }
 
   // Write the drawn image out to fname
-  Log::info(LOCATION, "rendering to {}", fname);
+  Log::info(LOCATION, "rendering to: {}", fname);
   img.render(fname);
 }
