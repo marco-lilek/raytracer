@@ -6,23 +6,17 @@
 
 #include "Object.hpp"
 
-class Point : public Object {
-const glm::dvec3 p;
-
+class Point : public glm::dvec4, public Object {
 public:
-  Point(double x, double y, double z) : p(x,y,z) {}
-  Point(const glm::dvec3 &in) : p(in) {}
-
-  double operator[](int i) const {
-    return p[i];
-  }
+  Point(double x, double y, double z) : glm::dvec4(x,y,z,1) {}
+  Point(const glm::dvec3 &in) : glm::dvec4(in, 1) {}
 
   virtual const char * type() const {
     return "Point";
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    return o << glm::to_string(p);
+    return o << glm::to_string(glm::dvec3(*this));
   }
 };
 

@@ -1,18 +1,11 @@
-/*
- * Node.h
- *
- *  Created on: Feb 20, 2019
- *      Author: mllilek
- */
-
-#ifndef SRC_NODE_NODE_H_
-#define SRC_NODE_NODE_H_
+#pragma once
 
 #include <glm/glm.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+#include "Intersection.hpp"
 #include "Material.hpp"
 #include "Ray.hpp"
 
@@ -40,21 +33,8 @@ public:
     children.push_back(child);
   }
 
-  const Node *intersect(
-    const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
-
-  virtual const Node *_intersect(
-    const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
-
-  virtual glm::dvec3
-  getColor(
-    const Scene &scene,
-    const LightRay &incomingRay,
-    const glm::dvec4 &sceneHit,
-    const glm::dvec4 &sceneHitNormal) const
-  {
-    throw std::logic_error("called getColor on Node");
-  }
+  const Intersection intersect(const Ray &r) const;
+  virtual const Intersection intersectImpl(const Ray &r) const;
 };
 
 template <>
@@ -67,5 +47,3 @@ struct fmt::formatter<Node> {
     return format_to(ctx.out(), "[Node {}]", n.name);
   }
 };
-
-#endif /* SRC_NODE_NODE_H_ */

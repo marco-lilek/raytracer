@@ -13,6 +13,7 @@
 #include "Debug.hpp"
 #include "Material.hpp"
 #include "Node.hpp"
+#include "Intersection.hpp"
 
 using namespace glm;
 using namespace std;
@@ -51,31 +52,39 @@ Node::translate(const glm::dvec3 &amount)
   updateTrans(glm::translate(amount));
 }
 
-const Node *
-Node::intersect(
-  const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const
+const Intersection Node::intersect(const Ray &r) const
 {
-  return nullptr;
-  // Log::debug("trying {}", name);
-  // cerr << "wrapper" << endl;
-  // cerr << glm::to_string(inv) << endl;
-  // Ray transRay(inv * r.from, inv * r.v);
-  // glm::dvec4 localP;
-  // glm::dvec4 localNormal;
+  return Intersection();
+  //const char *METHOD_NAME = "Node::intersect";
+  //Log::trace(METHOD_NAME, "*this: {} r: {}", *this, r);
 
-  // const Node *res =
-  //   _intersect(transRay, localP, localNormal);
-  // p = trans * localP;
-  // normal = inv * localNormal;
+  //// Applying the model transformations M
+  ////
+  //// For some point p in the model space
+  //// Mp is p in the world space
+  //// 
+  //// So for some point q in the world space 
+  //// inverse(M)q is q in the model space
+  //Ray rayInModelSpace(inv * r.from, inv * r.v);
 
-  // return res;
+  //const Intersection intersectionInModelSpace = 
+  //  _intersect(rayInModelSpace);
+
+  //// By similar reasoning, we have to apply the model transformations
+  //// on all outgoing vectors/points in the model space to return them to
+  //// the world space
+  ////
+  //// TODO: the reasoning for the normal is not the same though
+  //Intersection intersectionInWorldSpace(
+  //    trans * intersectionInModelSpace.p,
+  //    trans * intersectionInModelSpace.n);
+
+  //return intersectionInWorldSpace;
 }
 
-const Node *
-Node::_intersect(
-  const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const
+const Intersection Node::intersectImpl(const Ray &r) const
 {
-  return nullptr;
+  return Intersection();
   // const Node *toRet = nullptr;
   // double closestDistance = 0;
   // glm::dvec4 bestp;
