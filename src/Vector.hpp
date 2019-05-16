@@ -9,6 +9,7 @@ public:
   Vector(double x, double y, double z);
   Vector(const glm::dvec3 &v);
   Vector(const glm::dvec4 &v);
+  Vector();
 
   Vector normalize() const;
   Vector cross(const Vector &o) const;

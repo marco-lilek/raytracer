@@ -10,6 +10,8 @@ class Point : public glm::dvec4, public Object {
 public:
   Point(double x, double y, double z) : glm::dvec4(x,y,z,1) {}
   Point(const glm::dvec3 &in) : glm::dvec4(in, 1) {}
+  Point(const glm::dvec4 &in) : glm::dvec4(in) {}
+  Point() : glm::dvec4(0,0,0, 1) {}
 
   virtual const char * type() const {
     return "Point";

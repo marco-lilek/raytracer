@@ -5,10 +5,10 @@
 #include "Object.hpp"
 
 class Ray : public Object {
+public:
   const Point from;
   const Vector v;
 
-public:
   Ray(const Point &from, const Vector &v)
       : from(from), v(v)
   {}

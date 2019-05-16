@@ -12,6 +12,10 @@ Vector::Vector(const glm::dvec3 &vv) :
   glm::dvec4(vv, 0)
 {}
 
+Vector::Vector() :
+  glm::dvec4(0)
+{}
+
 Vector Vector::cross(const Vector &o) const
 {
   return Vector(glm::cross(glm::dvec3(*this), glm::dvec3(o)));

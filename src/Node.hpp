@@ -9,11 +9,17 @@
 #include "Material.hpp"
 #include "Ray.hpp"
 
-class Node {
+class Node : public Object {
   std::vector<Node *> children;
 
-  glm::mat4 trans;
-  glm::mat4 inv;
+  // M
+  glm::mat4 modelTransform;
+
+  // M^-1
+  glm::mat4 invModelTransform;
+
+  // (M^-1)^T
+  glm::mat4 invTransModelTransform;
 
 public:
   std::string name;
@@ -25,7 +31,7 @@ public:
   void scale(const glm::dvec3 &amount);
   void translate(const glm::dvec3 &amount);
 
-  void updateTrans(const glm::mat4 &mat);
+  void updateModelTransform(const glm::mat4 &mat);
 
   void
   addChild(Node *child)
@@ -35,15 +41,14 @@ public:
 
   const Intersection intersect(const Ray &r) const;
   virtual const Intersection intersectImpl(const Ray &r) const;
-};
 
-template <>
-struct fmt::formatter<Node> {
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+  virtual const char * type() const {
+    return "Node";
+  }
 
-  template <typename FormatContext>
-  auto format(const Node &n, FormatContext &ctx) {
-    return format_to(ctx.out(), "[Node {}]", n.name);
+  virtual std::ostream& dump(std::ostream& o) const {
+    // For the sake of brevity avoid dumping the full node tree
+    return o << "name: " << name 
+      << " modelTransform: " << glm::to_string(modelTransform);
   }
 };

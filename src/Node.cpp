@@ -18,8 +18,11 @@
 using namespace glm;
 using namespace std;
 
-Node::Node(const std::string &name)
-    : name(name), trans(1), inv(1)
+Node::Node(const std::string &name) : 
+  name(name), 
+  modelTransform(1),
+  invModelTransform(1),
+  invTransModelTransform(1)
 {
 }
 
@@ -37,49 +40,67 @@ Node::rotate(char axis, float angle)
   default: break;
   }
   mat4 rot = glm::rotate(glm::radians(angle), rot_axis);
-  updateTrans(rot);
+  updateModelTransform(rot);
 }
 
 void
 Node::scale(const glm::dvec3 &amount)
 {
-  updateTrans(glm::scale(amount));
+  updateModelTransform(glm::scale(amount));
 }
 
 void
 Node::translate(const glm::dvec3 &amount)
 {
-  updateTrans(glm::translate(amount));
+  updateModelTransform(glm::translate(amount));
 }
 
 const Intersection Node::intersect(const Ray &r) const
 {
-  return Intersection();
-  //const char *METHOD_NAME = "Node::intersect";
-  //Log::trace(METHOD_NAME, "*this: {} r: {}", *this, r);
+  const char *METHOD_NAME = "Node::intersect";
+  Log::trace(METHOD_NAME, "*this: {} r: {}", *this, r);
 
-  //// Applying the model transformations M
-  ////
-  //// For some point p in the model space
-  //// Mp is p in the world space
-  //// 
-  //// So for some point q in the world space 
-  //// inverse(M)q is q in the model space
-  //Ray rayInModelSpace(inv * r.from, inv * r.v);
+  // Applying the model transformations M
+  //
+  // For some point p in the model space
+  // Mp is p in the world space
+  // 
+  // So for some point q in the world space 
+  // inverse(M)q is q in the model space
+  Ray rayInModelSpace(glm::dvec4(invModelTransform * r.from),
+      glm::dvec4(invModelTransform * r.v));
 
-  //const Intersection intersectionInModelSpace = 
-  //  _intersect(rayInModelSpace);
+  const Intersection intersectionInModelSpace = 
+    intersectImpl(rayInModelSpace);
 
-  //// By similar reasoning, we have to apply the model transformations
-  //// on all outgoing vectors/points in the model space to return them to
-  //// the world space
-  ////
-  //// TODO: the reasoning for the normal is not the same though
-  //Intersection intersectionInWorldSpace(
-  //    trans * intersectionInModelSpace.p,
-  //    trans * intersectionInModelSpace.n);
+  // By similar reasoning, we have to apply the model transformations
+  // on all outgoing vectors/points in the model space to return them to
+  // the world space
+  //
+  // The normal at the point of intersection is different:
+  // for normal n and any two points P1 P2 on a model, in the model space
+  // n^T (P2-P1) = 0
+  //
+  // so suppose we want this to hold in the world space, with points M P1, M P2
+  // let n' be the normal in the world space, (N n)
+  // (n')^T ((M P2) - (M P1))
+  // = (N n)^T M (P2 - P1)
+  // = n^T N^T M (P2 - P1)
+  // = n^T (N^T M) (P2 - P1)
+  //
+  // so as long as N^T := M^-1 then we'd have
+  // = n^T I (P2 - P1) = 0
+  // as required
+  //
+  // So n' = N n = (M^-1)^T n
 
-  //return intersectionInWorldSpace;
+  // Also note the node we ultimately hit does not change
+  Intersection intersectionInWorldSpace(
+      intersectionInModelSpace.hitNode,
+      glm::dvec4(modelTransform * intersectionInModelSpace.p),
+      glm::dvec4(invTransModelTransform * intersectionInModelSpace.n));
+
+  return intersectionInWorldSpace;
 }
 
 const Intersection Node::intersectImpl(const Ray &r) const
@@ -133,9 +154,14 @@ const Intersection Node::intersectImpl(const Ray &r) const
 }
 
 void
-Node::updateTrans(const glm::mat4 &mat)
+Node::updateModelTransform(const glm::mat4 &mat)
 {
-  trans = mat * trans;
-  inv = glm::inverse(trans);
+  modelTransform = mat * modelTransform;
+  invModelTransform = glm::inverse(modelTransform);
+
+  // Keep only the upper 3x3 portion of the matrix since this is the only part
+  // pertinent for vectors
+  invTransModelTransform = glm::mat4(
+      glm::transpose(glm::mat3(invModelTransform)));
 }
 
