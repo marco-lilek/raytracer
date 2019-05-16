@@ -16,7 +16,7 @@ public:
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    return o << glm::to_string(glm::dvec3(*this));
+    return o << glm::to_string(static_cast<glm::dvec4>(*this));
   }
 };
 
