@@ -3,31 +3,27 @@
 #include "Material.hpp"
 #include "Node.hpp"
 #include "Primitive.hpp"
+#include "PhysicalNode.hpp"
 
-class GeometryNode : public Node {
-const Primitive *const prim;
-  const Material *material;
+class GeometryNode : public PhysicalNode {
+  const Primitive *const prim;
 
 public:
   GeometryNode(
     const std::string &name,
     const Primitive *const p,
     const Material *m)
-      : Node(name), prim(p), material(m)
-  {
+      : PhysicalNode(name, m), prim(p)
+  {}
+
+  virtual const PhysicalIntersection intersectImpl(const Ray &r) const;
+
+  virtual const char * type() const {
+    return "GeometryNode";
   }
 
-  virtual const Node *_intersect(
-    const Ray &r, glm::dvec4 &p, glm::dvec4 &normal) const;
-
-  virtual glm::dvec3
-  getColor(
-    const Scene &scene,
-    const LightRay &incomingRay,
-    const glm::dvec4 &sceneHit,
-    const glm::dvec4 &sceneHitNormal) const
-  {
-    return material->intersect(
-      scene, incomingRay, sceneHit, sceneHitNormal);
+  virtual std::ostream& dump(std::ostream& o) const {
+    Node::dump(o);
+    return o << "prim : " << *prim;
   }
 };

@@ -9,6 +9,10 @@ public:
   const Point from;
   const Vector v;
 
+  Point pointAt(double t) const {
+    return from + t * v;
+  }
+
   Ray(const Point &from, const Vector &v)
       : from(from), v(v)
   {}

@@ -7,60 +7,75 @@
 
 using namespace std;
 
-bool
-Sphere::intersect(
-  const Ray &r, float &t, glm::dvec4 &normal) const
-{
-  return false;
-  // // NOTE: Making the assumption that c = 0
-  // glm::dvec3 a(r.from);
-  // glm::dvec3 d(r.v);
+GeometryIntersection Sphere::intersect(const Ray &incomingRay) {
+  
+  // Intersecting with a sphere centered at 0,0,0 with radius 1
+  // then for any point on the sphere (x,y,z) we have
+  // x^2 + y^2 + z^2 = 1^2
+  //
+  // intersecting with a ray: a + td
+  // sub then solve for t
+  //
+  // (a.x+td.x)^2 + (a.y+td.y)^2 + (a.z+td.z)^2 = 1
+  // a.x^2 + 2a.xtd.x + t^2d.x^2 ... = 1
+  // t^2(d.x^2 + d.y^2 + d.z^2) + 2t(a.x*d.x + a.y*d.y ..) + dot(a,a) - 1 = 0
+  // t^2 dot(d,d) + t 2dot(a,d) + (dot(a,a) - 1) = 0
+  // quadractic formula badaboobbadabing eh whats it take to get a coffe over here
 
-  // // cerr << "a " << glm::to_string(a) << " d " <<
-  // // glm::to_string(d) << endl;
+  glm::dvec3 a(incomingRay.from);
+  glm::dvec3 d(incomingRay.v);
 
-  // float A = glm::dot(d, d);
-  // float B = 2 * glm::dot(d, a);
-  // float C =
-  //   glm::dot(a, a) - 1; // Just assume the radius is 1
+  // The coefficients from above
+  float A = glm::dot(d, d);
+  float B = 2 * glm::dot(d, a);
+  float C = glm::dot(a, a) - 1;
 
-  // double roots[2];
-  // size_t numRoots = quadraticRoots(A, B, C, roots);
-  // Log::debug("numRoots {}", numRoots);
-  // // cerr << "numroots " << numRoots << endl;
+  double roots[2];
+  size_t numRoots = quadraticRoots(A, B, C, roots);
 
-  // if (numRoots == 0)
-  //   return false;
-  // if (numRoots == 1)
-  //   t = roots[0];
-  // if (numRoots == 2) {
-  //   float l, r;
-  //   l = roots[0];
-  //   r = roots[1];
-  //   Log::debug("roots {} {}", l, r);
-  //   if (l < constants::EPSILON && r < constants::EPSILON)
-  //     return false; // No roots?
-  //   if (l < constants::EPSILON || r < constants::EPSILON) {
-  //     t = glm::max(l, r); // The non-neg one
-  //   } else {
-  //     t = glm::min(
-  //       l, r); // Intersection thats closer to the origin
-  //   }
-  // }
+  if (numRoots == 0) {
+    return GeometryIntersection();
+  }
 
-  // // cerr << "t " << t << endl;
-  // Log::debug("best {}", t);
+  // For ray a + td, the closest t for which we intersect the sphere
+  double t;
 
-  // glm::dvec4 P = Ray::pointAt(r, t);
-  // float dist = glm::distance(P, glm::dvec4(0, 0, 0, 1));
+  if (numRoots == 1) {
+    // Easy case
+    float root = roots[0];
+    
+    // But still reject if its behind us
+    if (root < constants::EPSILON) {
+      return GeometryIntersection();
+    }
 
-  // // Don't need to normalize it (and we shouldn't to avoid
-  // // acc error), just do the normalization when its actually
-  // // used
-  // normal = glm::dvec4(
-  //   glm::dvec3(P) - glm::dvec3(0),
-  //   0); // from center to point on the sphere
-  // // cerr << "dist" << glm::distance(P, glm::dvec4(0,0,0,1))
-  // // << endl;
-  // return true;
+    t = roots[0];
+  }
+
+  // Great we intersect twice, but the sphere could still be behind us
+  if (numRoots == 2) {
+    float l, r;
+    l = roots[0];
+    r = roots[1];
+    if (l < constants::EPSILON && r < constants::EPSILON) {
+      // The whole sphere is behind us
+      return GeometryIntersection();
+    }
+    if (l < constants::EPSILON || r < constants::EPSILON) {
+      // We're inside the sphere!
+      t = glm::max(l, r);
+    } else {
+      // The sphere is in front of us
+      // So return the point of intersection closer to us
+      t = glm::min(l, r);
+    }
+  }
+
+  Point pointOfIntersection = incomingRay.pointAt(t);
+
+  // Since we already assume the sphere is centered at 0,0,0, the normal
+  // is the same as the point of intersection
+  Vector normal = Vector(pointOfIntersection);
+
+  return GeometryIntersection(pointOfIntersection, normal);
 }

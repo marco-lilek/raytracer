@@ -2,31 +2,25 @@
 
 #include "Point.hpp"
 #include "Vector.hpp"
+#include "GeometryIntersection.hpp"
 
 // Forward declare because of circular dependency
-class Node;
+class PhysicalNode;
 
 // TODO Could avoid wasting stack space when we have 
 // an intersection that didn't hit
 // ...but for now this is good enough, better than using the heap
 // (so we can keep things running fast)
-struct Intersection {
+struct PhysicalIntersection : public GeometryIntersection {
 
-  Intersection(Node *hitNode,
+  PhysicalIntersection(const PhysicalNode *hitNode,
       const Point &p,
       const Vector &n) : 
-    hitNode(hitNode),
-    p(p),
-    n(n) {}
+    GeometryIntersection(p, n),
+    hitNode(hitNode) {}
 
-  Intersection() : hitNode(nullptr) {}
+  PhysicalIntersection() : GeometryIntersection(), hitNode(nullptr) {}
 
   // The node that we hit
-  Node *hitNode;
-
-  // The point of intersection
-  Point p;
-
-  // The normal at the point of intersection
-  Vector n;
+  const PhysicalNode *hitNode;
 };

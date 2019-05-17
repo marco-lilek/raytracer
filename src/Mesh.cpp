@@ -43,11 +43,11 @@ Mesh::Mesh(const std::string &name) : Primitive()
   importElements(importer, scene);
 }
 
-bool
-Mesh::_intersect(
-  const Ray &r, float &t, int &hitFace, double &beta, double &gamma) const
-{
-  return false;
+// bool
+// Mesh::_intersect(
+//   const Ray &r, float &t, int &hitFace, double &beta, double &gamma) const
+// {
+//   return false;
   // bool foundIntersection = false;
 
   // glm::vec3 ev(r.from);
@@ -112,23 +112,23 @@ Mesh::_intersect(
   // }
 
   // return foundIntersection;
-}
+// }
 
-bool
-Mesh::intersect(
-  const Ray &r, float &t, glm::dvec4 &normal) const
-{
-  int hitFace;
-  double beta;
-  double gamma;
-  bool intersects = _intersect(r, t, hitFace, beta, gamma);
-  if (intersects) {
-    glm::vec3 va(positions[hitFace]);
-    glm::vec3 vb(positions[hitFace + 1]);
-    glm::vec3 vc(positions[hitFace + 2]);
+// bool
+// Mesh::intersect(
+//   const Ray &r, float &t, glm::dvec4 &normal) const
+// {
+//   int hitFace;
+//   double beta;
+//   double gamma;
+//   bool intersects = _intersect(r, t, hitFace, beta, gamma);
+//   if (intersects) {
+//     glm::vec3 va(positions[hitFace]);
+//     glm::vec3 vb(positions[hitFace + 1]);
+//     glm::vec3 vc(positions[hitFace + 2]);
 
-    normal = glm::vec4(glm::cross(vb - va, vc - vb), 0);
-  }
+//     normal = glm::vec4(glm::cross(vb - va, vc - vb), 0);
+//   }
 
-  return intersects;
-}
+//   return intersects;
+// }

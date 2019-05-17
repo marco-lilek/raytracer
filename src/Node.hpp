@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Intersection.hpp"
+#include "PhysicalIntersection.hpp"
 #include "Material.hpp"
 #include "Ray.hpp"
 
@@ -39,8 +39,8 @@ public:
     children.push_back(child);
   }
 
-  const Intersection intersect(const Ray &r) const;
-  virtual const Intersection intersectImpl(const Ray &r) const;
+  const PhysicalIntersection intersect(const Ray &r) const;
+  virtual const PhysicalIntersection intersectImpl(const Ray &r) const;
 
   virtual const char * type() const {
     return "Node";

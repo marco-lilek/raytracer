@@ -20,5 +20,10 @@ public:
   virtual std::ostream& dump(std::ostream& o) const {
     return o << glm::to_string(static_cast<glm::dvec4>(*this));
   }
+
+  double distanceTo(const Point &o) const {
+    return glm::distance(static_cast<glm::dvec3>(*this), 
+        static_cast<glm::dvec3>(o));
+  }
 };
 

@@ -13,7 +13,7 @@
 #include "Debug.hpp"
 #include "Material.hpp"
 #include "Node.hpp"
-#include "Intersection.hpp"
+#include "PhysicalIntersection.hpp"
 
 using namespace glm;
 using namespace std;
@@ -55,10 +55,11 @@ Node::translate(const glm::dvec3 &amount)
   updateModelTransform(glm::translate(amount));
 }
 
-const Intersection Node::intersect(const Ray &r) const
+const PhysicalIntersection Node::intersect(const Ray &r) const
 {
   const char *METHOD_NAME = "Node::intersect";
-  Log::trace(METHOD_NAME, "*this: {} r: {}", *this, r);
+  Log::trace(METHOD_NAME, "this: {}", *this);
+  Log::trace(METHOD_NAME, "r: {}", r);
 
   // Applying the model transformations M
   //
@@ -70,7 +71,7 @@ const Intersection Node::intersect(const Ray &r) const
   Ray rayInModelSpace(glm::dvec4(invModelTransform * r.from),
       glm::dvec4(invModelTransform * r.v));
 
-  const Intersection intersectionInModelSpace = 
+  const PhysicalIntersection intersectionInModelSpace = 
     intersectImpl(rayInModelSpace);
 
   // By similar reasoning, we have to apply the model transformations
@@ -95,7 +96,7 @@ const Intersection Node::intersect(const Ray &r) const
   // So n' = N n = (M^-1)^T n
 
   // Also note the node we ultimately hit does not change
-  Intersection intersectionInWorldSpace(
+  PhysicalIntersection intersectionInWorldSpace(
       intersectionInModelSpace.hitNode,
       glm::dvec4(modelTransform * intersectionInModelSpace.p),
       glm::dvec4(invTransModelTransform * intersectionInModelSpace.n));
@@ -103,54 +104,36 @@ const Intersection Node::intersect(const Ray &r) const
   return intersectionInWorldSpace;
 }
 
-const Intersection Node::intersectImpl(const Ray &r) const
+const PhysicalIntersection Node::intersectImpl(const Ray &r) const
 {
-  return Intersection();
-  // const Node *toRet = nullptr;
-  // double closestDistance = 0;
-  // glm::dvec4 bestp;
-  // glm::dvec4 bestnormal;
-  // // cerr << "intersect !" << r.v << endl;
+  // For a node, we need to return the intersection 
+  // from the child node with the closest point of intersection
 
-  // for (auto childIt = children.begin();
-  //      childIt != children.end();
-  //      ++childIt) {
-  //   Node *child = *childIt;
+  PhysicalIntersection closestIntersection;
 
-  //   // cerr << "child " << child->name <<endl;
-  //   glm::dvec4 thisp;
-  //   glm::dvec4 thisnormal;
-  //   // cerr << "r.p, r.v" << r.from << " " << r.v << endl;
-  //   const Node *fromChild =
-  //     child->intersect(r, thisp, thisnormal);
+  // Since the distance is always positive we can use -1 to prime the loop
+  double closestDistance = -1;
 
-  //   if (fromChild) {
-  //     // cerr << fromChild->name <<endl;
-  //     double thisDistance =
-  //       std::max(0.0, glm::distance(thisp, r.from));
-  //     // cerr << thisDistance << endl;
-  //     if (
-  //       toRet == nullptr ||
-  //       thisDistance < closestDistance) {
-  //       toRet = fromChild;
-  //       bestp = thisp;
-  //       bestnormal = thisnormal;
-  //       closestDistance = thisDistance;
-  //     }
-  //   }
-  // }
+  for (auto childIt = children.begin(); 
+      childIt != children.end();
+      ++childIt) {
+    Node *child = *childIt;
 
-  // p = bestp;
-  // normal = bestnormal;
+    PhysicalIntersection intersectionFromChild = child->intersect(r);
+    if (intersectionFromChild.hitNode == nullptr) {
+      continue;
+    } else {
+      double thisDistance = r.from.distanceTo(intersectionFromChild.p);
+      if (closestDistance == -1 ||  thisDistance <= closestDistance) {
+        // Kinda stinky: we need to copy off the intersection
+        // every time we have a decent hit
+        // ...still faster than using the heap?
+        closestIntersection = intersectionFromChild;
+      }
+    }
+  }
 
-  // // if (toRet) cerr << "ya it hit" << endl;
-  // if (toRet) {
-  //   Log::debug("best {}", toRet->name);
-  // } else {
-  //   Log::debug("no best");
-  // }
-
-  // return toRet;
+  return closestIntersection;
 }
 
 void

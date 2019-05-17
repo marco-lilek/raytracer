@@ -6,10 +6,10 @@
 
 using namespace std;
 
-bool
-Cube::intersect(
-  const Ray &r, float &t, glm::dvec4 &normal) const
-{
+// bool
+// Cube::intersect(
+//   const Ray &r, float &t, glm::dvec4 &normal) const
+// {
   // glm::dvec3 e(r.from);
   // glm::dvec3 d(r.v);
 
@@ -53,5 +53,5 @@ Cube::intersect(
   // }
 
   // return intersect;
-  return false;
-}
+  // return false;
+// }

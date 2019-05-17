@@ -5,6 +5,14 @@
 class Sphere : public Primitive {
 public:
   virtual ~Sphere() {}
-  virtual bool intersect(
-    const Ray &r, float &t, glm::dvec4 &normal) const;
+  virtual GeometryIntersection intersect(const Ray &incomingRay);
+
+  virtual const char * type() const {
+    return "Sphere";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    Primitive::dump(o);
+    return o;
+  }
 };

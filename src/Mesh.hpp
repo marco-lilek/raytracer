@@ -13,14 +13,13 @@ protected:
   std::vector<glm::dvec3> positions;
 
 public:
-  Mesh(
-    const std::string &name);
+  Mesh(const std::string &name);
   virtual ~Mesh() {};
-  virtual bool intersect(
-    const Ray &r, float &t, glm::dvec4 &normal) const;
 
-  bool _intersect(
-    const Ray &r, float &t, int &hitFace, double &beta, double &gamma) const;
+  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+    // Stub
+    return GeometryIntersection();
+  }
 
   virtual void importElements(
     Assimp::Importer &importer,

@@ -92,13 +92,11 @@ initNamespace(lua_State *L)
       const Color &color, const Point &pos)>()
     .endClass()
 
-    // .beginClass<Primitive>("Primitive")
-    // .addFunction("intersect", &Primitive::intersect)
-    // .endClass()
+    .beginClass<Primitive>("Primitive").endClass()
 
-    // .deriveClass<Sphere, Primitive>("Sphere")
-    // .addConstructor<void (*)()>()
-    // .endClass()
+    .deriveClass<Sphere, Primitive>("Sphere")
+    .addConstructor<void (*)()>()
+    .endClass()
 
     // .deriveClass<Mesh, Primitive>("Mesh")
     // .addConstructor<void (*)(const std::string &name)>()
@@ -108,13 +106,11 @@ initNamespace(lua_State *L)
     // .addConstructor<void (*)(const std::string &name)>()
     // .endClass()
 
-    // .beginClass<Material>("Material")
-    // .addFunction("intersect", &Material::intersect)
-    // .endClass()
+    .beginClass<Material>("Material").endClass()
 
-    // .deriveClass<DebugMaterial, Material>("DebugMaterial")
-    // .addConstructor<void (*)()>()
-    // .endClass()
+    .deriveClass<DebugMaterial, Material>("DebugMaterial")
+    .addConstructor<void (*)()>()
+    .endClass()
 
     // .deriveClass<ReflectiveMaterial, Material>(
     //   "ReflectiveMaterial")
@@ -134,16 +130,16 @@ initNamespace(lua_State *L)
     // .addFunction("scale", &Node::scale)
     // .addFunction("rotate", &Node::rotate)
     // .addFunction("translate", &Node::translate)
-    // .addFunction("addChild", &Node::addChild)
+    .addFunction("addChild", &Node::addChild)
     // .addFunction("intersect", &Node::intersect)
     .endClass()
 
-    // .deriveClass<GeometryNode, Node>("GeometryNode")
-    // .addConstructor<void (*)(
-    //   const std::string &,
-    //   const Primitive *const,
-    //   const Material *)>()
-    // .endClass()
+    .deriveClass<GeometryNode, Node>("GeometryNode")
+    .addConstructor<void (*)(
+      const std::string &,
+      const Primitive *const,
+      const Material *)>()
+    .endClass()
 
     .beginClass<RayTracer>("RayTracer")
     .addConstructor<void (*)(void)>()

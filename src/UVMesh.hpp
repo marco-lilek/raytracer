@@ -16,9 +16,10 @@ public:
 
   virtual ~UVMesh() {};
 
-
-  virtual bool intersect(
-    const Ray &r, float &t, glm::dvec4 &normal) const;
+  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+    // Stub
+    return GeometryIntersection();
+  }
 
   virtual void importElements(
     Assimp::Importer &importer,
