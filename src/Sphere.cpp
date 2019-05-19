@@ -1,13 +1,16 @@
 #include "Sphere.hpp"
 #include "Constants.hpp"
 #include "Debug.hpp"
+#include "Log.hpp"
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <polyroots.hpp>
 
 using namespace std;
 
-GeometryIntersection Sphere::intersect(const Ray &incomingRay) {
+GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
+  const char * METHOD_NAME = "Sphere::intersect";
+  Log::trace(METHOD_NAME, "incomingRay {}", incomingRay);
   
   // Intersecting with a sphere centered at 0,0,0 with radius 1
   // then for any point on the sphere (x,y,z) we have

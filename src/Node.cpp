@@ -55,11 +55,11 @@ Node::translate(const glm::dvec3 &amount)
   updateModelTransform(glm::translate(amount));
 }
 
-const PhysicalIntersection Node::intersect(const Ray &r) const
+const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
 {
   const char *METHOD_NAME = "Node::intersect";
   Log::trace(METHOD_NAME, "this: {}", *this);
-  Log::trace(METHOD_NAME, "r: {}", r);
+  Log::trace(METHOD_NAME, "incomingRay: {}", incomingRay);
 
   // Applying the model transformations M
   //
@@ -68,8 +68,8 @@ const PhysicalIntersection Node::intersect(const Ray &r) const
   // 
   // So for some point q in the world space 
   // inverse(M)q is q in the model space
-  Ray rayInModelSpace(glm::dvec4(invModelTransform * r.from),
-      glm::dvec4(invModelTransform * r.v));
+  Ray rayInModelSpace(glm::dvec4(invModelTransform * incomingRay.from),
+      glm::dvec4(invModelTransform * incomingRay.v));
 
   const PhysicalIntersection intersectionInModelSpace = 
     intersectImpl(rayInModelSpace);
@@ -95,6 +95,11 @@ const PhysicalIntersection Node::intersect(const Ray &r) const
   //
   // So n' = N n = (M^-1)^T n
 
+  // TODO some better way to return an intersection that didn't hit
+  if (!intersectionInModelSpace.hit) {
+    return PhysicalIntersection();
+  }
+
   // Also note the node we ultimately hit does not change
   PhysicalIntersection intersectionInWorldSpace(
       intersectionInModelSpace.hitNode,
@@ -106,6 +111,7 @@ const PhysicalIntersection Node::intersect(const Ray &r) const
 
 const PhysicalIntersection Node::intersectImpl(const Ray &r) const
 {
+  const char * METHOD_NAME = "Node::intersectImpl";
   // For a node, we need to return the intersection 
   // from the child node with the closest point of intersection
 
@@ -132,6 +138,8 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
       }
     }
   }
+
+  Log::trace(METHOD_NAME, "closestIntersection {}", closestIntersection);
 
   return closestIntersection;
 }

@@ -13,6 +13,12 @@ class PhysicalNode;
 // (so we can keep things running fast)
 struct PhysicalIntersection : public GeometryIntersection {
 
+  PhysicalIntersection(const PhysicalNode *hitNode, 
+      const GeometryIntersection &gi) : 
+    GeometryIntersection(gi),
+    hitNode(hitNode) {}
+    
+
   PhysicalIntersection(const PhysicalNode *hitNode,
       const Point &p,
       const Vector &n) : 

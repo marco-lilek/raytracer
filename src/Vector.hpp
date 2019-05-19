@@ -3,10 +3,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "Object.hpp"
+#include "Point.hpp"
 
 class Vector : public glm::dvec4, public Object {
 public:
   Vector(double x, double y, double z);
+  Vector(const Point &p) : glm::dvec4(p.x, p.y, p.z, 0) {}
   Vector(const glm::dvec3 &v);
   Vector(const glm::dvec4 &v);
   Vector();

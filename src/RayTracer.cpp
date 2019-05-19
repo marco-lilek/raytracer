@@ -40,12 +40,15 @@ RayTracer::render(
 
   // Initialize the camera
   int distanceFromEyeToScreen = 1;
-  const Camera camera(Point(0,0,0) /* eye */, 
+
+  // TODO pass in camera params from the Lua
+  const Camera camera(Point(0,0,-5) /* eye */, 
       Vector(0,1,0) /* up */,
       Vector(0,0,1) /* towards */,
       width,
       height);
 
+  // TODO pass in the single pixel to be shot
   int startX = 0;
   int startY = 0;
   int endX = img.width;
@@ -54,9 +57,9 @@ RayTracer::render(
   if (RuntimeConfig::get().singlePixel) {
     Log::info(LOCATION, "shooting single pixel");
     startX = img.width / 2;
-    startY = img.height / 2;
+    startY = img.height / 4;
     endX = img.width / 2 + 1;
-    endY = img.height / 2 + 1;
+    endY = img.height / 4 + 1;
   }
 
   for (int i = startX; i < endX; i++) {

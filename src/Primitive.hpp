@@ -9,7 +9,7 @@ class Primitive : public Object {
 public:
   virtual ~Primitive() {}
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
     // Stub
     return GeometryIntersection();
   } 

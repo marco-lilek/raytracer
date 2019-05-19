@@ -16,7 +16,7 @@ public:
   Mesh(const std::string &name);
   virtual ~Mesh() {};
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
     // Stub
     return GeometryIntersection();
   }

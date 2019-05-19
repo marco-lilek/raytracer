@@ -28,7 +28,7 @@ Ray Camera::getRayFromEyeToScreen(int i, int j) const
   double offsetRight = (double)i / screenWidth * 2 - 1;
 
   // same for the offset up
-  double offsetUp = (double)i / screenHeight * 2 - 1;
+  double offsetUp = (double)j / screenHeight * 2 - 1;
 
   return Ray(eye,
       towards 

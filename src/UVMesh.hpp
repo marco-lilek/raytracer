@@ -16,7 +16,7 @@ public:
 
   virtual ~UVMesh() {};
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
     // Stub
     return GeometryIntersection();
   }

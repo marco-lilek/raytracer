@@ -5,7 +5,7 @@
 class Cube : public Primitive {
 public:
   virtual ~Cube() {}
-  virtual GeometryIntersection intersect(const Ray &incomingRay) {
+  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
     // Stub
     return GeometryIntersection();
   }

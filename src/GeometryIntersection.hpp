@@ -1,6 +1,6 @@
 #pragma once
 
-struct GeometryIntersection {
+struct GeometryIntersection : public Object {
 public:
   GeometryIntersection() : hit(false) {}
   GeometryIntersection(
@@ -14,4 +14,12 @@ public:
 
   // The normal at the point of intersection
   Vector n;
+
+  virtual const char * type() const {
+    return "GeometryIntersection";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    return o << "hit " << hit << " p " << p << " n " << n;
+  }
 };
