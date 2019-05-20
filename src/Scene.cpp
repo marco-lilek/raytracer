@@ -50,7 +50,7 @@ Scene::getColor(const Ray &rayFromEye) const
   const PhysicalIntersection intersection(root->intersect(rayFromEye));
   
   Log::trace(METHOD, "intersection: {}", intersection);
-  return Color(glm::dvec4(intersection.hit));
+  return Color(glm::dvec4(intersection.isHit()));
 }
 
 // const Intersection

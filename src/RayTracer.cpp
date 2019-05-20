@@ -11,6 +11,7 @@ using namespace std;
 void
 RayTracer::render(
   const Node *rootNode,
+  const Camera &camera,
   const std::vector<const Light *> &lights,
   const std::string &fname,
   const int width,
@@ -20,8 +21,8 @@ RayTracer::render(
   // TODO: assert rootnode not null
 
   Log::info(LOCATION, 
-      "rootNode: {} lights: {} fname: {} width: {} height: {}",
-      *rootNode, lights.size(), fname, width, height);
+      "rootNode {} camera {} lights.size() {} fname {} width {} height {}",
+      *rootNode, camera, lights.size(), fname, width, height);
 
   for (auto lightIt = lights.begin();
        lightIt != lights.end();
@@ -32,21 +33,14 @@ RayTracer::render(
         *l);
   }
 
-  // Initialize the image we're rendering to
+  // Initialize the image
   Image img(width, height);
-  
+
   // Initialize the scene
   const Scene scene(rootNode, lights);
 
   // Initialize the camera
   int distanceFromEyeToScreen = 1;
-
-  // TODO pass in camera params from the Lua
-  const Camera camera(Point(0,0,-5) /* eye */, 
-      Vector(0,1,0) /* up */,
-      Vector(0,0,1) /* towards */,
-      width,
-      height);
 
   // TODO pass in the single pixel to be shot
   int startX = 0;
@@ -64,7 +58,11 @@ RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
+      const double windowOffsetX = (double)i / img.width;
+      const double windowOffsetY = (double)j / img.height;
+
+      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(
+          windowOffsetX, windowOffsetY);
       const Color pixelColor = scene.getColor(rayFromEyeToScreen);
       img.drawPixel(i, j, pixelColor);
     }

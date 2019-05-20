@@ -12,7 +12,7 @@ PhysicalIntersection GeometryNode::intersectImpl(const Ray &incomingRay) const {
 
   GeometryIntersection geometryIntersection = prim->intersect(incomingRay);
   Log::trace(METHOD_NAME, "geometryIntersection {}", geometryIntersection);
-  if (geometryIntersection.hit) {
+  if (geometryIntersection.isHit()) {
     return PhysicalIntersection(this, geometryIntersection);
   } else {
     return PhysicalIntersection();

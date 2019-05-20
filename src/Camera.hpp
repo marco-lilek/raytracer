@@ -4,20 +4,24 @@
 #include "Vector.hpp"
 #include "Ray.hpp"
 
-class Camera {
+class Camera : public Object {
   Point eye;
   Vector up;
   Vector towards;
   int distanceFromEyeToScreen;
-  int screenWidth;
-  int screenHeight;
 
 public:
   Camera(Point eye,
       Vector up,
-      Vector towards,
-      int screenWidth,
-      int screenHeight);
+      Vector towards);
 
-  Ray getRayFromEyeToScreen(int i, int j) const;
+  Ray getRayFromEyeToScreen(double, double) const;
+
+  virtual const char * type() const {
+    return "Camera";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    return o << "eye " << eye << " up " << up << " towards " << towards << " distanceFromEyeToScreen " << distanceFromEyeToScreen; 
+  }
 };

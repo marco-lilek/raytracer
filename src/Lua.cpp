@@ -26,6 +26,7 @@ extern "C" {
 #include "DebugMaterial.hpp"
 #include "PhongMaterial.hpp"
 #include "ReflectiveMaterial.hpp"
+#include "Camera.hpp"
 
 using namespace luabridge;
 using namespace std;
@@ -77,7 +78,19 @@ initNamespace(lua_State *L)
     .beginNamespace("g")
     .addFunction("echo", echo)
 
+    .beginClass<Camera>("Camera")
+    .addConstructor<void (*)(
+      const Point &,
+      const Vector &,
+      const Vector &)>()
+    .endClass()
+
     .beginClass<Color>("Color")
+    .addConstructor<void (*)(
+      double x, double y, double z)>()
+    .endClass()
+
+    .beginClass<Vector>("Vector")
     .addConstructor<void (*)(
       double x, double y, double z)>()
     .endClass()

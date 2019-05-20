@@ -11,7 +11,7 @@ public:
 
   virtual GeometryIntersection intersect(const Ray &incomingRay) const {
     // Stub
-    return GeometryIntersection();
+    return GeometryIntersection(GeometryIntersection::Miss);
   } 
 
   virtual const char * type() const {

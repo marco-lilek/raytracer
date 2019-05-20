@@ -1,14 +1,33 @@
 #pragma once
 
-struct GeometryIntersection : public Object {
-public:
-  GeometryIntersection() : hit(false) {}
-  GeometryIntersection(
+#include "Intersection.hpp"
+
+struct GeometryIntersection : public Object, public Intersection {
+  // where the fired ray is positioned relative to the geometry
+  enum ShooterPos : bool {
+    Miss = false, // (shooter)/^ object
+    Past = false, // (object) (shooter)----->
+    Inside = true, // (object (shooter)---)--->
+    Towards = true, // (shooter)----->(object)
+  };
+
+  GeometryIntersection(ShooterPos sp) : 
+    shooterPos(sp),
+    p(Point()),
+    n(Vector()) {}
+
+  GeometryIntersection(const ShooterPos sp,
       const Point &p,
-      const Vector &n) : hit(true), p(p), n(n) {} 
+      const Vector &n) : 
+    shooterPos(sp), 
+    p(p),
+    n(n) {} 
 
-  bool hit;
+  virtual bool isHit() const {
+    return static_cast<bool>(shooterPos);
+  }
 
+  // TODO private+getters since these should not be mutable
   // The point of intersection
   Point p;
 
@@ -20,6 +39,8 @@ public:
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    return o << "hit " << hit << " p " << p << " n " << n;
+    return o << "shooterPos " << shooterPos << " p " << p << " n " << n;
   }
+
+  ShooterPos shooterPos;
 };

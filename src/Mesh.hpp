@@ -16,11 +16,6 @@ public:
   Mesh(const std::string &name);
   virtual ~Mesh() {};
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
-    // Stub
-    return GeometryIntersection();
-  }
-
   virtual void importElements(
     Assimp::Importer &importer,
     const aiScene *scene);

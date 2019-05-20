@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "PhysicalIntersection.hpp"
 #include "Material.hpp"
 #include "Ray.hpp"
+#include "PhysicalIntersection.hpp"
 
 class Node : public Object {
   std::vector<Node *> children;

@@ -95,16 +95,21 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
   //
   // So n' = N n = (M^-1)^T n
 
-  // TODO some better way to return an intersection that didn't hit
-  if (!intersectionInModelSpace.hit) {
+  if (!intersectionInModelSpace.isHit()) {
     return PhysicalIntersection();
   }
 
   // Also note the node we ultimately hit does not change
+  const GeometryIntersection &intersectionInModelSpaceGeometry = 
+    intersectionInModelSpace.geometry;
+  GeometryIntersection intersectionInWorldSpaceGeometry(
+      intersectionInModelSpaceGeometry.shooterPos,
+      glm::dvec4(modelTransform * intersectionInModelSpaceGeometry.p),
+      glm::dvec4(invTransModelTransform * intersectionInModelSpaceGeometry.n));
+
   PhysicalIntersection intersectionInWorldSpace(
-      intersectionInModelSpace.hitNode,
-      glm::dvec4(modelTransform * intersectionInModelSpace.p),
-      glm::dvec4(invTransModelTransform * intersectionInModelSpace.n));
+      intersectionInModelSpace.hitNode, 
+      intersectionInWorldSpaceGeometry);
 
   return intersectionInWorldSpace;
 }
@@ -115,6 +120,7 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
   // For a node, we need to return the intersection 
   // from the child node with the closest point of intersection
 
+  // Default init we have no hit
   PhysicalIntersection closestIntersection;
 
   // Since the distance is always positive we can use -1 to prime the loop
@@ -129,7 +135,7 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
     if (intersectionFromChild.hitNode == nullptr) {
       continue;
     } else {
-      double thisDistance = r.from.distanceTo(intersectionFromChild.p);
+      double thisDistance = r.from.distanceTo(intersectionFromChild.geometry.p);
       if (closestDistance == -1 ||  thisDistance <= closestDistance) {
         // Kinda stinky: we need to copy off the intersection
         // every time we have a decent hit

@@ -37,7 +37,8 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
   size_t numRoots = quadraticRoots(A, B, C, roots);
 
   if (numRoots == 0) {
-    return GeometryIntersection();
+    // Total miss
+    return GeometryIntersection(GeometryIntersection::Miss);
   }
 
   // For ray a + td, the closest t for which we intersect the sphere
@@ -49,25 +50,28 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     
     // But still reject if its behind us
     if (root < constants::EPSILON) {
-      return GeometryIntersection();
+      return GeometryIntersection(GeometryIntersection::Past);
     }
 
     t = roots[0];
   }
 
   // Great we intersect twice, but the sphere could still be behind us
+  GeometryIntersection::ShooterPos shooterPos;
   if (numRoots == 2) {
     float l, r;
     l = roots[0];
     r = roots[1];
     if (l < constants::EPSILON && r < constants::EPSILON) {
       // The whole sphere is behind us
-      return GeometryIntersection();
+      return GeometryIntersection(GeometryIntersection::Past);
     }
     if (l < constants::EPSILON || r < constants::EPSILON) {
+      shooterPos = GeometryIntersection::Inside;
       // We're inside the sphere!
       t = glm::max(l, r);
     } else {
+      shooterPos = GeometryIntersection::Towards;
       // The sphere is in front of us
       // So return the point of intersection closer to us
       t = glm::min(l, r);
@@ -80,5 +84,6 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
   // is the same as the point of intersection
   Vector normal = Vector(pointOfIntersection);
 
-  return GeometryIntersection(pointOfIntersection, normal);
+  return GeometryIntersection(shooterPos, 
+      pointOfIntersection, normal);
 }
