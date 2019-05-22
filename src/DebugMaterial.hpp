@@ -2,6 +2,7 @@
 
 #include "Material.hpp"
 #include "Object.hpp"
+#include "GeometryIntersection.hpp"
 #include <glm/glm.hpp>
 
 #include <iostream>
@@ -10,14 +11,7 @@ struct DebugMaterial : public Material {
 
   DebugMaterial() : Material() {}
 
-  virtual glm::dvec3
-  intersect(
-    const Scene &scene,
-    const LightRay &rayFromEye,
-    const glm::dvec4 &sceneHit,
-    const glm::dvec4 &sceneHitNormal) const {
-    return glm::dvec3(1);
-  }
+  Color getColor(const GeometryIntersection::ShooterPos &shooterPos) const;
 
   virtual const char * type() const {
     return "DebugMaterial";

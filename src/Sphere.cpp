@@ -23,12 +23,12 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
   // a.x^2 + 2a.xtd.x + t^2d.x^2 ... = 1
   // t^2(d.x^2 + d.y^2 + d.z^2) + 2t(a.x*d.x + a.y*d.y ..) + dot(a,a) - 1 = 0
   // t^2 dot(d,d) + t 2dot(a,d) + (dot(a,a) - 1) = 0
-  // quadractic formula badaboobbadabing eh whats it take to get a coffe over here
+  // quadractic formula badaboombadabing eh whats it take to get a coffe over here
 
   glm::dvec3 a(incomingRay.from);
   glm::dvec3 d(incomingRay.v);
 
-  // The coefficients from above
+  // The coefficients as described in the comment above
   float A = glm::dot(d, d);
   float B = 2 * glm::dot(d, a);
   float C = glm::dot(a, a) - 1;

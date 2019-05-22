@@ -4,11 +4,11 @@
 
 struct GeometryIntersection : public Object, public Intersection {
   // where the fired ray is positioned relative to the geometry
-  enum ShooterPos : bool {
-    Miss = false, // (shooter)/^ object
-    Past = false, // (object) (shooter)----->
-    Inside = true, // (object (shooter)---)--->
-    Towards = true, // (shooter)----->(object)
+  enum ShooterPos {
+    Miss, // (shooter)/^ object
+    Past, // (object) (shooter)----->
+    Inside, // (object (shooter)---)--->
+    Towards, // (shooter)----->(object)
   };
 
   GeometryIntersection(ShooterPos sp) : 
@@ -24,7 +24,7 @@ struct GeometryIntersection : public Object, public Intersection {
     n(n) {} 
 
   virtual bool isHit() const {
-    return static_cast<bool>(shooterPos);
+    return Inside == shooterPos || Towards == shooterPos;
   }
 
   // TODO private+getters since these should not be mutable

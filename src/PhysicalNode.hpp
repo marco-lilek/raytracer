@@ -11,8 +11,9 @@
 #include "Node.hpp"
 
 class PhysicalNode : public Node {
-  const Material *material;
 public:
+  const Material *material;
+
   PhysicalNode(const std::string &name, const Material *material) : 
     Node(name), material(material) {}
 

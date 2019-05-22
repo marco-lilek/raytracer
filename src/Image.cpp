@@ -11,6 +11,8 @@
 #include "Image.hpp"
 #include "Log.hpp"
 
+using namespace std;
+
 Image::Image(int width, int height)
   : width(width), height(height),
       data(width * height * 4, 0)

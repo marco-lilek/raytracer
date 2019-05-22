@@ -8,6 +8,8 @@
 #include "Scene.hpp"
 #include "Material.hpp"
 #include "Node.hpp"
+#include "DebugMaterial.hpp"
+#include "PhysicalNode.hpp"
 
 #include <iostream>
 
@@ -50,7 +52,26 @@ Scene::getColor(const Ray &rayFromEye) const
   const PhysicalIntersection intersection(root->intersect(rayFromEye));
   
   Log::trace(METHOD, "intersection: {}", intersection);
-  return Color(glm::dvec4(intersection.isHit()));
+  if (!intersection.isHit()) {
+    return Color(0);
+  }
+
+  // A node/its material is just a component of the state of the scene;
+  // it does not make sense for a node/material to handle the lighting calculation
+  // since these objects are unaware of the rest of the scene (namely other nodes,
+  // light sources). For this reason we do the following dynamic_cast, if chain
+  // block on the type of material we hit---the scene should be responsible for 
+  // the lighting calculation since its the only object which knows enough to be 
+  // able to do it.
+
+  if (const DebugMaterial *material = 
+      dynamic_cast<const DebugMaterial *>(intersection.hitNode->material)) {
+    return material->getColor(intersection.geometry.shooterPos);
+  }
+
+  // TODO assert(0)
+  // Should never be reached
+  return Color(1,0,1); // #ff00ff
 }
 
 // const Intersection

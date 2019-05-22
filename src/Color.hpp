@@ -18,7 +18,7 @@ public:
       : rgba(r, g, b, 1)
   { }
 
-  Color(double c) : Color(glm::dvec4(c)) {}
+  Color(double c) : Color(glm::dvec4(c,c,c,1)) {}
 
   std::array<uint8_t, 4> toBytes() {
     std::array<uint8_t, 4> asBytes;
