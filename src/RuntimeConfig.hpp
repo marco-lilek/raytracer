@@ -1,13 +1,12 @@
 #pragma once
 #include <memory>
+#include "ViewWindow.hpp"
 
 struct RuntimeConfig {
-static std::unique_ptr<RuntimeConfig> rc;
-
   bool debug;
-  bool singlePixel;
-  RuntimeConfig(bool debug, bool singlePixel)
-      : debug(debug), singlePixel(singlePixel)
+  ViewWindow viewWindow;
+  RuntimeConfig(bool debug, const ViewWindow &window)
+      : debug(debug), viewWindow(window)
   {
   }
 
@@ -22,5 +21,9 @@ static std::unique_ptr<RuntimeConfig> rc;
   {
     return *RuntimeConfig::rc.get();
   }
+
+private:
+  static std::unique_ptr<RuntimeConfig> rc;
+
 };
 

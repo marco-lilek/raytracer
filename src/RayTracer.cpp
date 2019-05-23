@@ -50,12 +50,15 @@ RayTracer::render(
   int endX = img.width;
   int endY = img.height;
 
-  if (RuntimeConfig::get().singlePixel) {
-    Log::info(LOCATION, "shooting single pixel");
-    startX = img.width / 2;
-    startY = img.height / 2 - 5;
-    endX = img.width / 2 + 1;
-    endY = img.height / 2 - 5 + 1;
+  {
+    const ViewWindow &viewWindow = RuntimeConfig::get().viewWindow;
+    if (!viewWindow.isEmpty()) {
+      Log::info(LOCATION, "drawing viewWindow {}", viewWindow);
+      startX =  viewWindow.x1;
+      endX =    viewWindow.x2;
+      startY =  viewWindow.y1;
+      endY =    viewWindow.y2;
+    }
   }
 
   for (int i = startX; i < endX; i++) {
