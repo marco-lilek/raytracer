@@ -5,11 +5,6 @@
 #include "Node.hpp"
 #include "LightRay.hpp"
 
-// Color PhongMaterial::getColor(const GeometryIntserection &) const
-// {
-
-// }
-
 // glm::dvec3
 // PhongMaterial::intersect(
 //   const Scene &scene,

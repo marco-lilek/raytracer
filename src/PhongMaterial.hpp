@@ -5,22 +5,29 @@
 
 #include <iostream>
 
-// struct PhongMaterial : public Material {
-//   const glm::dvec3 kd;
-//   const glm::dvec3 ks;
-//   const double shininess;
+struct PhongMaterial : public Material {
+  const Color kd;
+  const Color ks;
 
-//   PhongMaterial(
-//     const glm::dvec3 &kd,
-//     const glm::dvec3 &ks,
-//     const double &shininess)
-//       : kd(kd), ks(ks), shininess(shininess)
-//   {
-//   }
+  const double shininess;
 
-//   virtual glm::dvec3 intersect(
-//     const Scene &scene,
-//     const LightRay &rayFromEye,
-//     const glm::dvec4 &sceneHit,
-//     const glm::dvec4 &sceneHitNormal) const;
-// };
+  PhongMaterial(
+    const Color &kd,
+    const Color &ks,
+    const double &shininess) : 
+    kd(kd), 
+    ks(ks),
+    shininess(shininess)
+  {
+  }
+
+  virtual const char * type() const {
+    return "PhongMaterial";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    Material::dump(o);
+    o << "kd " << kd << " ks " << ks << " shininess " << shininess;
+    return o;
+  }
+};

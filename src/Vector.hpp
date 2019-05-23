@@ -15,6 +15,10 @@ public:
 
   Vector normalize() const;
   Vector cross(const Vector &o) const;
+  double dot(const Vector &o) const;
+  double normalizeDot(const Vector &o) const;
+
+  Vector halfwayVector(const Vector &o) const;
 
   virtual const char * type() const {
     return "Vector";

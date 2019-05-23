@@ -39,6 +39,8 @@ RayTracer::render(
   // Initialize the scene
   const Scene scene(rootNode, lights);
 
+  // TODO trace dump the img and the scene
+
   // Initialize the camera
   int distanceFromEyeToScreen = 1;
 
@@ -51,9 +53,9 @@ RayTracer::render(
   if (RuntimeConfig::get().singlePixel) {
     Log::info(LOCATION, "shooting single pixel");
     startX = img.width / 2;
-    startY = img.height / 4;
+    startY = img.height / 2 - 5;
     endX = img.width / 2 + 1;
-    endY = img.height / 4 + 1;
+    endY = img.height / 2 - 5 + 1;
   }
 
   for (int i = startX; i < endX; i++) {

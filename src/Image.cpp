@@ -33,8 +33,16 @@ Image::render(const std::string &fname)
 
 void
 Image::drawPixel(
+  int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+  drawPixel(x,y,r,g,b,255);
+}
+
+void
+Image::drawPixel(
   int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
+  const char *METHOD_NAME = "Image::drawPixel";
+  Log::trace(METHOD_NAME, "x {} y {} r {} g {} b {} a {}", x,y,r,g,b,a);
   int pos = (x + y * width) * 4;
   data[pos] = r;
   data[pos + 1] = g;
@@ -47,14 +55,8 @@ void Image::drawPixel(
   int y,
   Color c)
 {
-  array<uint8_t, 4> asBytes = c.toBytes();
-
-  int pos = (x + y * width) * 4;
-  data[pos+0] = asBytes[0];
-  data[pos+1] = asBytes[1];
-  data[pos+2] = asBytes[2];
-  data[pos+3] = asBytes[3];
-
+  array<uint8_t, 3> asBytes = c.toBytes();
+  drawPixel(x,y,asBytes[0],asBytes[1], asBytes[2]);
 }
 
 

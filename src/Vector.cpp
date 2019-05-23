@@ -1,4 +1,5 @@
 #include "Vector.hpp"
+#include "Constants.hpp"
 
 Vector::Vector(double x, double y, double z) :
   glm::dvec4(x,y,z, 0)
@@ -18,10 +19,25 @@ Vector::Vector() :
 
 Vector Vector::cross(const Vector &o) const
 {
-  return Vector(glm::cross(glm::dvec3(*this), glm::dvec3(o)));
+  return glm::cross(glm::dvec3(*this), glm::dvec3(o));
 }
 
 Vector Vector::normalize() const
 {
-  return Vector(glm::normalize(glm::dvec3(*this)));
+  return glm::normalize(glm::dvec3(*this));
+}
+
+double Vector::normalizeDot(const Vector &o) const {
+  return glm::dot(
+      glm::normalize(glm::dvec3(*this)), 
+      glm::normalize(glm::dvec3(o)));
+}
+
+double Vector::dot(const Vector &o) const {
+  return glm::dot(glm::dvec3(*this), glm::dvec3(o));
+}
+
+Vector Vector::halfwayVector(const Vector &o) const {
+  const glm::dvec3 c = glm::dvec3(*this) + glm::dvec3(o);
+  return c / (glm::length(c) + constants::EPSILON);
 }

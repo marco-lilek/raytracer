@@ -87,6 +87,8 @@ initNamespace(lua_State *L)
 
     .beginClass<Color>("Color")
     .addConstructor<void (*)(
+      double c)>()
+    .addConstructor<void (*)(
       double x, double y, double z)>()
     .endClass()
 
@@ -131,12 +133,12 @@ initNamespace(lua_State *L)
     //   const double &refractionIndex)>()
     // .endClass()
 
-    // .deriveClass<PhongMaterial, Material>("PhongMaterial")
-    // .addConstructor<void (*)(
-    //   const glm::dvec3 &,
-    //   const glm::dvec3 &,
-    //   const double &)>()
-    // .endClass()
+    .deriveClass<PhongMaterial, Material>("PhongMaterial")
+    .addConstructor<void (*)(
+      const Color &,
+      const Color &,
+      const double &)>()
+    .endClass()
 
     .beginClass<Node>("Node")
     .addConstructor<void (*)(const std::string &)>()

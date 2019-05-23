@@ -33,6 +33,13 @@ public:
   void drawPixel(
     int x,
     int y,
+    uint8_t r,
+    uint8_t g,
+    uint8_t b);
+
+  void drawPixel(
+    int x,
+    int y,
     Color c);
 
   virtual ~Image();

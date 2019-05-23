@@ -9,21 +9,22 @@
 
 class Color : public Object {
 public:
-  glm::dvec4 rgba;
+  glm::dvec3 rgb;
+
   Color(glm::dvec3 rgb)
-      : rgba(rgb, 1)
+      : rgb(rgb)
   { }
 
   Color(double r, double g, double b)
-      : rgba(r, g, b, 1)
+      : rgb(r, g, b)
   { }
 
-  Color(double c) : Color(glm::dvec4(c,c,c,1)) {}
+  Color(double c) : Color(glm::dvec3(c,c,c)) {}
 
-  std::array<uint8_t, 4> toBytes() {
-    std::array<uint8_t, 4> asBytes;
-    for (int i = 0; i < 4; i++) {
-      asBytes[i] = enc(rgba[i]);
+  std::array<uint8_t, 3> toBytes() {
+    std::array<uint8_t, 3> asBytes;
+    for (int i = 0; i < 3; i++) {
+      asBytes[i] = enc(rgb[i]);
     }
     return asBytes;
   }
@@ -33,17 +34,26 @@ public:
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    o << glm::to_string(rgba);
+    o << glm::to_string(rgb);
     return o;
   }
 
-  // friend Color operator+ (Color& lhs,const Color& rhs) {
-  //   return Color(lhs.r+rhs.r,lhs.g+rhs.g,lhs.b+rhs.b,
-  //   lhs.a+rhs.a);
-  // }
+  void operator+=(const Color &o) {
+    rgb += o.rgb;
+  }
+
+  friend Color operator+ (const Color& lhs ,const Color& rhs) {
+    return lhs.rgb + rhs.rgb;
+  }
+  
+  friend Color operator*(const Color&lhs, const Color&rhs) {
+    return lhs.rgb * rhs.rgb;
+  }
+
 private:
   uint8_t enc(double v) {
     assert(v >= 0 && v <= 1);
     return 255 * v;
   }
+
 };

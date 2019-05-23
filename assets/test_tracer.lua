@@ -1,9 +1,13 @@
 root = g.Node('root')
+red = g.Color(0.5,0,0);
+gre = g.Color(0,0.5,0);
+blu = g.Color(0,0,0.5);
 
-sphere = g.GeometryNode("sphere", g.Sphere(), g.DebugMaterial())
+material = g.PhongMaterial(red, gre, 20);
+sphere = g.GeometryNode("sphere", g.Sphere(), material) 
 root:addChild(sphere)
 
-l1 = g.Light(g.Color(1,1,1), g.Point(0,0,0))
+l1 = g.Light(g.Color(1,1,1), g.Point(0,4,-5))
 
 lights = {l1}
 

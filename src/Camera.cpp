@@ -30,7 +30,7 @@ Ray Camera::getRayFromEyeToScreen(
 
   return Ray(eye,
       towards 
-      + screenUp * offsetScreenX 
-      + screenRight * offsetScreenY);
+      + screenRight * offsetScreenX 
+      + screenUp * offsetScreenY);
 }
 
