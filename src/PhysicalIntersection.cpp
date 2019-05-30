@@ -7,5 +7,5 @@ std::ostream& PhysicalIntersection::dump(std::ostream& o) const {
     o << "hitNode " << *hitNode;
   }
 
-  return o << "geometry " << geometry;
+  return o << " geometry " << geometry;
 }

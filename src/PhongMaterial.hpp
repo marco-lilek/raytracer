@@ -18,8 +18,7 @@ struct PhongMaterial : public Material {
     kd(kd), 
     ks(ks),
     shininess(shininess)
-  {
-  }
+  { }
 
   virtual const char * type() const {
     return "PhongMaterial";

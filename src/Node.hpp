@@ -27,9 +27,11 @@ public:
   Node(const std::string &name);
   virtual ~Node();
 
+  void dumpNodeTree(std::ostream &o) const;
+
   void rotate(char axis, float angle);
-  void scale(const glm::dvec3 &amount);
-  void translate(const glm::dvec3 &amount);
+  void scale(double x, double y, double z);
+  void translate(double x, double y, double z);
 
   void updateModelTransform(const glm::mat4 &mat);
 
@@ -48,7 +50,7 @@ public:
 
   virtual std::ostream& dump(std::ostream& o) const {
     // For the sake of brevity avoid dumping the full node tree
-    return o << "name: " << name 
-      << " modelTransform: " << glm::to_string(modelTransform);
+    return o << "name " << name 
+      << " modelTransform " << glm::to_string(modelTransform);
   }
 };

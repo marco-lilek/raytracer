@@ -24,6 +24,6 @@ public:
 
   virtual std::ostream& dump(std::ostream& o) const {
     Node::dump(o);
-    return o << "prim : " << *prim;
+    return o << " prim " << *prim;
   }
 };

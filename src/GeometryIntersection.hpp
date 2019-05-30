@@ -39,7 +39,16 @@ struct GeometryIntersection : public Object, public Intersection {
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    return o << "shooterPos " << shooterPos << " p " << p << " n " << n;
+    static const char *ShooterPosStr[] = {
+        "Miss",
+        "Past",
+        "Inside",
+        "Towards"
+    };
+    return o << 
+      "shooterPos " << ShooterPosStr[shooterPos] << 
+      " p " << p << 
+      " n " << n;
   }
 
   ShooterPos shooterPos;

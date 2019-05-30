@@ -3,13 +3,14 @@
 #include "Color.hpp"
 #include "Light.hpp"
 #include "LightRay.hpp"
+#include "Object.hpp"
 #include "GeometryIntersection.hpp"
 #include <vector>
 
 class Node;
 class PhongMaterial;
 
-struct Scene {
+struct Scene : public Object {
   const Node *const root;
   const std::vector<const Light *> lights;
   glm::dvec3 ambientLight;
@@ -30,6 +31,10 @@ public:
   // constructRay(int x, int y, int width, int height);
 
   const Color getColor(const Ray &r) const;
+
+  virtual const char * type() const;
+
+  virtual std::ostream& dump(std::ostream& o) const;
 
 private:
   Color getColorOfRayOnPhongMaterial(

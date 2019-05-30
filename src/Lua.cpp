@@ -7,6 +7,7 @@
 #include "UVMesh.hpp"
 #include "Primitive.hpp"
 #include "Sphere.hpp"
+#include "Cube.hpp"
 
 #include "Log.hpp"
 #include "GeometryNode.hpp"
@@ -109,6 +110,10 @@ initNamespace(lua_State *L)
 
     .beginClass<Primitive>("Primitive").endClass()
 
+    .deriveClass<Cube, Primitive>("Cube")
+    .addConstructor<void (*)()>()
+    .endClass()
+
     .deriveClass<Sphere, Primitive>("Sphere")
     .addConstructor<void (*)()>()
     .endClass()
@@ -142,9 +147,9 @@ initNamespace(lua_State *L)
 
     .beginClass<Node>("Node")
     .addConstructor<void (*)(const std::string &)>()
-    // .addFunction("scale", &Node::scale)
-    // .addFunction("rotate", &Node::rotate)
-    // .addFunction("translate", &Node::translate)
+    .addFunction("scale", &Node::scale)
+    .addFunction("rotate", &Node::rotate)
+    .addFunction("translate", &Node::translate)
     .addFunction("addChild", &Node::addChild)
     // .addFunction("intersect", &Node::intersect)
     .endClass()

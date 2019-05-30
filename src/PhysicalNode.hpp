@@ -13,7 +13,6 @@
 class PhysicalNode : public Node {
 public:
   const Material *material;
-
   PhysicalNode(const std::string &name, const Material *material) : 
     Node(name), material(material) {}
 

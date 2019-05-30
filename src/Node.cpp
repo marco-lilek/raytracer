@@ -28,6 +28,13 @@ Node::Node(const std::string &name) :
 
 Node::~Node() {}
 
+void Node::dumpNodeTree(std::ostream &o) const {
+  o << *this << " ";
+  for (int i = 0; i < children.size(); i++) {
+    children[i]->dumpNodeTree(o);
+  }
+}
+
 void
 Node::rotate(char axis, float angle)
 {
@@ -44,15 +51,15 @@ Node::rotate(char axis, float angle)
 }
 
 void
-Node::scale(const glm::dvec3 &amount)
+Node::scale(double x, double y, double z)
 {
-  updateModelTransform(glm::scale(amount));
+  updateModelTransform(glm::scale(glm::dvec3(x,y,z)));
 }
 
 void
-Node::translate(const glm::dvec3 &amount)
+Node::translate(double x, double y, double z)
 {
-  updateModelTransform(glm::translate(amount));
+  updateModelTransform(glm::translate(glm::dvec3(x,y,z)));
 }
 
 const PhysicalIntersection Node::intersect(const Ray &incomingRay) const

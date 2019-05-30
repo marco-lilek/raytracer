@@ -6,6 +6,10 @@
 
 using namespace std;
 
+GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
+    return GeometryIntersection(GeometryIntersection::Miss);
+}
+
 // bool
 // Cube::intersect(
 //   const Ray &r, float &t, glm::dvec4 &normal) const

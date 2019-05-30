@@ -18,11 +18,11 @@ RayTracer::render(
   const int height)
 {
   const char * LOCATION = "RayTracer::render";
-  // TODO: assert rootnode not null
 
-  Log::info(LOCATION, 
-      "rootNode {} camera {} lights.size() {} fname {} width {} height {}",
-      *rootNode, camera, lights.size(), fname, width, height);
+  Log::check(LOCATION, rootNode != NULL, "rootNode is null");
+  Log::info(LOCATION, "camera {}", camera);
+  Log::info(LOCATION, "fname {}", fname);
+  Log::info(LOCATION, "width {} height {}", width, height);
 
   for (auto lightIt = lights.begin();
        lightIt != lights.end();
@@ -39,12 +39,11 @@ RayTracer::render(
   // Initialize the scene
   const Scene scene(rootNode, lights);
 
-  // TODO trace dump the img and the scene
+  Log::info(LOCATION, "scene {}", scene);
 
   // Initialize the camera
   int distanceFromEyeToScreen = 1;
 
-  // TODO pass in the single pixel to be shot
   int startX = 0;
   int startY = 0;
   int endX = img.width;
@@ -63,12 +62,15 @@ RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
+      Log::debug(LOCATION, "firing ray to i {} j {}", i, j);
       const double windowOffsetX = (double)i / img.width;
       const double windowOffsetY = (double)j / img.height;
 
       const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(
           windowOffsetX, windowOffsetY);
+      Log::debug(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
       const Color pixelColor = scene.getColor(rayFromEyeToScreen);
+      Log::debug(LOCATION, "pixelColor {}", pixelColor);
       img.drawPixel(i, j, pixelColor);
     }
   }

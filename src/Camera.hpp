@@ -8,7 +8,6 @@ class Camera : public Object {
   Point eye;
   Vector up;
   Vector towards;
-  int distanceFromEyeToScreen;
 
 public:
   Camera(Point eye,
@@ -22,6 +21,6 @@ public:
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    return o << "eye " << eye << " up " << up << " towards " << towards << " distanceFromEyeToScreen " << distanceFromEyeToScreen; 
+    return o << "eye " << eye << " up " << up << " towards " << towards;
   }
 };

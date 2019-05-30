@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdint>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <array>
 
+#include "Constants.hpp"
+#include "Log.hpp"
 #include "Object.hpp"
 
 class Color : public Object {
@@ -21,13 +22,11 @@ public:
 
   Color(double c) : Color(glm::dvec3(c,c,c)) {}
 
-  std::array<uint8_t, 3> toBytes() {
-    std::array<uint8_t, 3> asBytes;
-    for (int i = 0; i < 3; i++) {
-      asBytes[i] = enc(rgb[i]);
-    }
-    return asBytes;
+  Color clamp() const {
+    return Color(glm::normalize(rgb));
   }
+
+  std::array<uint8_t, 3> toBytes() const;
 
   virtual const char * type() const {
     return "Color";
@@ -51,9 +50,6 @@ public:
   }
 
 private:
-  uint8_t enc(double v) {
-    assert(v >= 0 && v <= 1);
-    return 255 * v;
-  }
+  uint8_t enc(double v) const;
 
 };

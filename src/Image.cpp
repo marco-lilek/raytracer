@@ -55,8 +55,14 @@ void Image::drawPixel(
   int y,
   Color c)
 {
-  array<uint8_t, 3> asBytes = c.toBytes();
-  drawPixel(x,y,asBytes[0],asBytes[1], asBytes[2]);
+  const char *TRACE_HEADER = "Image::drawPixel";
+  try {
+    array<uint8_t, 3> asBytes = c.toBytes();
+    drawPixel(x,y,asBytes[0],asBytes[1], asBytes[2]);
+  } catch (const AssertionError &e) {
+    Log::error(TRACE_HEADER, "x {} y {} c {}", x, y, c);
+    throw;
+  }
 }
 
 

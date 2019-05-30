@@ -184,7 +184,7 @@ Scene::getColorOfRayOnPhongMaterial(
   // TODO it is very possible our color exceeds 1, we need to add 
   // some safeguards to clamp its range so that it doesn't act up when
   // we convert it to bytes
-  return finalColor;
+  return finalColor.clamp();
 }
 
 // const Intersection
@@ -207,3 +207,19 @@ Scene::getColorOfRayOnPhongMaterial(
 //   return hitNode->getColor(
 //     *this, rayFromEye, sceneHit, sceneHitNormal);
 // }
+
+const char * Scene::type() const {
+  return "Scene";
+}
+
+std::ostream& Scene::dump(std::ostream& o) const {
+  // Dump the full node tree
+  o << "nodeTree ";
+  root->dumpNodeTree(o);
+
+  o << "lights [";
+  for (int i = 0; i < lights.size(); i++) {
+    o << " light" << i << " " << *lights[i];
+  }
+  o << "]";
+}

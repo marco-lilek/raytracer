@@ -1,8 +1,16 @@
 #pragma once
 #include "Printglm.hpp"
 #include <fmt/format.h>
+#include <cstdint>
 #include <fmt/ostream.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+
+struct AssertionError : public std::runtime_error {
+  AssertionError(const std::string &what) : std::runtime_error(what) {
+  }
+};
 
 struct Log {
   enum Level
@@ -44,9 +52,23 @@ struct Log {
   static void
   error(const char *location, const char *s, const Args &... args)
   {
-
     log(Log::ERROR, location, s, args...);
   }
+
+  template <typename... Args>
+  static void
+  check(
+      const char *location, 
+      bool result,
+      const char *s,
+      const Args &... args)
+  {
+    if (!result) {
+      log(Log::ERROR, location, s, args...);
+      throw AssertionError("assertion failed");
+    }
+  }
+
 
 private:
   static const char *
