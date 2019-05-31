@@ -49,7 +49,7 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     float root = roots[0];
     
     // But still reject if its behind us
-    if (root < constants::EPSILON) {
+    if (root < 0) {
       return GeometryIntersection(GeometryIntersection::Past);
     }
 
@@ -62,11 +62,12 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     float l, r;
     l = roots[0];
     r = roots[1];
-    if (l < constants::EPSILON && r < constants::EPSILON) {
+    Log::trace(METHOD_NAME, "l {} r {}", l , r);
+    if (l < 0 && r < 0) {
       // The whole sphere is behind us
       return GeometryIntersection(GeometryIntersection::Past);
-    }
-    if (l < constants::EPSILON || r < constants::EPSILON) {
+    } else if (l < 0 || r < 0) {
+      // One of the intersections in certainly behind us
       shooterPos = GeometryIntersection::Inside;
       // We're inside the sphere!
       t = glm::max(l, r);
@@ -78,6 +79,7 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     }
   }
 
+  Log::trace(METHOD_NAME, "t {}", t);
   Point pointOfIntersection = incomingRay.pointAt(t);
 
   // Since we already assume the sphere is centered at 0,0,0, the normal

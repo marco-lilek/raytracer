@@ -38,15 +38,19 @@ void Node::dumpNodeTree(std::ostream &o) const {
 void
 Node::rotate(char axis, float angle)
 {
+  const char *TRACE_HEADER = "Node::rotate";
   vec3 rot_axis;
 
   switch (axis) {
   case 'x': rot_axis = vec3(1, 0, 0); break;
   case 'y': rot_axis = vec3(0, 1, 0); break;
   case 'z': rot_axis = vec3(0, 0, 1); break;
-  default: break;
+  default:
+    Log::check(TRACE_HEADER, false, "axis {} angle {}", axis, angle);
+    break;
   }
   mat4 rot = glm::rotate(glm::radians(angle), rot_axis);
+  //Log::info(TRACE_HEADER, "rot {}", glm::to_string(rot));
   updateModelTransform(rot);
 }
 

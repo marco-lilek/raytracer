@@ -116,8 +116,13 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
+    // We shoot the shadow ray slightly off of the object of intersection
+    // this is done so that it isn't accidentally fired from within
+    // the object because of floating point error
+    const Point shooterPosOfShadow = intersection.p + 
+      intersection.n * constants::EPSILON;
     // Ray from the point of intersection to the light
-    const Ray shadowRay(intersection.p, light->pos - intersection.p);
+    const Ray shadowRay(shooterPosOfShadow, light->pos - shooterPosOfShadow);
     Log::trace(METHOD_NAME, "shadowRay {}", shadowRay);
 
     {
@@ -156,7 +161,8 @@ Scene::getColorOfRayOnPhongMaterial(
       // TODO assert(diffuseFactor <= 1);
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
-      const Color diffuseColor(diffuseFactor * material->kd * light->color);
+      // TODO for now just assume white light
+      const Color diffuseColor(diffuseFactor * material->kd);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
       finalColor += diffuseColor;
     }
@@ -171,7 +177,8 @@ Scene::getColorOfRayOnPhongMaterial(
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
-      const Color specularColor(specularFactor * material->ks * light->color);
+      // TODO add light color
+      const Color specularColor(specularFactor * material->ks);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
       finalColor += specularColor;
     }
