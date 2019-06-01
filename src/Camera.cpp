@@ -1,36 +1,53 @@
 #include "Camera.hpp"
+#include "Log.hpp"
+
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+using namespace glm;
 
 Camera::Camera(Point eye,
     Vector up,
-    Vector towards) :
+    Vector towards,
+    int width, 
+    int height,
+    double fov) :
   eye(eye),
   up(up),
-  towards(towards)
-{}
-
-Ray Camera::getRayFromEyeToScreen(
-    double offsetWindowX, 
-    double offsetWindowY) const
+  towards(towards),
+  width(width),
+  height(height)
 {
-  // 1. Compute the plane representing the screen in the 3d space
-  // starting with the unit vector for the positive x direction
-  Vector screenRight = towards.cross(up).normalize();
+  const char *TRACE_HEADER = "Camera::Camera";
+  // 2d point on screen ([0,width],[0,height])->([-w/2,w/2],..,-1)
+  const dmat4 pointToScreen = glm::translate(dmat4(1), 
+      glm::dvec3(-(width / 2), -(height / 2), -1));
+  Log::debug(TRACE_HEADER, "pointToScreen {}", to_string(pointToScreen));
 
-  // then the unit vector for the positive y direction
-  Vector screenUp = towards.cross(screenRight).normalize();
+  // Considers the fov, so will be between 0 and 2
+  const double worldWindowHeight = 2 * glm::tan(glm::radians(fov) / 2);
+  Log::debug(TRACE_HEADER, "worldWindowHeight {}", worldWindowHeight);
 
-  // 2. Compute the scale for these unit vectors based on the pixel
-  // location on the screen
+  // Maintain the aspect ratio of the image
+  const double worldWindowWidth = (width /  height) * worldWindowHeight;
+  Log::debug(TRACE_HEADER, "worldWindowWidth {}", worldWindowWidth);
 
-  // translating from [0,1] to [-1,1]
-  double offsetScreenX = offsetWindowX * 2 - 1;
+  // scale it to the screen size in the world
+  const dmat4 screenToView = glm::scale(dmat4(1), dvec3(
+        worldWindowWidth / width, -worldWindowHeight / height, 1));
+  Log::debug(TRACE_HEADER, "screenToView {}", to_string(screenToView));
 
-  // same for the offset up
-  double offsetScreenY = offsetWindowY * 2 - 1;
+  // lookAt gives world to view, we need inverse since going to world
+  const dmat4 viewToWorld = glm::inverse(
+      glm::lookAt(dvec3(eye), dvec3(towards), dvec3(up)));
+  Log::debug(TRACE_HEADER, "viewToWorld {}", to_string(viewToWorld));
 
-  return Ray(eye,
-      towards 
-      + screenRight * offsetScreenX 
-      + screenUp * offsetScreenY);
+  pointToWorld = viewToWorld * screenToView * pointToScreen;
+  Log::debug(TRACE_HEADER, "pointToWorld {}", to_string(pointToWorld));
+}
+
+Ray Camera::getRayFromEyeToScreen(int x, int y) const
+{
+  return Ray(eye, dvec4(pointToWorld * glm::dvec4(x,y,0,1)) - eye); 
 }
 

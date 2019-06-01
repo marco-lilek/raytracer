@@ -2,13 +2,11 @@
 #include <memory>
 #include "ViewWindow.hpp"
 
-struct RuntimeConfig {
-  bool debug;
+struct RuntimeConfig : public Object {
+  bool drawDeadPixels;
   ViewWindow viewWindow;
-  RuntimeConfig(bool debug, const ViewWindow &window)
-      : debug(debug), viewWindow(window)
-  {
-  }
+  RuntimeConfig()
+  { }
 
   static void
   init(RuntimeConfig *rc)
@@ -20,6 +18,14 @@ struct RuntimeConfig {
   get()
   {
     return *RuntimeConfig::rc.get();
+  }
+
+  virtual const char * type() const {
+    return "RuntimeConfig";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    return o << "drawDeadPixels " << drawDeadPixels << " viewWindow " << viewWindow;
   }
 
 private:

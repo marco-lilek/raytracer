@@ -16,7 +16,5 @@ struct RayTracer {
     const Node *rootNode,
     const Camera &c,
     const std::vector<const Light *> &lights,
-    const std::string &fname,
-    const int width,
-    const int height);
+    const std::string &fname);
 };

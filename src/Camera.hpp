@@ -4,17 +4,21 @@
 #include "Vector.hpp"
 #include "Ray.hpp"
 
-class Camera : public Object {
+struct Camera : public Object {
   Point eye;
   Vector up;
   Vector towards;
+  int width, height;
+  double fov;
+  glm::mat4 pointToWorld;
 
-public:
   Camera(Point eye,
       Vector up,
-      Vector towards);
+      Vector towards,
+      int width,
+      int height, double fov);
 
-  Ray getRayFromEyeToScreen(double, double) const;
+  Ray getRayFromEyeToScreen(int, int) const;
 
   virtual const char * type() const {
     return "Camera";

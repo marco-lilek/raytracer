@@ -83,7 +83,7 @@ initNamespace(lua_State *L)
     .addConstructor<void (*)(
       const Point &,
       const Vector &,
-      const Vector &)>()
+      const Vector &,int, int, double)>()
     .endClass()
 
     .beginClass<Color>("Color")

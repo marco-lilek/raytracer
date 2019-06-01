@@ -8,6 +8,7 @@
 #include <array>
 #include <lodepng/lodepng.h>
 
+#include "RuntimeConfig.hpp"
 #include "Image.hpp"
 #include "Log.hpp"
 
@@ -61,7 +62,11 @@ void Image::drawPixel(
     drawPixel(x,y,asBytes[0],asBytes[1], asBytes[2]);
   } catch (const AssertionError &e) {
     Log::error(TRACE_HEADER, "x {} y {} c {}", x, y, c);
-    throw;
+    if (RuntimeConfig::get().drawDeadPixels) {
+      drawPixel(x,y,0,0,0);
+    } else {
+      throw;
+    }
   }
 }
 

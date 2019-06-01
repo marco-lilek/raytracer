@@ -13,16 +13,13 @@ RayTracer::render(
   const Node *rootNode,
   const Camera &camera,
   const std::vector<const Light *> &lights,
-  const std::string &fname,
-  const int width,
-  const int height)
+  const std::string &fname)
 {
   const char * LOCATION = "RayTracer::render";
 
   Log::check(LOCATION, rootNode != NULL, "rootNode is null");
   Log::info(LOCATION, "camera {}", camera);
   Log::info(LOCATION, "fname {}", fname);
-  Log::info(LOCATION, "width {} height {}", width, height);
 
   for (auto lightIt = lights.begin();
        lightIt != lights.end();
@@ -34,7 +31,7 @@ RayTracer::render(
   }
 
   // Initialize the image
-  Image img(width, height);
+  Image img(camera.width, camera.height);
 
   // Initialize the scene
   const Scene scene(rootNode, lights);
@@ -62,15 +59,11 @@ RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      Log::debug(LOCATION, "firing ray to i {} j {}", i, j);
-      const double windowOffsetX = (double)i / img.width;
-      const double windowOffsetY = (double)j / img.height;
-
-      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(
-          windowOffsetX, windowOffsetY);
-      Log::debug(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
+      Log::trace(LOCATION, "firing ray to i {} j {}", i, j);
+      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
+      Log::trace(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
       const Color pixelColor = scene.getColor(rayFromEyeToScreen);
-      Log::debug(LOCATION, "pixelColor {}", pixelColor);
+      Log::trace(LOCATION, "pixelColor {}", pixelColor);
       img.drawPixel(i, j, pixelColor);
     }
   }

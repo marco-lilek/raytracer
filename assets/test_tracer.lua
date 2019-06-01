@@ -14,6 +14,6 @@ lights = {l1}
 camera = g.Camera(
   g.Point(0,0,-5), 
   g.Vector(0,1,0), 
-  g.Vector(0,0,1))
+  g.Vector(0,0,1), 256, 256, 50)
 tracer = g.RayTracer()
-tracer:render(root, camera, lights, 'test_tracer.png', 256, 256)
+tracer:render(root, camera, lights, 'test_tracer.png')
