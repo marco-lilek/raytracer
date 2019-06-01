@@ -8,7 +8,7 @@ using namespace std;
 const 
 PhysicalIntersection GeometryNode::intersectImpl(const Ray &incomingRay) const {
   const char *METHOD_NAME = "GeometryNode::intersectImpl";
-  Log::trace(METHOD_NAME, "incomingRay {}", incomingRay);
+  //Log::trace(METHOD_NAME, "incomingRay {}", incomingRay);
 
   GeometryIntersection geometryIntersection = prim->intersect(incomingRay);
   Log::trace(METHOD_NAME, "geometryIntersection {}", geometryIntersection);

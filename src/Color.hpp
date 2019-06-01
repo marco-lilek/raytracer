@@ -23,7 +23,10 @@ public:
   Color(double c) : Color(glm::dvec3(c,c,c)) {}
 
   Color clamp() const {
-    return Color(glm::normalize(rgb));
+    return Color(
+        glm::clamp(rgb.x, 0.0, 1.0), 
+        glm::clamp(rgb.y, 0.0, 1.0),
+        glm::clamp(rgb.z, 0.0, 1.0));
   }
 
   std::array<uint8_t, 3> toBytes() const;

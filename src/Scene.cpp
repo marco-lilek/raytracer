@@ -88,6 +88,7 @@ Scene::getColorOfRayOnPhongMaterial(
     const Ray &rayFromEye,
     const GeometryIntersection &intersection) const {
   const char *METHOD_NAME = "Scene::getColorOfRayOnPhongMaterial";
+  // TODO parameterize it
   const Color AMBIENT_LIGHT(0.2);
 
   Log::trace(METHOD_NAME, "material {}", *material);
@@ -116,13 +117,10 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
-    // We shoot the shadow ray slightly off of the object of intersection
-    // this is done so that it isn't accidentally fired from within
-    // the object because of floating point error
-    const Point shooterPosOfShadow = intersection.p + 
-      intersection.n * constants::EPSILON;
-    // Ray from the point of intersection to the light
-    const Ray shadowRay(shooterPosOfShadow, light->pos - shooterPosOfShadow);
+    const Point shooterPosOfShadow = intersection.p + intersection.n;
+    // Ray from the point of intersection to the ligt
+    const Ray shadowRay(shooterPosOfShadow, 
+        light->pos - shooterPosOfShadow);
     Log::trace(METHOD_NAME, "shadowRay {}", shadowRay);
 
     {
@@ -162,7 +160,7 @@ Scene::getColorOfRayOnPhongMaterial(
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
       // TODO for now just assume white light
-      const Color diffuseColor(diffuseFactor * material->kd);
+      const Color diffuseColor(diffuseFactor * material->kd * light->color);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
       finalColor += diffuseColor;
     }
@@ -172,13 +170,13 @@ Scene::getColorOfRayOnPhongMaterial(
       // and the eye
       const Vector halfwayVector = shadowRay.v.halfwayVector(-rayFromEye.v);
       Log::trace(METHOD_NAME, "halfwayVector {}", halfwayVector);
-      double hDotn = halfwayVector.dot(intersection.n);
+      double hDotn = halfwayVector.normalizeDot(intersection.n);
       Log::trace(METHOD_NAME, "hDotn {}", hDotn);
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
       // TODO add light color
-      const Color specularColor(specularFactor * material->ks);
+      const Color specularColor(specularFactor * material->ks * light->color);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
       finalColor += specularColor;
     }

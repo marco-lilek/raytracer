@@ -24,6 +24,7 @@ main(int argc, char *argv[])
   ("d,debug", "Enable debugging")
   ("t,trace", "Enable trace")
   ("ddp", "Draw dead pixels")
+  ("sp", "Single pixel x,y", cxxopts::value<std::string>())
   ("window", "View window x1,x2,y1,y2", cxxopts::value<std::string>());
   auto result = options.parse(argc, argv);
 
@@ -40,6 +41,9 @@ main(int argc, char *argv[])
   ViewWindow window;
   if (result.count("window") == 1) {
     window = result["window"].as<std::string>();
+  } else if (result.count("sp") == 1) {
+    window = ViewWindow::fromPoint(
+        result["sp"].as<std::string>());
   }
 
   RuntimeConfig::init(new RuntimeConfig());

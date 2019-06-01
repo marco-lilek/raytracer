@@ -116,6 +116,7 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
   GeometryIntersection intersectionInWorldSpaceGeometry(
       intersectionInModelSpaceGeometry.shooterPos,
       glm::dvec4(modelTransform * intersectionInModelSpaceGeometry.p),
+      // TODO use the invTrans correctly
       glm::dvec4(invTransModelTransform * intersectionInModelSpaceGeometry.n));
 
   PhysicalIntersection intersectionInWorldSpace(
@@ -147,7 +148,9 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
       continue;
     } else {
       double thisDistance = r.from.distanceTo(intersectionFromChild.geometry.p);
-      if (closestDistance == -1 ||  thisDistance <= closestDistance) {
+      if (closestDistance == -1 || thisDistance <= closestDistance) {
+        Log::trace(METHOD_NAME, "thisDistance {} closestDistance {}",
+           thisDistance, closestDistance); 
         // Kinda stinky: we need to copy off the intersection
         // every time we have a decent hit
         // ...still faster than using the heap?
@@ -165,11 +168,15 @@ void
 Node::updateModelTransform(const glm::mat4 &mat)
 {
   modelTransform = mat * modelTransform;
+  Log::trace("aswdf", "modelTransform {}", glm::to_string(modelTransform));
+  glm::mat3 inv3x3(glm::inverse(glm::mat3(modelTransform)));
+  Log::trace("aswdf", "inv3x3 {}", glm::to_string(inv3x3));
+
   invModelTransform = glm::inverse(modelTransform);
 
   // Keep only the upper 3x3 portion of the matrix since this is the only part
   // pertinent for vectors
-  invTransModelTransform = glm::mat4(
-      glm::transpose(glm::mat3(invModelTransform)));
+  invTransModelTransform = glm::mat4(glm::transpose(inv3x3));
+  Log::trace("aswdf", "invTransModelTransform {}", glm::to_string(invTransModelTransform));
 }
 
