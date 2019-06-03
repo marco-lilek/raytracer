@@ -59,12 +59,21 @@ RayTracer::render(
 
   for (int i = startX; i < endX; i++) {
     for (int j = startY; j < endY; j++) {
-      Log::trace(LOCATION, "firing ray to i {} j {}", i, j);
-      const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
-      Log::trace(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
-      const Color pixelColor = scene.getColor(rayFromEyeToScreen);
-      Log::trace(LOCATION, "pixelColor {}", pixelColor);
-      img.drawPixel(i, j, pixelColor);
+      try {
+        Log::trace(LOCATION, "firing ray to i {} j {}", i, j);
+        const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
+        Log::trace(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
+        const Color pixelColor = scene.getColor(rayFromEyeToScreen);
+        Log::trace(LOCATION, "pixelColor {}", pixelColor);
+        img.drawPixel(i, j, pixelColor);
+      } catch (const AssertionError &e) {
+        Log::error(LOCATION, "i {} j {}", i, j);
+        if (RuntimeConfig::get().drawDeadPixels) {
+          img.drawPixel(i, j, Color(0));
+        } else {
+          throw;
+        }
+      }
     }
   }
 

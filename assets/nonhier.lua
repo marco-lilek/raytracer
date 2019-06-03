@@ -35,14 +35,10 @@ scene_root:addChild(s5)
 s5:scale(25,25,25)
 s5:translate(0,100,-250)
 
--- b1 = g.GeometryNode('b1', cube, mat1)
--- scene_root:addChild(b1)
--- b1:scale(100,100,100)
--- b1:translate(-200,-125,0)
-
--- b1 = g.nh_box('b1', g.Color(-200, -125, 0), 100)
--- scene_root:addChild(b1)
--- b1:set_material(mat4)
+b1 = g.GeometryNode('b1', cube, mat4)
+scene_root:addChild(b1)
+b1:scale(100,100,100)
+b1:translate(-200,-125,0)
 
 -- A small stellated dodecahedron.
 

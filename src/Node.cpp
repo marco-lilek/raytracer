@@ -165,18 +165,14 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
 }
 
 void
-Node::updateModelTransform(const glm::mat4 &mat)
+Node::updateModelTransform(const glm::dmat4 &mat)
 {
   modelTransform = mat * modelTransform;
-  Log::trace("aswdf", "modelTransform {}", glm::to_string(modelTransform));
   glm::mat3 inv3x3(glm::inverse(glm::mat3(modelTransform)));
-  Log::trace("aswdf", "inv3x3 {}", glm::to_string(inv3x3));
-
   invModelTransform = glm::inverse(modelTransform);
 
   // Keep only the upper 3x3 portion of the matrix since this is the only part
   // pertinent for vectors
   invTransModelTransform = glm::mat4(glm::transpose(inv3x3));
-  Log::trace("aswdf", "invTransModelTransform {}", glm::to_string(invTransModelTransform));
 }
 

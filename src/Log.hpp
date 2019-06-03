@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <string>
 
+#define CHECK(TRACE_HEADER, x) Log::check(TRACE_HEADER, x, #x)
+
 struct AssertionError : public std::runtime_error {
   AssertionError(const std::string &what) : std::runtime_error(what) {
   }

@@ -1,4 +1,5 @@
 #include "Cube.hpp"
+#include "Log.hpp"
 
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
@@ -7,6 +8,7 @@
 using namespace std;
 
 GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
+  const char *METHOD_NAME = "Cube::intersect";
   // TODO for now just incorrectly report all non-Towards intersections
   // as misses, eventually get Inside properly detected too
   
@@ -14,8 +16,11 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
   glm::dvec3 e(incomingRay.from);
   glm::dvec3 d(incomingRay.v);
 
+  Log::trace(METHOD_NAME, "e {} d {}", to_string(e), to_string(d));
+
   // We'll test for intersections with every plane twice for a total of 6 checks
   // x,y,z = 0,1,2
+  // y,z   x,z   x,y
   static const int planeAxes[3][2] = {{1, 2}, {0, 2}, {0, 1}};
 
   bool intersectWithCube = false;
@@ -24,13 +29,16 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
   double t;
   Point closestPoi;
   Vector normalAtIntersection;
-  for (int corner = 0; corner <= 1; corner++) { // 0,0,0 or 1,1,1
-    for (int planeIdx = 0; planeIdx <= 2; planeIdx++) { // 0,1,2
+  for (int planeIdx = 0; planeIdx <= 2; planeIdx++) { // 0,1,2
+    for (int corner = 0; corner <= 1; corner++) { // 0,0,0 or 1,1,1
+      Log::trace(METHOD_NAME, "planeIdx {} corner {}",
+          planeIdx, corner);
       glm::dvec3 normal(0);
 
       // 0,1 -> -1,1
       // the normal of the xz plane cornered at 0,0,0 is -y etc
       normal[planeIdx] = 2 * corner - 1;
+
       glm::dvec3 p1(corner); // Point on the plane
 
       // Project our incoming ray onto the plane
@@ -53,6 +61,7 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
       if (lt < 0) {
         continue; // No intersection
       }
+      Log::trace(METHOD_NAME, "lt {}", lt);
       if (intersectWithCube && t < lt) {
         // Ray already intersected the cube at a closer point
         continue;
@@ -60,15 +69,20 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
 
       // point of intersection
       glm::dvec3 poi(e + lt * d);
+      Log::trace(METHOD_NAME, "poi {}", to_string(poi));
 
       // Since the cube is axis aligned we can easily get where the point of
       // intersection falls along each of the axes of the plane
+      bool intersectsPlane = true;
       for (int axis = 0; axis <= 1; axis++) {
         double poiAlongAxis = poi[planeAxes[planeIdx][axis]];
         // If we fall outside of a 1x1 square then fuggetaboutit
         if (poiAlongAxis < 0 || poiAlongAxis > 1) {
-          continue;
+          intersectsPlane = false;
         }
+      }
+      if (!intersectsPlane) {
+        continue;
       }
 
       // We reached this far, this means that this was our closest
@@ -83,6 +97,8 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
   if (!intersectWithCube) {
     return GeometryIntersection(GeometryIntersection::Miss);
   }
+
+  Log::trace(METHOD_NAME, "closestPoi {}" , closestPoi);
 
   return GeometryIntersection(
       GeometryIntersection::Towards,

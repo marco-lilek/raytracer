@@ -52,6 +52,10 @@ public:
     return lhs.rgb * rhs.rgb;
   }
 
+  bool operator>=(double v) const {
+    return rgb.x >= v && rgb.y >= v && rgb.z >= v;
+  }
+
 private:
   uint8_t enc(double v) const;
 

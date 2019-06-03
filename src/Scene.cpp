@@ -102,6 +102,7 @@ Scene::getColorOfRayOnPhongMaterial(
     // we do this computation first
     Color ambientLight = AMBIENT_LIGHT * material->kd;
     Log::trace(METHOD_NAME, "ambientLight {}", ambientLight);
+    CHECK(METHOD_NAME, ambientLight >= 0);
     finalColor += ambientLight;
   }
 
@@ -117,11 +118,24 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
-    const Point shooterPosOfShadow = intersection.p + intersection.n;
-    // Ray from the point of intersection to the ligt
+    const Point shooterPosOfShadow = intersection.p + 
+      intersection.n.normalize();
+
+    // Ray from the point of intersection to the light
     const Ray shadowRay(shooterPosOfShadow, 
         light->pos - shooterPosOfShadow);
     Log::trace(METHOD_NAME, "shadowRay {}", shadowRay);
+
+    // we still need some correction to prevent the case when we get an
+    // obtuse angle between the normal and the shadow ray 
+    // because of our "shift" by epsilon
+    double shadowRayDotNormal = shadowRay.v.dot(intersection.n);
+    if (shadowRayDotNormal < 0) {
+      Log::trace(METHOD_NAME,
+          "no illumiation because 0 > shadowRayDotNormal {}",
+          shadowRayDotNormal);
+      continue;
+    }
 
     {
       // Checking if the shadow ray reaches the light
@@ -156,12 +170,11 @@ Scene::getColorOfRayOnPhongMaterial(
       // Diffuse lighting is based on the angle between the normal
       // at the point of intersection and direction of the shadowRay
       double diffuseFactor = shadowRay.v.normalizeDot(intersection.n);
-      // TODO assert(diffuseFactor <= 1);
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
-      // TODO for now just assume white light
       const Color diffuseColor(diffuseFactor * material->kd * light->color);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
+      CHECK(METHOD_NAME, diffuseColor >= 0);
       finalColor += diffuseColor;
     }
 
@@ -175,9 +188,9 @@ Scene::getColorOfRayOnPhongMaterial(
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
-      // TODO add light color
       const Color specularColor(specularFactor * material->ks * light->color);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
+      CHECK(METHOD_NAME, specularColor >= 0);
       finalColor += specularColor;
     }
 

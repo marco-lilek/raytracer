@@ -4,7 +4,7 @@ gre = g.Color(0,0.5,0);
 blu = g.Color(0,0,0.5);
 
 material = g.PhongMaterial(red, gre, 20);
-sphere = g.GeometryNode("sphere", g.Sphere(), material) 
+sphere = g.GeometryNode("sphere", g.Cube(), material) 
 sphere:scale(1.5,1.5,1.5)
 sphere:translate(0,0,10)
 root:addChild(sphere)

@@ -13,13 +13,13 @@ class Node : public Object {
   std::vector<Node *> children;
 
   // M
-  glm::mat4 modelTransform;
+  glm::dmat4 modelTransform;
 
   // M^-1
-  glm::mat4 invModelTransform;
+  glm::dmat4 invModelTransform;
 
   // (M^-1)^T
-  glm::mat4 invTransModelTransform;
+  glm::dmat4 invTransModelTransform;
 
 public:
   std::string name;
@@ -33,7 +33,7 @@ public:
   void scale(double x, double y, double z);
   void translate(double x, double y, double z);
 
-  void updateModelTransform(const glm::mat4 &mat);
+  void updateModelTransform(const glm::dmat4 &mat);
 
   void
   addChild(Node *child)
