@@ -118,9 +118,9 @@ initNamespace(lua_State *L)
     .addConstructor<void (*)()>()
     .endClass()
 
-    // .deriveClass<Mesh, Primitive>("Mesh")
-    // .addConstructor<void (*)(const std::string &name)>()
-    // .endClass()
+    .deriveClass<Mesh, Primitive>("Mesh")
+    .addConstructor<void (*)(const std::string &name)>()
+    .endClass()
 
     // .deriveClass<UVMesh, Mesh>("UVMesh")
     // .addConstructor<void (*)(const std::string &name)>()

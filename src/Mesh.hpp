@@ -3,10 +3,7 @@
 #include "Primitive.hpp"
 #include <string>
 #include <vector>
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include "MeshLoader.hpp"
 
 class Mesh : public Primitive {
 protected:
@@ -16,11 +13,16 @@ public:
   Mesh(const std::string &name);
   virtual ~Mesh() {};
 
-  virtual void importElements(
-    Assimp::Importer &importer,
-    const aiScene *scene);
+  virtual GeometryIntersection intersect(const Ray &incomingRay) const;
 
-  bool verifyScene(
-    const aiScene *scene);
+  // The MeshLoader will load the Mesh on initialization
+  friend class MeshLoader;
 
+  virtual const char * type() const {
+    return "Mesh";
+  }
+
+  virtual std::ostream& dump(std::ostream& o) const {
+    return o;
+  }
 };

@@ -42,9 +42,9 @@ b1:translate(-200,-125,0)
 
 -- A small stellated dodecahedron.
 
--- steldodec = g.mesh( 'dodec', 'smstdodeca.obj' )
--- steldodec:set_material(mat3)
--- scene_root:add_child(steldodec)
+dodec = g.Mesh( 'smstdodeca.obj' )
+dodecNode = g.GeometryNode('dodec', dodec, mat3);
+scene_root:addChild(dodecNode)
 
 -- The lights
 white_light = g.Light(g.Color(0.9, 0.9, 0.9), g.Point(-100.0, 150.0, 400.0))

@@ -2,117 +2,101 @@
 #include "ObjLoader.hpp"
 #include "Log.hpp"
 #include "Constants.hpp"
+#include "MeshLoader.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-bool
-Mesh::verifyScene(
-  const aiScene *scene)
-{
-  if (!scene)
-    return false;
-  if (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
-    return false;
-  if (!scene->mRootNode)
-    return false;
-
-  return true;
-}
-
-void
-Mesh::importElements(
-  Assimp::Importer &importer,
-  const aiScene *scene)
-{
-  const aiMesh *mesh = scene->mMeshes[0];
-  int nv = mesh->mNumVertices;
-  positions.resize(nv);
-  for (int i = 0; i < nv; i++) {
-    auto vertex = mesh->mVertices[i];
-    positions[i] = glm::vec3(vertex.x, vertex.y, vertex.z);
-  }
-}
-
 Mesh::Mesh(const std::string &name) : Primitive()
 {
-  Assimp::Importer importer;
-  const aiScene *scene = importer.ReadFile(
-    "../src/models/" + name,0);
-  importElements(importer, scene);
+  MeshLoader loader(name);
+  loader.loadMesh(this);
 }
 
-// bool
-// Mesh::_intersect(
-//   const Ray &r, float &t, int &hitFace, double &beta, double &gamma) const
-// {
-//   return false;
-  // bool foundIntersection = false;
+GeometryIntersection Mesh::intersect(const Ray &incomingRay) const {
+  int hitFace = -1;
+  double closestDistToIntersect = -1;
+  double beta = -1;
+  double gamma = -1;
 
-  // glm::vec3 ev(r.from);
-  // glm::vec3 dv(r.v);
-  // double a, b, c, d, e, f, g, h, i, j, k, l;
-  // for (int fidx = 0; fidx < positions.size(); fidx += 3) {
-  //   glm::vec3 va(positions[fidx]);
-  //   glm::vec3 vb(positions[fidx + 1]);
-  //   glm::vec3 vc(positions[fidx + 2]);
+  const glm::dvec3 &ev = incomingRay.from;
+  const glm::dvec3 dv(incomingRay.v);
+  double a, b, c, d, e, f, g, h, i, j, k, l;
+  for (int faceIdx = 0; faceIdx < positions.size(); faceIdx += 3) {
+    glm::dvec3 va(positions[faceIdx]);
+    glm::dvec3 vb(positions[faceIdx + 1]);
+    glm::dvec3 vc(positions[faceIdx + 2]);
 
-  //   a = va.x - vb.x;
-  //   b = va.y - vb.y;
-  //   c = va.z - vb.z;
-  //   d = va.x - vc.x;
-  //   e = va.y - vc.y;
-  //   f = va.z - vc.z;
-  //   g = dv.x;
-  //   h = dv.y;
-  //   i = dv.z;
+    // TODO explain how this works
+    a = va.x - vb.x; b = va.y - vb.y; c = va.z - vb.z;
+    d = va.x - vc.x; e = va.y - vc.y; f = va.z - vc.z;
 
-  //   j = va.x - ev.x;
-  //   k = va.y - ev.y;
-  //   l = va.z - ev.z;
+    g = dv.x; h = dv.y; i = dv.z;
+    j = va.x - ev.x; k = va.y - ev.y; l = va.z - ev.z;
 
-  //   double M = a * (e * i - h * f) + b * (g * f - d * i) +
-  //              c * (d * h - e * g);
+    double M = a * (e * i - h * f) + b * (g * f - d * i) +
+               c * (d * h - e * g);
 
-  //   double tp =
-  //     -(f * (a * k - j * b) + e * (j * c - a * l) +
-  //       d * (b * l - k * c)) / M;
+    double distToIntersect = -(
+        f * (a * k - j * b) + 
+        e * (j * c - a * l) + 
+        d * (b * l - k * c)) / M;
 
-  //   if (tp < constants::EPSILON)
-  //     continue; // Doesnt intersect this plane
-  //   if (foundIntersection && tp > t)
-  //     continue; // We've already intersected at a nearer
-  //               // point
+    if (distToIntersect < 0.0) {
+      // Doesnt intersect this plane
+      continue; 
+    }
 
-  //   double thisGamma =
-  //     (i * (a * k - j * b) + h * (j * c - a * l) +
-  //      g * (b * l - k * c)) /
-  //     M;
+    if (hitFace != -1 && distToIntersect > closestDistToIntersect) {
+      // We've already intersected at a nearer
+      // point                                      
+      continue;
+    }
+                
+    double thisGamma =
+      (i * (a * k - j * b) + 
+       h * (j * c - a * l) +
+       g * (b * l - k * c)) / M;
 
-  //   if (thisGamma < 0 || thisGamma > 1)
-  //     continue;
+    if (thisGamma < 0.0 || thisGamma > 1.0) {
+      continue;
+    }
 
-  //   double thisBeta =
-  //     (j * (e * i - h * f) + k * (g * f - d * i) +
-  //      l * (d * h - e * g)) / M;
+    double thisBeta =
+      (j * (e * i - h * f) + k * (g * f - d * i) +
+       l * (d * h - e * g)) / M;
 
-  //   if (thisBeta < 0) continue;
+    if (thisBeta < 0.0) {
+      continue;
+    } 
 
-  //   if (thisBeta + thisGamma != 1.0 &&
-  //       thisBeta + thisGamma > 1)
-  //       continue;
+    if (thisBeta + thisGamma >= 1.0) {
+        continue;
+    }
 
-  //   t = tp;
-  //   hitFace = fidx;
-  //   beta = thisBeta;
-  //   gamma = thisGamma;
+    closestDistToIntersect = distToIntersect;
+    hitFace = faceIdx;
+    beta = thisBeta;
+    gamma = thisGamma;
+  }
 
-  //   foundIntersection = true;
-  // }
+  // TODO not all misses are full misses
+  if (hitFace == -1) {
+    return GeometryIntersection(GeometryIntersection::Miss);
+  }
 
-  // return foundIntersection;
-// }
+  glm::vec3 va(positions[hitFace]);
+  glm::vec3 vb(positions[hitFace + 1]);
+  glm::vec3 vc(positions[hitFace + 2]);
+
+  Vector normal(glm::cross(vb - va, vc - vb));
+  Point poi(incomingRay.pointAt(closestDistToIntersect));
+
+  return GeometryIntersection(
+      GeometryIntersection::Towards,
+      poi, normal);
+}
 
 // bool
 // Mesh::intersect(
