@@ -5,6 +5,9 @@ gold = g.PhongMaterial(g.Color(0.9, 0.8, 0.4), g.Color(0.8, 0.8, 0.4), 25)
 grass = g.PhongMaterial(g.Color(0.1, 0.7, 0.1), g.Color(0, 0,0), 0)
 blue = g.PhongMaterial(g.Color(0.7, 0.6, 1), g.Color(0.5, 0.4, 0.8), 25)
 
+plane = g.Mesh('plane.obj')
+dodeca = g.Mesh('dodeca.obj')
+
 scene = g.Node('scene')
 scene:rotate('x', 23)
 scene:translate(6, -2, -15)
@@ -31,14 +34,14 @@ s:scale(4, 0.6, 0.6)
 s:translate(0, 4, 0)
 
 -- the floor
--- plane = g.GeometryNode( 'plane', g.Mesh('plane.obj'), grass)
--- scene:addChild(plane)
--- plane:scale(30, 30, 30)
+plane = g.GeometryNode( 'plane', plane, grass)
+scene:addChild(plane)
+plane:scale(30, 30, 30)
 
 -- sphere
--- poly = g.mesh( 'poly', g.Mesh('dodeca.obj' ), blue)
--- scene:addChild(poly)
--- poly:translate(-2, 1.618034, 0)
+poly = g.GeometryNode( 'poly', dodeca, blue)
+scene:addChild(poly)
+poly:translate(-2, 1.618034, 0)
 
 -- The lights
 l1 = g.Light(g.Color(0.8,0.8,0.8), g.Point(200,200,400))

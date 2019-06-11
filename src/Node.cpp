@@ -155,6 +155,7 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
         // every time we have a decent hit
         // ...still faster than using the heap?
         closestIntersection = intersectionFromChild;
+        closestDistance = thisDistance;
       }
     }
   }
