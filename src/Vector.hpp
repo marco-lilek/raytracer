@@ -19,6 +19,8 @@ public:
   double normalizeDot(const Vector &o) const;
 
   Vector halfwayVector(const Vector &o) const;
+  // normalized!
+  Vector reflectAcross(const Vector &normal) const;
 
   virtual const char * type() const {
     return "Vector";

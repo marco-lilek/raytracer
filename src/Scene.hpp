@@ -5,6 +5,7 @@
 #include "LightRay.hpp"
 #include "Object.hpp"
 #include "GeometryIntersection.hpp"
+#include "ReflectiveMaterial.hpp"
 #include <vector>
 
 class Node;
@@ -16,6 +17,7 @@ struct Scene : public Object {
   glm::dvec3 ambientLight;
 
   // const glm::dvec3 fireRay(const LightRay &r) const;
+  const Color getColor(const Ray &r, int depth) const;
 
 public:
   Scene(
@@ -41,4 +43,10 @@ private:
     const PhongMaterial *material, 
     const Ray &rayFromEye,
     const GeometryIntersection &intersection) const;
+
+  Color getColorOfRayOnReflectiveMaterial(
+    const ReflectiveMaterial *material, 
+    const Ray &rayFromEye,
+    const GeometryIntersection &intersection,
+    const int depth) const;
 };

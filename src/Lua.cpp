@@ -132,11 +132,10 @@ initNamespace(lua_State *L)
     .addConstructor<void (*)()>()
     .endClass()
 
-    // .deriveClass<ReflectiveMaterial, Material>(
-    //   "ReflectiveMaterial")
-    // .addConstructor<void (*)(
-    //   const double &refractionIndex)>()
-    // .endClass()
+    .deriveClass<ReflectiveMaterial, Material>(
+      "ReflectiveMaterial")
+    .addConstructor<void (*)()>()
+    .endClass()
 
     .deriveClass<PhongMaterial, Material>("PhongMaterial")
     .addConstructor<void (*)(

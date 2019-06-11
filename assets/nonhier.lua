@@ -5,12 +5,14 @@ mat2 = g.PhongMaterial(g.Color(0.5, 0.5, 0.5), g.Color(0.5, 0.7, 0.5), 25)
 mat3 = g.PhongMaterial(g.Color(1.0, 0.6, 0.1), g.Color(0.5, 0.7, 0.5), 25)
 mat4 = g.PhongMaterial(g.Color(0.7, 0.6, 1.0), g.Color(0.5, 0.4, 0.8), 25)
 
+reflectiveMat = g.ReflectiveMaterial()
+
 sphere = g.Sphere()
 cube = g.Cube()
 
 scene_root = g.Node('root')
 
-s1 = g.GeometryNode('s1', sphere, mat1) --g.Color(0, 0, -400), 100)
+s1 = g.GeometryNode('s1', sphere, reflectiveMat) --g.Color(0, 0, -400), 100)
 scene_root:addChild(s1)
 s1:scale(100,100,100)
 s1:translate(0,0,-400)

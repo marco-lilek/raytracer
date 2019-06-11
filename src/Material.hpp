@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Scene.hpp"
-#include "LightRay.hpp"
-#include "Object.hpp"
 #include "Color.hpp"
 
 #include <glm/glm.hpp>

@@ -97,22 +97,3 @@ GeometryIntersection Mesh::intersect(const Ray &incomingRay) const {
       GeometryIntersection::Towards,
       poi, normal);
 }
-
-// bool
-// Mesh::intersect(
-//   const Ray &r, float &t, glm::dvec4 &normal) const
-// {
-//   int hitFace;
-//   double beta;
-//   double gamma;
-//   bool intersects = _intersect(r, t, hitFace, beta, gamma);
-//   if (intersects) {
-//     glm::vec3 va(positions[hitFace]);
-//     glm::vec3 vb(positions[hitFace + 1]);
-//     glm::vec3 vc(positions[hitFace + 2]);
-
-//     normal = glm::vec4(glm::cross(vb - va, vc - vb), 0);
-//   }
-
-//   return intersects;
-// }

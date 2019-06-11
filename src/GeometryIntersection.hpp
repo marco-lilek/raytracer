@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Intersection.hpp"
+#include "Point.hpp"
+#include "Vector.hpp"
 
 struct GeometryIntersection : public Object, public Intersection {
   // where the fired ray is positioned relative to the geometry

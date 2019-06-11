@@ -48,6 +48,15 @@ Scene::Scene(
 const Color
 Scene::getColor(const Ray &rayFromEye) const
 {
+  // TODO parameterize
+  int maxIterations = 3;
+
+  return getColor(rayFromEye, maxIterations);
+}
+
+const Color
+Scene::getColor(const Ray &rayFromEye, int depth) const
+{
   const char *METHOD = "Scene::getColor";
   Log::trace(METHOD, "rayFromEye: {}", rayFromEye);
   const PhysicalIntersection intersection(root->intersect(rayFromEye));
@@ -74,7 +83,12 @@ Scene::getColor(const Ray &rayFromEye) const
       dynamic_cast<const PhongMaterial *>(intersection.hitNode->material)) {
     return getColorOfRayOnPhongMaterial(
         material, rayFromEye, intersection.geometry);
+  }
 
+  if (const ReflectiveMaterial *material = 
+      dynamic_cast<const ReflectiveMaterial *>(intersection.hitNode->material)) {
+    return getColorOfRayOnReflectiveMaterial(
+        material, rayFromEye, intersection.geometry, depth);
   }
 
   // TODO assert(0)
@@ -203,6 +217,27 @@ Scene::getColorOfRayOnPhongMaterial(
   // some safeguards to clamp its range so that it doesn't act up when
   // we convert it to bytes
   return finalColor.clamp();
+}
+
+Color Scene::getColorOfRayOnReflectiveMaterial(
+    const ReflectiveMaterial *material, 
+    const Ray &rayFromEye,
+    const GeometryIntersection &intersection,
+    const int depth) const {
+  const char * METHOD_NAME = "Scene::getColorOfRayOnReflectiveMaterial";
+  // A pure reflective material just returns the color from the reflected ray
+  if (depth == 0) {
+    // To avoid infinite recursion
+    Log::trace(METHOD_NAME, "depth == 0, terminating");
+    return Color(0);
+  }
+
+  Vector normalizedN = intersection.n.normalize();
+  Ray reflectedRay(intersection.p + normalizedN, 
+      rayFromEye.v.reflectAcross(normalizedN));
+  Log::trace(METHOD_NAME, "depth {} reflectedRay {}", depth, reflectedRay);
+
+  return getColor(reflectedRay, depth-1);
 }
 
 // const Intersection

@@ -41,3 +41,11 @@ Vector Vector::halfwayVector(const Vector &o) const {
   const glm::dvec3 c = glm::dvec3(*this) + glm::dvec3(o);
   return c / (glm::length(c) + constants::EPSILON);
 }
+
+// n must be normalized
+Vector Vector::reflectAcross(const Vector &n) const {
+  const glm::dvec3 normalizedN(n);
+  const glm::dvec3 d(*this);
+
+  return d - 2 * glm::dot(d, normalizedN) * normalizedN;
+}
