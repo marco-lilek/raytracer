@@ -5,9 +5,11 @@
 #include <iostream>
 #include <polyroots.hpp>
 
+#include "GeometryIntersection.hpp"
+
 using namespace std;
 
-GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
+Intersection *Cube::intersect(const Ray &incomingRay) const {
   const char *METHOD_NAME = "Cube::intersect";
   // TODO for now just incorrectly report all non-Towards intersections
   // as misses, eventually get Inside properly detected too
@@ -95,12 +97,12 @@ GeometryIntersection Cube::intersect(const Ray &incomingRay) const {
   }
 
   if (!intersectWithCube) {
-    return GeometryIntersection(GeometryIntersection::Miss);
+    return new Intersection(GeometryIntersection::Miss);
   }
 
   Log::trace(METHOD_NAME, "closestPoi {}" , closestPoi);
 
-  return GeometryIntersection(
+  return new GeometryIntersection(
       GeometryIntersection::Towards,
       closestPoi,
       normalAtIntersection);

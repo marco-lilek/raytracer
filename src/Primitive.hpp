@@ -3,15 +3,16 @@
 #include <glm/glm.hpp>
 
 #include "Ray.hpp"
-#include "GeometryIntersection.hpp"
+#include "Intersection.hpp"
 
 class Primitive : public Object {
 public:
   virtual ~Primitive() {}
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) const {
-    // Stub
-    return GeometryIntersection(GeometryIntersection::Miss);
+  // Allocates a new intserection on the heap
+  // caller must deallocate
+  virtual Intersection *intersect(const Ray &incomingRay) const {
+    return new Intersection(Intersection::Miss);
   } 
 
   virtual const char * type() const {

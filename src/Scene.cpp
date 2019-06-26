@@ -76,19 +76,19 @@ Scene::getColor(const Ray &rayFromEye, int depth) const
 
   if (const DebugMaterial *material = 
       dynamic_cast<const DebugMaterial *>(intersection.hitNode->material)) {
-    return material->getColor(intersection.geometry.shooterPos);
+    return material->getColor(intersection.geometry.get()->shooterPos);
   }
 
   if (const PhongMaterial *material = 
       dynamic_cast<const PhongMaterial *>(intersection.hitNode->material)) {
     return getColorOfRayOnPhongMaterial(
-        material, rayFromEye, intersection.geometry);
+        material, rayFromEye, *intersection.geometry.get());
   }
 
   if (const ReflectiveMaterial *material = 
       dynamic_cast<const ReflectiveMaterial *>(intersection.hitNode->material)) {
     return getColorOfRayOnReflectiveMaterial(
-        material, rayFromEye, intersection.geometry, depth);
+        material, rayFromEye, *intersection.geometry.get(), depth);
   }
 
   // TODO assert(0)
@@ -155,14 +155,13 @@ Scene::getColorOfRayOnPhongMaterial(
       // Checking if the shadow ray reaches the light
       // if not, then we can skip the rest of the lighting calculation
       // for this light source
-      const GeometryIntersection shadowRayIntersection = root->intersect(
-          shadowRay).geometry;
+      const PhysicalIntersection &shadowRayIntersection = root->intersect(shadowRay);
       Log::trace(METHOD_NAME, "shadowRayIntersection {}", shadowRayIntersection);
       if (shadowRayIntersection.isHit()) {
+        const GeometryIntersection &shadowRayGeometry = *shadowRayIntersection.geometry;
         // We intersected the scene, but it is still possible that 
         // we reach the light source before we hit the scene
-        double lengthOfShadowRay = intersection.p.distanceTo(
-            shadowRayIntersection.p);
+        double lengthOfShadowRay = intersection.p.distanceTo(shadowRayGeometry.p);
         double distanceToLight = intersection.p.distanceTo(light->pos);
         Log::trace(METHOD_NAME, 
             "lengthOfShadowRay {} distanceToLight {}",

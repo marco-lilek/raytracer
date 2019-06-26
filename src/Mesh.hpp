@@ -13,7 +13,7 @@ public:
   Mesh(const std::string &name);
   virtual ~Mesh() {};
 
-  virtual GeometryIntersection intersect(const Ray &incomingRay) const;
+  virtual Intersection *intersect(const Ray &incomingRay) const;
 
   // The MeshLoader will load the Mesh on initialization
   friend class MeshLoader;

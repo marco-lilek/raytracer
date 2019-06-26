@@ -4,6 +4,8 @@
 #include "Constants.hpp"
 #include "MeshLoader.hpp"
 
+#include "GeometryIntersection.hpp"
+
 #include <iostream>
 
 using namespace std;
@@ -14,7 +16,7 @@ Mesh::Mesh(const std::string &name) : Primitive()
   loader.loadMesh(this);
 }
 
-GeometryIntersection Mesh::intersect(const Ray &incomingRay) const {
+Intersection *Mesh::intersect(const Ray &incomingRay) const {
   int hitFace = -1;
   double closestDistToIntersect = -1;
   double beta = -1;
@@ -83,7 +85,7 @@ GeometryIntersection Mesh::intersect(const Ray &incomingRay) const {
 
   // TODO not all misses are full misses
   if (hitFace == -1) {
-    return GeometryIntersection(GeometryIntersection::Miss);
+    return new Intersection(GeometryIntersection::Miss);
   }
 
   glm::vec3 va(positions[hitFace]);
@@ -93,7 +95,7 @@ GeometryIntersection Mesh::intersect(const Ray &incomingRay) const {
   Vector normal(glm::cross(vb - va, vc - vb));
   Point poi(incomingRay.pointAt(closestDistToIntersect));
 
-  return GeometryIntersection(
+  return new GeometryIntersection(
       GeometryIntersection::Towards,
       poi, normal);
 }

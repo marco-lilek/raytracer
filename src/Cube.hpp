@@ -5,7 +5,7 @@
 class Cube : public Primitive {
 public:
   virtual ~Cube() {}
-  virtual GeometryIntersection intersect(const Ray &incomingRay) const;
+  virtual Intersection *intersect(const Ray &incomingRay) const;
 
   virtual const char * type() const {
     return "Cube";

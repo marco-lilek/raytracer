@@ -5,7 +5,7 @@
 class Sphere : public Primitive {
 public:
   virtual ~Sphere() {}
-  virtual GeometryIntersection intersect(const Ray &incomingRay) const;
+  virtual Intersection *intersect(const Ray &incomingRay) const;
 
   virtual const char * type() const {
     return "Sphere";

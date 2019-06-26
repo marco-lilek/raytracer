@@ -14,6 +14,7 @@
 #include "Material.hpp"
 #include "Node.hpp"
 #include "PhysicalIntersection.hpp"
+#include "GeometryIntersection.hpp"
 
 using namespace glm;
 using namespace std;
@@ -82,7 +83,7 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
   Ray rayInModelSpace(glm::dvec4(invModelTransform * incomingRay.from),
       glm::dvec4(invModelTransform * incomingRay.v));
 
-  const PhysicalIntersection intersectionInModelSpace = 
+  const PhysicalIntersection physicalIntersection = 
     intersectImpl(rayInModelSpace);
 
   // By similar reasoning, we have to apply the model transformations
@@ -106,24 +107,17 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
   //
   // So n' = N n = (M^-1)^T n
 
-  if (!intersectionInModelSpace.isHit()) {
-    return PhysicalIntersection();
+  if (!physicalIntersection.isHit()) {
+    return physicalIntersection;
   }
 
-  // Also note the node we ultimately hit does not change
-  const GeometryIntersection &intersectionInModelSpaceGeometry = 
-    intersectionInModelSpace.geometry;
-  GeometryIntersection intersectionInWorldSpaceGeometry(
-      intersectionInModelSpaceGeometry.shooterPos,
-      glm::dvec4(modelTransform * intersectionInModelSpaceGeometry.p),
-      // TODO use the invTrans correctly
-      glm::dvec4(invTransModelTransform * intersectionInModelSpaceGeometry.n));
+  GeometryIntersection &geometry = *physicalIntersection.geometry.get();
+  geometry.p = glm::dvec4(
+      modelTransform * geometry.p);
+  geometry.n = glm::dvec4(
+      invTransModelTransform * geometry.n);
 
-  PhysicalIntersection intersectionInWorldSpace(
-      intersectionInModelSpace.hitNode, 
-      intersectionInWorldSpaceGeometry);
-
-  return intersectionInWorldSpace;
+  return physicalIntersection;
 }
 
 const PhysicalIntersection Node::intersectImpl(const Ray &r) const
@@ -144,16 +138,13 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
     Node *child = *childIt;
 
     PhysicalIntersection intersectionFromChild = child->intersect(r);
-    if (intersectionFromChild.hitNode == nullptr) {
+    if (!intersectionFromChild.isHit()) {
       continue;
     } else {
-      double thisDistance = r.from.distanceTo(intersectionFromChild.geometry.p);
+      double thisDistance = r.from.distanceTo(intersectionFromChild.geometry.get()->p);
       if (closestDistance == -1 || thisDistance <= closestDistance) {
         Log::trace(METHOD_NAME, "thisDistance {} closestDistance {}",
            thisDistance, closestDistance); 
-        // Kinda stinky: we need to copy off the intersection
-        // every time we have a decent hit
-        // ...still faster than using the heap?
         closestIntersection = intersectionFromChild;
         closestDistance = thisDistance;
       }

@@ -5,10 +5,11 @@
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <polyroots.hpp>
+#include "GeometryIntersection.hpp"
 
 using namespace std;
 
-GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
+Intersection *Sphere::intersect(const Ray &incomingRay) const {
   const char * METHOD_NAME = "Sphere::intersect";
   
   // Intersecting with a sphere centered at 0,0,0 with radius 1
@@ -37,7 +38,7 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
 
   if (numRoots == 0) {
     // Total miss
-    return GeometryIntersection(GeometryIntersection::Miss);
+    return new Intersection(GeometryIntersection::Miss);
   }
 
   // For ray a + td, the closest t for which we intersect the sphere
@@ -49,7 +50,7 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     
     // But still reject if its behind us
     if (root < 0) {
-      return GeometryIntersection(GeometryIntersection::Past);
+      return new Intersection(GeometryIntersection::Past);
     }
 
     t = roots[0];
@@ -64,7 +65,7 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
     Log::trace(METHOD_NAME, "l {} r {}", l , r);
     if (l < 0 && r < 0) {
       // The whole sphere is behind us
-      return GeometryIntersection(GeometryIntersection::Past);
+      return new Intersection(GeometryIntersection::Past);
     } else if (l < 0 || r < 0) {
       // One of the intersections in certainly behind us
       shooterPos = GeometryIntersection::Inside;
@@ -85,6 +86,6 @@ GeometryIntersection Sphere::intersect(const Ray &incomingRay) const {
   // is the same as the point of intersection
   Vector normal = Vector(pointOfIntersection);
 
-  return GeometryIntersection(shooterPos, 
+  return new GeometryIntersection(shooterPos, 
       pointOfIntersection, normal);
 }

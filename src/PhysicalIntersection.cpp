@@ -6,6 +6,9 @@ std::ostream& PhysicalIntersection::dump(std::ostream& o) const {
   if (hitNode != nullptr) {
     o << "hitNode.name " << hitNode->name;
   }
+  if (geometry != nullptr) {
+    o << " geometry " << *geometry;
+  }
 
-  return o << " geometry " << geometry;
+  return o;
 }

@@ -3,36 +3,52 @@
 #include "Point.hpp"
 #include "Vector.hpp"
 #include "GeometryIntersection.hpp"
+#include <memory>
+#include "Log.hpp"
 
 class PhysicalNode;
 
-// Could avoid wasting stack space when we have 
-// an intersection that didn't hit
-// ...but for now this is good enough, better than using the heap
-// (so we can keep things running fast)
-struct PhysicalIntersection : public Object, public Intersection {
+struct PhysicalIntersection : public Object {
 
-  PhysicalIntersection(const PhysicalNode *hitNode, 
-      const GeometryIntersection &geometry) : 
+  PhysicalIntersection(
+      const PhysicalNode *hitNode, 
+      GeometryIntersection *geometry) : 
     hitNode(hitNode),
-    geometry(geometry) {}
+    geometry(geometry) {
+    const char *TRACE_HEADER = "PhysicalIntersection";
+    Log::check(
+        TRACE_HEADER, 
+        hitNode != NULL && geometry != NULL, 
+        "PhysicalIntersection malformed");
+  }
 
-  PhysicalIntersection() :
-    hitNode(nullptr),
-    geometry(GeometryIntersection::Miss) {}
+  PhysicalIntersection() : 
+    hitNode(NULL), 
+    geometry(NULL) {
+  }
+
+  PhysicalIntersection(const PhysicalIntersection &o) : 
+    hitNode(o.hitNode),
+    geometry(o.geometry)
+    {}
+
+  ~PhysicalIntersection() {
+  }
+
     
   // The node that we hit
   const PhysicalNode *hitNode;
 
-  GeometryIntersection geometry;
+  // How we intersected that node
+  std::shared_ptr<GeometryIntersection> geometry;
+
+  bool isHit() const {
+    return geometry != NULL;
+  }
 
   virtual const char * type() const {
     return "PhysicalIntersection";
   }
 
   virtual std::ostream& dump(std::ostream& o) const;
-
-  virtual bool isHit() const {
-    return geometry.isHit();
-  }
 };
