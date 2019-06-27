@@ -132,8 +132,7 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
-    const Point shooterPosOfShadow = intersection.p + 
-      intersection.n.normalize();
+    const Point shooterPosOfShadow = intersection.p + intersection.n.normalize();
 
     // Ray from the point of intersection to the light
     const Ray shadowRay(shooterPosOfShadow, 
@@ -146,8 +145,8 @@ Scene::getColorOfRayOnPhongMaterial(
     double shadowRayDotNormal = shadowRay.v.dot(intersection.n);
     if (shadowRayDotNormal < 0) {
       Log::trace(METHOD_NAME,
-          "no illumiation because 0 > shadowRayDotNormal {}",
-          shadowRayDotNormal);
+          "no illumiation because shadowRayDotNormal {} < 0, shadowRay {} normal {}",
+          shadowRayDotNormal, shadowRay.v, intersection.n);
       continue;
     }
 

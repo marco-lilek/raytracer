@@ -14,10 +14,6 @@ public:
 
   virtual ~UVMesh() {};
 
-  virtual void importElements(
-    Assimp::Importer &importer,
-    const aiScene *scene);
-
   virtual const char * type() const {
     return "UVMesh";
   }
@@ -25,4 +21,5 @@ public:
   virtual std::ostream& dump(std::ostream& o) const {
     return o;
   }
+  friend class MeshLoader;
 };

@@ -111,15 +111,11 @@ initNamespace(lua_State *L)
 
     .beginClass<Geometry>("Geometry").endClass()
 
-    .deriveClass<Cube, Geometry>("Cube")
-    .addConstructor<void (*)()>()
-    .endClass()
-
-    .deriveClass<Sphere, Geometry>("Sphere")
-    .addConstructor<void (*)()>()
-    .endClass()
-
     .deriveClass<Mesh, Geometry>("Mesh")
+    .addConstructor<void (*)(const std::string &name)>()
+    .endClass()
+
+    .deriveClass<UVMesh, Mesh>("UVMesh")
     .addConstructor<void (*)(const std::string &name)>()
     .endClass()
 

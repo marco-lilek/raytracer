@@ -37,7 +37,8 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
     g = dv.x; h = dv.y; i = dv.z;
     j = va.x - ev.x; k = va.y - ev.y; l = va.z - ev.z;
 
-    double M = a * (e * i - h * f) + b * (g * f - d * i) +
+    double M = a * (e * i - h * f) + 
+               b * (g * f - d * i) +
                c * (d * h - e * g);
 
     double distToIntersect = -(
@@ -50,6 +51,7 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
       continue; 
     }
 
+
     if (hitFace != -1 && distToIntersect > closestDistToIntersect) {
       // We've already intersected at a nearer
       // point                                      
@@ -60,6 +62,7 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
       (i * (a * k - j * b) + 
        h * (j * c - a * l) +
        g * (b * l - k * c)) / M;
+    
 
     if (thisGamma < 0.0 || thisGamma > 1.0) {
       continue;
@@ -72,13 +75,15 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
     if (thisBeta < 0.0) {
       continue;
     } 
+    Log::trace("gobo", "faceIdx {} distToIntersect {} sum {}", faceIdx, distToIntersect, thisGamma+ thisBeta);
 
-    if (thisBeta + thisGamma >= 1.0) {
+    if (thisBeta + thisGamma - constants::EPSILON > 1.0) {
         continue;
     }
 
     closestDistToIntersect = distToIntersect;
     hitFace = faceIdx;
+    Log::trace("sdf", "hitFace {}", hitFace);
     beta = thisBeta;
     gamma = thisGamma;
   }

@@ -8,6 +8,7 @@
 #include <string>
 
 class Mesh;
+class UVMesh;
 
 class MeshLoader : public Object {
   const std::string &filename;
@@ -16,7 +17,8 @@ public:
   MeshLoader(const std::string &filename);
   virtual ~MeshLoader();
 
-  virtual void loadMesh(Mesh *mesh) const;
+  void loadMesh(Mesh *mesh) const;
+  void loadMesh(UVMesh *mesh) const;
 
   virtual const char * type() const {
     return "MeshLoader";
@@ -30,4 +32,5 @@ private:
   static bool verifyScene(const aiScene *scene);
 
   const aiScene *loadScene(Assimp::Importer &importer) const;
+  const int loadPositions(const aiMesh* aiMesh, Mesh *mesh) const;
 };
