@@ -23,20 +23,25 @@ MeshLoader::verifyScene(
   return true;
 }
 
-void MeshLoader::loadMesh(Mesh *mesh) const {
-  const char *TRACE_HEADER = "MeshLoader::loadMesh";
+const aiScene *MeshLoader::loadScene(
+    Assimp::Importer &importer) const {
+  const char *TRACE_HEADER = "MeshLoader::loadScene";
 
   // TODO dont hardcode
   string fullpath = "../assets/obj/" + filename;
 
-
-  Assimp::Importer importer;
-  // TODO maybe put the actual loading of the scene into an impl
   Log::debug(TRACE_HEADER, "loading model from {}", fullpath);
   const aiScene *scene = importer.ReadFile(fullpath,0);
 
   CHECK(TRACE_HEADER, verifyScene(scene));
+  return scene;
+}
 
+void MeshLoader::loadMesh(Mesh *mesh) const {
+  const char *TRACE_HEADER = "MeshLoader::loadMesh";
+
+  Assimp::Importer importer;
+  const aiScene *scene = loadScene(importer);
   const aiMesh *aiMesh = scene->mMeshes[0];
   // TODO assert there is exactly 1 mesh in the scene
 

@@ -7,7 +7,6 @@
 #include <assimp/scene.h>
 #include <string>
 
-// Forward declare
 class Mesh;
 
 class MeshLoader : public Object {
@@ -30,4 +29,5 @@ public:
 private:
   static bool verifyScene(const aiScene *scene);
 
+  const aiScene *loadScene(Assimp::Importer &importer) const;
 };
