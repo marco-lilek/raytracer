@@ -5,9 +5,9 @@
 #include "Ray.hpp"
 #include "Intersection.hpp"
 
-class Primitive : public Object {
+class Geometry : public Object {
 public:
-  virtual ~Primitive() {}
+  virtual ~Geometry() {}
 
   // Allocates a new intserection on the heap
   // caller must deallocate
@@ -16,7 +16,7 @@ public:
   } 
 
   virtual const char * type() const {
-    return "Primitive";
+    return "Geometry";
   }
 
   virtual std::ostream& dump(std::ostream& o) const {

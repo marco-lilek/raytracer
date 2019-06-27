@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Mesh::Mesh(const std::string &name) : Primitive()
+Mesh::Mesh(const std::string &name) : Geometry()
 {
   MeshLoader loader(name);
   loader.loadMesh(this);

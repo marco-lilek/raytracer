@@ -2,18 +2,18 @@
 
 #include "Material.hpp"
 #include "Node.hpp"
-#include "Primitive.hpp"
+#include "Geometry.hpp"
 #include "PhysicalNode.hpp"
 
 class GeometryNode : public PhysicalNode {
-  const Primitive *const prim;
+  const Geometry *const geometry;
 
 public:
   GeometryNode(
     const std::string &name,
-    const Primitive *const p,
+    const Geometry *const p,
     const Material *m)
-      : PhysicalNode(name, m), prim(p)
+      : PhysicalNode(name, m), geometry(p)
   {}
 
   virtual const PhysicalIntersection intersectImpl(const Ray &r) const;
@@ -24,6 +24,6 @@ public:
 
   virtual std::ostream& dump(std::ostream& o) const {
     Node::dump(o);
-    return o << " prim " << *prim;
+    return o << " geometry " << *geometry;
   }
 };

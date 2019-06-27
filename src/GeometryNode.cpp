@@ -11,7 +11,7 @@ PhysicalIntersection GeometryNode::intersectImpl(const Ray &incomingRay) const {
   const char *METHOD_NAME = "GeometryNode::intersectImpl";
   Log::trace(METHOD_NAME, "incomingRay {}", incomingRay);
 
-  Intersection *intersection = prim->intersect(incomingRay);
+  Intersection *intersection = geometry->intersect(incomingRay);
   Log::check(METHOD_NAME, intersection != NULL, "intersection should not be null");
   Log::trace(METHOD_NAME, "intersection {}", *intersection);
   if (intersection->isHit()) {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Primitive.hpp"
+#include "Geometry.hpp"
 #include <string>
 #include <vector>
 #include "MeshLoader.hpp"
 
-class Mesh : public Primitive {
+class Mesh : public Geometry {
 protected:
   std::vector<glm::dvec3> positions;
 

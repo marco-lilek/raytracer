@@ -5,12 +5,13 @@
 #include "Cube.hpp"
 #include "Mesh.hpp"
 #include "UVMesh.hpp"
-#include "Primitive.hpp"
+#include "Geometry.hpp"
 #include "Sphere.hpp"
 #include "Cube.hpp"
 
 #include "Log.hpp"
 #include "GeometryNode.hpp"
+#include "PrimitiveNode.hpp"
 #include "Node.hpp"
 
 extern "C" {
@@ -108,17 +109,17 @@ initNamespace(lua_State *L)
       const Color &color, const Point &pos)>()
     .endClass()
 
-    .beginClass<Primitive>("Primitive").endClass()
+    .beginClass<Geometry>("Geometry").endClass()
 
-    .deriveClass<Cube, Primitive>("Cube")
+    .deriveClass<Cube, Geometry>("Cube")
     .addConstructor<void (*)()>()
     .endClass()
 
-    .deriveClass<Sphere, Primitive>("Sphere")
+    .deriveClass<Sphere, Geometry>("Sphere")
     .addConstructor<void (*)()>()
     .endClass()
 
-    .deriveClass<Mesh, Primitive>("Mesh")
+    .deriveClass<Mesh, Geometry>("Mesh")
     .addConstructor<void (*)(const std::string &name)>()
     .endClass()
 
@@ -153,10 +154,17 @@ initNamespace(lua_State *L)
     // .addFunction("intersect", &Node::intersect)
     .endClass()
 
+    .deriveClass<PrimitiveNode, Node>("PrimitiveNode")
+    .addConstructor<void (*)(
+      const std::string &,
+      const std::string &,
+      const Material *)>()
+    .endClass()
+
     .deriveClass<GeometryNode, Node>("GeometryNode")
     .addConstructor<void (*)(
       const std::string &,
-      const Primitive *const,
+      const Geometry *const,
       const Material *)>()
     .endClass()
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Primitive.hpp"
+#include "Geometry.hpp"
 
-class Cube : public Primitive {
+class Cube : public Geometry {
 public:
   virtual ~Cube() {}
   virtual Intersection *intersect(const Ray &incomingRay) const;
@@ -12,7 +12,7 @@ public:
   }
 
   virtual std::ostream& dump(std::ostream& o) const {
-    Primitive::dump(o);
+    Geometry::dump(o);
     return o;
   }
 };
