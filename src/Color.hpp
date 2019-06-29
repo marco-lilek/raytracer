@@ -44,6 +44,10 @@ public:
     rgb += o.rgb;
   }
 
+  void operator=(const glm::dvec3 &rgb) {
+    this->rgb = rgb;
+  }
+
   friend Color operator+ (const Color& lhs ,const Color& rhs) {
     return lhs.rgb + rhs.rgb;
   }
@@ -56,7 +60,6 @@ public:
     return rgb.x >= v && rgb.y >= v && rgb.z >= v;
   }
 
-private:
-  uint8_t enc(double v) const;
-
+  static double decode(uint8_t v);
+  static uint8_t enc(double v);
 };

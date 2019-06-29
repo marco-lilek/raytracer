@@ -8,7 +8,13 @@ std::array<uint8_t, 3> Color::toBytes() const {
   return asBytes;
 }
 
-uint8_t Color::enc(double v) const {
+double Color::decode(uint8_t v) {
+  const char * TRACE_HEADER = "Color::enc";
+  int asDouble = (double)v / 255;
+  return asDouble;
+}
+
+uint8_t Color::enc(double v) {
   const char * TRACE_HEADER = "Color::enc";
   int asInt = (int)(255 * v);
   Log::check(TRACE_HEADER, asInt >= 0 && asInt <= 255, "asInt {}", asInt);

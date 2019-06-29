@@ -1,4 +1,34 @@
 #include "UVMesh.hpp"
+#include "UVIntersection.hpp"
+
+Intersection *UVMesh::constructIntersection(
+      int hitFace,
+      Point poi,
+      double beta,
+      double gamma) const {
+
+  double ua(uvCoords[hitFace][0]);
+  double ub(uvCoords[hitFace+1][0]);
+  double uc(uvCoords[hitFace+2][0]);
+
+  double va(uvCoords[hitFace][1]);
+  double vb(uvCoords[hitFace+1][1]);
+  double vc(uvCoords[hitFace+2][1]);
+
+  double u = ua + beta * ub + gamma * uc;
+  double v = va + beta * vb + gamma * vc;
+
+  glm::vec3 na(positions[hitFace]);
+  glm::vec3 nb(positions[hitFace + 1]);
+  glm::vec3 nc(positions[hitFace + 2]);
+
+  Vector normal(glm::cross(nb - na, nc - nb));
+
+  return new UVIntersection(
+      GeometryIntersection::Towards,
+      poi, 
+      normal, u, v);
+}
 
 // void
 // UVMesh::importElements(

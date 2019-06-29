@@ -40,12 +40,12 @@ const aiScene *MeshLoader::loadScene(
 
 void MeshLoader::loadMesh(Mesh *mesh) const {
   const char *TRACE_HEADER = "MeshLoader::loadMesh";
-
   Assimp::Importer importer;
   const aiScene *scene = loadScene(importer);
   const aiMesh *aiMesh = scene->mMeshes[0];
   // TODO assert there is exactly 1 mesh in the scene
   loadPositions(aiMesh, mesh);
+  Log::info(TRACE_HEADER, "loaded mesh from {}", filename);
 }
 
 void MeshLoader::loadMesh(UVMesh *mesh) const {
@@ -80,6 +80,8 @@ void MeshLoader::loadMesh(UVMesh *mesh) const {
     mesh->tangents[i] = glm::vec3(
         tangent.x, tangent.y, tangent.z);
   }
+
+  Log::info(TRACE_HEADER, "loaded uvmesh from {}", filename);
 }
 
 const int MeshLoader::loadPositions(

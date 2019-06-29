@@ -28,6 +28,7 @@ extern "C" {
 #include "DebugMaterial.hpp"
 #include "PhongMaterial.hpp"
 #include "ReflectiveMaterial.hpp"
+#include "TextureMaterial.hpp"
 #include "Camera.hpp"
 
 using namespace luabridge;
@@ -87,50 +88,19 @@ initNamespace(lua_State *L)
       const Vector &,int, int, double)>()
     .endClass()
 
-    .beginClass<Color>("Color")
-    .addConstructor<void (*)(
-      double c)>()
-    .addConstructor<void (*)(
-      double x, double y, double z)>()
-    .endClass()
-
-    .beginClass<Vector>("Vector")
-    .addConstructor<void (*)(
-      double x, double y, double z)>()
-    .endClass()
-
-    .beginClass<Point>("Point")
-    .addConstructor<void (*)(
-      double x, double y, double z)>()
-    .endClass()
-
-    .beginClass<Light>("Light")
-    .addConstructor<void (*)(
-      const Color &color, const Point &pos)>()
-    .endClass()
+    .beginClass<Light>("Light").endClass()
 
     .beginClass<Geometry>("Geometry").endClass()
 
-    .deriveClass<Mesh, Geometry>("Mesh")
-    .addConstructor<void (*)(const std::string &name)>()
-    .endClass()
-
-    .deriveClass<UVMesh, Mesh>("UVMesh")
-    .addConstructor<void (*)(const std::string &name)>()
-    .endClass()
-
-    // .deriveClass<UVMesh, Mesh>("UVMesh")
-    // .addConstructor<void (*)(const std::string &name)>()
-    // .endClass()
-
     .beginClass<Material>("Material").endClass()
 
-    .deriveClass<DebugMaterial, Material>("DebugMaterial")
-    .addConstructor<void (*)()>()
+    .deriveClass<DebugMaterial, Material>("DebugMaterial").endClass()
+
+    .deriveClass<TextureMaterial, Material>("TextureMaterial")
+    .addConstructor<void (*)(const std::string &name)>()
     .endClass()
 
-    .deriveClass<ReflectiveMaterial, Material>(
-      "ReflectiveMaterial")
+    .deriveClass<ReflectiveMaterial, Material>("ReflectiveMaterial")
     .addConstructor<void (*)()>()
     .endClass()
 

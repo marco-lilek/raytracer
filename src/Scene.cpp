@@ -11,6 +11,8 @@
 #include "DebugMaterial.hpp"
 #include "PhongMaterial.hpp"
 #include "PhysicalNode.hpp"
+#include "UVIntersection.hpp"
+#include "TextureMaterial.hpp"
 
 #include <iostream>
 
@@ -171,6 +173,15 @@ Scene::getColorOfRayOnPhongMaterial(
           continue;
         }
       }
+    }
+
+    Color textureColor(0);
+    const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
+    if (textureMaterial != NULL) {
+      // If we have a texture, we must be able to cast the intersection to a UVintersection
+      const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
+      CHECK(METHOD_NAME, uvIntersection != NULL);
+      textureColor = textureMaterial->texture->getValue(uvIntersection->u, uvIntersection->v);
     }
 
     // We know this light illuminates our point of intersection. 

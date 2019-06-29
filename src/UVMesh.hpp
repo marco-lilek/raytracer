@@ -22,4 +22,9 @@ public:
     return o;
   }
   friend class MeshLoader;
+
+private:
+
+  virtual Intersection *constructIntersection(
+      int hitFace, Point poi, double beta, double gamma) const;
 };

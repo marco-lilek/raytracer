@@ -6,6 +6,7 @@
 #include "Object.hpp"
 #include "GeometryIntersection.hpp"
 #include "ReflectiveMaterial.hpp"
+#include "TextureMaterial.hpp"
 #include <vector>
 
 class Node;

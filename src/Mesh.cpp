@@ -75,7 +75,6 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
     if (thisBeta < 0.0) {
       continue;
     } 
-    Log::trace("gobo", "faceIdx {} distToIntersect {} sum {}", faceIdx, distToIntersect, thisGamma+ thisBeta);
 
     if (thisBeta + thisGamma - constants::EPSILON > 1.0) {
         continue;
@@ -83,7 +82,6 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
 
     closestDistToIntersect = distToIntersect;
     hitFace = faceIdx;
-    Log::trace("sdf", "hitFace {}", hitFace);
     beta = thisBeta;
     gamma = thisGamma;
   }
@@ -93,14 +91,21 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
     return new Intersection(GeometryIntersection::Miss);
   }
 
+  Point poi(incomingRay.pointAt(closestDistToIntersect));
+  return constructIntersection(hitFace, poi, beta, gamma);
+}
+
+Intersection *Mesh::constructIntersection(
+      int hitFace, Point poi, double beta, double gamma) const {
+
   glm::vec3 va(positions[hitFace]);
   glm::vec3 vb(positions[hitFace + 1]);
   glm::vec3 vc(positions[hitFace + 2]);
 
   Vector normal(glm::cross(vb - va, vc - vb));
-  Point poi(incomingRay.pointAt(closestDistToIntersect));
 
   return new GeometryIntersection(
       GeometryIntersection::Towards,
-      poi, normal);
+      poi, 
+      normal);
 }
