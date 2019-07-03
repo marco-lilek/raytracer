@@ -1,13 +1,14 @@
 #include "Cube.hpp"
 #include "Log.hpp"
 
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <polyroots.hpp>
 
 #include "GeometryIntersection.hpp"
+#include "Glm.hpp"
 
 using namespace std;
+using namespace Glm;
 
 Intersection *Cube::intersect(const Ray &incomingRay) const {
   const char *METHOD_NAME = "Cube::intersect";
@@ -15,10 +16,10 @@ Intersection *Cube::intersect(const Ray &incomingRay) const {
   // as misses, eventually get Inside properly detected too
   
   // Incoming ray is e + td, for some t
-  glm::dvec3 e(incomingRay.from);
-  glm::dvec3 d(incomingRay.v);
+  Vec3 e(incomingRay.from);
+  Vec3 d(incomingRay.v);
 
-  Log::trace(METHOD_NAME, "e {} d {}", to_string(e), to_string(d));
+  Log::trace(METHOD_NAME, "e {} d {}", e, d);
 
   // We'll test for intersections with every plane twice for a total of 6 checks
   // x,y,z = 0,1,2
@@ -29,19 +30,19 @@ Intersection *Cube::intersect(const Ray &incomingRay) const {
 
   // We need to find the smallest positive t for which we intersect the cube
   double t;
-  Point closestPoi;
-  Vector normalAtIntersection;
+  Vec4 closestPoi;
+  Vec4 normalAtIntersection;
   for (int planeIdx = 0; planeIdx <= 2; planeIdx++) { // 0,1,2
     for (int corner = 0; corner <= 1; corner++) { // 0,0,0 or 1,1,1
       Log::trace(METHOD_NAME, "planeIdx {} corner {}",
           planeIdx, corner);
-      glm::dvec3 normal(0);
+      Vec3 normal(0);
 
       // 0,1 -> -1,1
       // the normal of the xz plane cornered at 0,0,0 is -y etc
       normal[planeIdx] = 2 * corner - 1;
 
-      glm::dvec3 p1(corner); // Point on the plane
+      Vec3 p1(corner); // Vec4 on the plane
 
       // Project our incoming ray onto the plane
       double dDotn = glm::dot(d, normal);
@@ -70,7 +71,7 @@ Intersection *Cube::intersect(const Ray &incomingRay) const {
       }
 
       // point of intersection
-      glm::dvec3 poi(e + lt * d);
+      Vec3 poi(e + lt * d);
       Log::trace(METHOD_NAME, "poi {}", to_string(poi));
 
       // Since the cube is axis aligned we can easily get where the point of
@@ -91,8 +92,8 @@ Intersection *Cube::intersect(const Ray &incomingRay) const {
       // point of intersection YET
       intersectWithCube = true;
       t = lt;
-      closestPoi = poi;
-      normalAtIntersection = Vector(normal);
+      closestPoi = Vec4(poi,1);
+      normalAtIntersection = Vec4(normal,0);
     }
   }
 

@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fmt/format.h>
 
-#include "Debug.hpp"
 #include "Material.hpp"
 #include "Node.hpp"
 #include "PhysicalIntersection.hpp"
@@ -141,7 +140,7 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
     if (!intersectionFromChild.isHit()) {
       continue;
     } else {
-      double thisDistance = r.from.distanceTo(intersectionFromChild.geometry.get()->p);
+      double thisDistance = Glm::distanceTo(r.from, intersectionFromChild.geometry.get()->p);
       if (closestDistance == -1 || thisDistance <= closestDistance) {
         Log::trace(METHOD_NAME, "thisDistance {} closestDistance {}",
            thisDistance, closestDistance); 

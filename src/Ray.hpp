@@ -1,19 +1,18 @@
 #pragma once
 
-#include "Point.hpp"
-#include "Vector.hpp"
+#include "Glm.hpp"
 #include "Object.hpp"
 
 class Ray : public Object {
 public:
-  const Point from;
-  const Vector v;
+  const Glm::Vec4 from;
+  const Glm::Vec4 v;
 
-  Point pointAt(double t) const {
+  Glm::Vec4 pointAt(double t) const {
     return from + t * v;
   }
 
-  Ray(const Point &from, const Vector &v)
+  Ray(const Glm::Vec4 &from, const Glm::Vec4 &v)
       : from(from), v(v)
   {}
 

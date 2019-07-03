@@ -14,64 +14,81 @@
 #include "PrimitiveNode.hpp"
 #include "Node.hpp"
 
-extern "C" {
-#include <lua5.3/lauxlib.h>
-#include <lua5.3/lua.h>
-#include <lua5.3/lualib.h>
-}
-
-
-#include <LuaBridge/LuaBridge.h>
-#include <LuaBridge/Vector.h>
-
-#include "Printglm.hpp"
 #include "DebugMaterial.hpp"
 #include "PhongMaterial.hpp"
 #include "ReflectiveMaterial.hpp"
 #include "TextureMaterial.hpp"
 #include "Camera.hpp"
 
+#include "LuaTypes.hpp"
+
 using namespace luabridge;
 using namespace std;
-
-namespace luabridge {
-
-template <> struct Stack<const glm::dvec3 &> {
-  static void
-  push(lua_State *L, const glm::dvec3 &a)
-  {
-    assert(lua_checkstack(L, 3));
-    lua_createtable(L, 3, 0);
-    for (int i = 0; i < 3; i++) {
-      lua_pushinteger(
-        L,
-        i + 1); // lua lists are 1-indexed :^)
-      lua_pushnumber(L, a[i]);
-      lua_settable(L, -3);
-    }
-  }
-
-  static const glm::dvec3 
-  get(lua_State *L, int index)
-  {
-    assert(lua_istable(L, index));
-    double res[3];
-    for (int i = 0; i < 3; i++) {
-      lua_pushinteger(L, i + 1);
-      lua_gettable(L, index);
-      assert(lua_isnumber(L, -1));
-      res[i] = lua_tonumber(L, -1);
-    }
-    return glm::dvec3(res[0], res[1], res[2]);
-  }
-};
-
-}; // END namespace luabridge
 
 void
 echo()
 {
   cout << "hello!" << endl;
+}
+
+// Note to self:
+// Lua is very picky about its arguments---if you see errors like
+//
+// terminate called after throwing an instance of 'std::logic_error'
+// what():  The class is not registered in LuaBridge
+// Aborted (core dumped)
+//
+// Make sure the arguments (type + const + ref vs pointer) are correct
+
+Mesh* create_mesh(const string&name) {
+  // Use the meshloader
+  return new Mesh(name);
+}
+
+Material *create_texture(const string&name) {
+  return new TextureMaterial(name);
+}
+
+Material *create_phong_material(const Glm::Vec3 &kd,
+    const Glm::Vec3 &ks,
+    const double &shininess) {
+  return new PhongMaterial(kd, ks, shininess);
+}
+
+Node *create_node(const string&name) {
+  return new Node(name);
+}
+
+Node *create_geometry_node(
+    const string&name,
+    const Geometry *const p,
+    const Material *m) {
+  return new GeometryNode(name, p, m);
+}
+
+const Light *create_light(
+    const Glm::Vec3 &color,
+    const Glm::Vec3 &pos) {
+  return new Light(color, pos);
+}
+
+Camera *create_camera(
+      const Glm::Vec3 &eye,
+      const Glm::Vec3 &up,
+      const Glm::Vec3 &towards,
+      int width,
+      int height,
+      double fov) {
+  return new Camera(eye, up, towards, width, height, fov);
+}
+
+void render(
+    const Node *root,
+    const Camera *camera,
+    const vector<const Light *> &lights,
+    const string&fname) {
+  RayTracer r;
+  r.render(root, *camera, lights, fname);
 }
 
 void
@@ -80,39 +97,30 @@ initNamespace(lua_State *L)
   getGlobalNamespace(L)
     .beginNamespace("g")
     .addFunction("echo", echo)
+    .addFunction("mesh", create_mesh)
+    .addFunction("texture", create_texture)
+    .addFunction("phong_material", create_phong_material)
 
-    .beginClass<Camera>("Camera")
-    .addConstructor<void (*)(
-      const Point &,
-      const Vector &,
-      const Vector &,int, int, double)>()
-    .endClass()
+    .addFunction("node", create_node)
+    .addFunction("geometry_node", create_geometry_node)
 
+    .addFunction("light", create_light)
+    .addFunction("camera", create_camera)
+    .addFunction("render", render)
+
+    .beginClass<Camera>("Camera").endClass()
     .beginClass<Light>("Light").endClass()
 
     .beginClass<Geometry>("Geometry").endClass()
+    .deriveClass<Mesh, Geometry>("Geometry").endClass()
 
     .beginClass<Material>("Material").endClass()
-
     .deriveClass<DebugMaterial, Material>("DebugMaterial").endClass()
-
-    .deriveClass<TextureMaterial, Material>("TextureMaterial")
-    .addConstructor<void (*)(const std::string &name)>()
-    .endClass()
-
-    .deriveClass<ReflectiveMaterial, Material>("ReflectiveMaterial")
-    .addConstructor<void (*)()>()
-    .endClass()
-
-    .deriveClass<PhongMaterial, Material>("PhongMaterial")
-    .addConstructor<void (*)(
-      const Color &,
-      const Color &,
-      const double &)>()
-    .endClass()
+    .deriveClass<ReflectiveMaterial, Material>("ReflectiveMaterial").endClass()
+    .deriveClass<PhongMaterial, Material>("PhongMaterial").endClass()
+    .deriveClass<TextureMaterial, PhongMaterial>("TextureMaterial").endClass() 
 
     .beginClass<Node>("Node")
-    .addConstructor<void (*)(const std::string &)>()
     .addFunction("scale", &Node::scale)
     .addFunction("rotate", &Node::rotate)
     .addFunction("translate", &Node::translate)
@@ -120,26 +128,10 @@ initNamespace(lua_State *L)
     // .addFunction("intersect", &Node::intersect)
     .endClass()
 
-    .deriveClass<PrimitiveNode, Node>("PrimitiveNode")
-    .addConstructor<void (*)(
-      const std::string &,
-      const std::string &,
-      const Material *)>()
-    .endClass()
+    .deriveClass<PrimitiveNode, Node>("PrimitiveNode").endClass()
+    .deriveClass<GeometryNode, Node>("GeometryNode").endClass()
 
-    .deriveClass<GeometryNode, Node>("GeometryNode")
-    .addConstructor<void (*)(
-      const std::string &,
-      const Geometry *const,
-      const Material *)>()
-    .endClass()
-
-    .beginClass<RayTracer>("RayTracer")
-    .addConstructor<void (*)(void)>()
-    .addData(
-      "renderReflection", &RayTracer::renderReflection)
-    .addFunction("render", &RayTracer::render)
-    .endClass()
+    .beginClass<RayTracer>("RayTracer").endClass()
     .endNamespace();
 }
 

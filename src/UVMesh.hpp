@@ -5,9 +5,9 @@
 #include <vector>
 
 class UVMesh : public Mesh {
-  std::vector<glm::dvec3> normals;
-  std::vector<glm::dvec2> uvCoords;
-  std::vector<glm::dvec3> tangents;
+  std::vector<Glm::Vec3> normals;
+  std::vector<Glm::Vec2> uvCoords;
+  std::vector<Glm::Vec3> tangents;
 
 public:
   UVMesh(const std::string &name) : Mesh(name) {}
@@ -26,5 +26,5 @@ public:
 private:
 
   virtual Intersection *constructIntersection(
-      int hitFace, Point poi, double beta, double gamma) const;
+      int hitFace, Glm::Vec4 poi, double beta, double gamma) const;
 };

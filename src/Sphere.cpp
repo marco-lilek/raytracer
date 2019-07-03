@@ -1,13 +1,14 @@
 #include "Sphere.hpp"
 #include "Constants.hpp"
-#include "Debug.hpp"
 #include "Log.hpp"
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <polyroots.hpp>
 #include "GeometryIntersection.hpp"
 
+#include "Glm.hpp"
+
 using namespace std;
+using namespace Glm;
 
 Intersection *Sphere::intersect(const Ray &incomingRay) const {
   const char * METHOD_NAME = "Sphere::intersect";
@@ -25,8 +26,8 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   // t^2 dot(d,d) + t 2dot(a,d) + (dot(a,a) - 1) = 0
   // quadractic formula badaboombadabing eh whats it take to get a coffe over here
 
-  glm::dvec3 a(incomingRay.from);
-  glm::dvec3 d(incomingRay.v);
+  Vec3 a(incomingRay.from);
+  Vec3 d(incomingRay.v);
 
   // The coefficients as described in the comment above
   float A = glm::dot(d, d);
@@ -80,11 +81,11 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   }
 
   Log::trace(METHOD_NAME, "t {}", t);
-  Point pointOfIntersection = incomingRay.pointAt(t);
+  Vec4 pointOfIntersection = incomingRay.pointAt(t);
 
   // Since we already assume the sphere is centered at 0,0,0, the normal
   // is the same as the point of intersection
-  Vector normal = Vector(pointOfIntersection);
+  Vec4 normal = Vec4(pointOfIntersection);
 
   return new GeometryIntersection(shooterPos, 
       pointOfIntersection, normal);

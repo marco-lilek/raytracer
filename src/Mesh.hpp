@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Geometry.hpp"
 #include <string>
 #include <vector>
+#include "Geometry.hpp"
 #include "MeshLoader.hpp"
+#include "Glm.hpp"
 
 class Mesh : public Geometry {
 protected:
-  std::vector<glm::dvec3> positions;
+  std::vector<Glm::Vec3> positions;
 
 public:
   Mesh(const std::string &name);
@@ -28,5 +29,5 @@ public:
 
 private:
   virtual Intersection *constructIntersection(
-      int hitFace, Point poi, double beta, double gamma) const;
+      int hitFace, Glm::Vec4 poi, double beta, double gamma) const;
 };

@@ -1,6 +1,5 @@
 #include "ReflectiveMaterial.hpp"
 #include "Constants.hpp"
-#include "Debug.hpp"
 #include <cmath>
 #include <glm/gtx/vector_angle.hpp>
 

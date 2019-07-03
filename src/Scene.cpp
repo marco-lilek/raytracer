@@ -1,10 +1,5 @@
-#include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtx/vector_angle.hpp>
-
 #include "Constants.hpp"
 #include "Log.hpp"
-#include "Math.hpp"
 #include "Scene.hpp"
 #include "Material.hpp"
 #include "Node.hpp"
@@ -13,15 +8,17 @@
 #include "PhysicalNode.hpp"
 #include "UVIntersection.hpp"
 #include "TextureMaterial.hpp"
+#include "Glm.hpp"
 
 #include <iostream>
 
 using namespace std;
+using namespace Glm;
 
 Scene::Scene(
   const Node *const root,
   const std::vector<const Light *> &lights,
-  const glm::dvec3 &ambient)
+  const Vec3 &ambient)
     : root(root), lights(lights), ambientLight(ambient)
 {
 }
@@ -47,7 +44,7 @@ Scene::Scene(
 //     startingDepth); // TODO
 // }
 
-const Color
+const Vec3
 Scene::getColor(const Ray &rayFromEye) const
 {
   // TODO parameterize
@@ -56,7 +53,7 @@ Scene::getColor(const Ray &rayFromEye) const
   return getColor(rayFromEye, maxIterations);
 }
 
-const Color
+const Vec3
 Scene::getColor(const Ray &rayFromEye, int depth) const
 {
   const char *METHOD = "Scene::getColor";
@@ -65,7 +62,7 @@ Scene::getColor(const Ray &rayFromEye, int depth) const
   
   Log::trace(METHOD, "intersection: {}", intersection);
   if (!intersection.isHit()) {
-    return Color(0);
+    return Vec3(0);
   }
 
   // A node/its material is just a component of the state of the scene;
@@ -95,28 +92,28 @@ Scene::getColor(const Ray &rayFromEye, int depth) const
 
   // TODO assert(0)
   // Should never be reached
-  return Color(1,0,1); // #ff00ff
+  return Vec3(1,0,1); // #ff00ff
 }
 
-Color
+Vec3
 Scene::getColorOfRayOnPhongMaterial(
     const PhongMaterial *material, 
     const Ray &rayFromEye,
     const GeometryIntersection &intersection) const {
   const char *METHOD_NAME = "Scene::getColorOfRayOnPhongMaterial";
   // TODO parameterize it
-  const Color AMBIENT_LIGHT(0.2);
+  const Vec3 AMBIENT_LIGHT(0.2);
 
   Log::trace(METHOD_NAME, "material {}", *material);
 
   // This is the color ultimately returned from this method
-  Color finalColor(0);
+  Vec3 finalColor(0);
 
   {
     // To simplify just assume we have a constant ambient diffuse lighting
     // This light is always present even if we're in the shadow, which is why
     // we do this computation first
-    Color ambientLight = AMBIENT_LIGHT * material->kd;
+    Vec3 ambientLight = AMBIENT_LIGHT * material->kd;
     Log::trace(METHOD_NAME, "ambientLight {}", ambientLight);
     CHECK(METHOD_NAME, ambientLight >= 0);
     finalColor += ambientLight;
@@ -134,7 +131,7 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
-    const Point shooterPosOfShadow = intersection.p + intersection.n.normalize();
+    const Vec4 shooterPosOfShadow = intersection.p + Glm::normalize(intersection.n);
 
     // Ray from the point of intersection to the light
     const Ray shadowRay(shooterPosOfShadow, 
@@ -144,7 +141,7 @@ Scene::getColorOfRayOnPhongMaterial(
     // we still need some correction to prevent the case when we get an
     // obtuse angle between the normal and the shadow ray 
     // because of our "shift" by epsilon
-    double shadowRayDotNormal = shadowRay.v.dot(intersection.n);
+    double shadowRayDotNormal = Glm::dot(shadowRay.v, intersection.n);
     if (shadowRayDotNormal < 0) {
       Log::trace(METHOD_NAME,
           "no illumiation because shadowRayDotNormal {} < 0, shadowRay {} normal {}",
@@ -162,8 +159,8 @@ Scene::getColorOfRayOnPhongMaterial(
         const GeometryIntersection &shadowRayGeometry = *shadowRayIntersection.geometry;
         // We intersected the scene, but it is still possible that 
         // we reach the light source before we hit the scene
-        double lengthOfShadowRay = intersection.p.distanceTo(shadowRayGeometry.p);
-        double distanceToLight = intersection.p.distanceTo(light->pos);
+        double lengthOfShadowRay = Glm::distanceTo(intersection.p, shadowRayGeometry.p);
+        double distanceToLight = Glm::distanceTo(intersection.p, light->pos);
         Log::trace(METHOD_NAME, 
             "lengthOfShadowRay {} distanceToLight {}",
             lengthOfShadowRay, distanceToLight);
@@ -175,14 +172,14 @@ Scene::getColorOfRayOnPhongMaterial(
       }
     }
 
-    Color textureColor(0);
-    const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
-    if (textureMaterial != NULL) {
-      // If we have a texture, we must be able to cast the intersection to a UVintersection
-      const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
-      CHECK(METHOD_NAME, uvIntersection != NULL);
-      textureColor = textureMaterial->texture->getValue(uvIntersection->u, uvIntersection->v);
-    }
+    Vec3 textureColor(0);
+    // const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
+    // if (textureMaterial != NULL) {
+    //   // If we have a texture, we must be able to cast the intersection to a UVintersection
+    //   const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
+    //   CHECK(METHOD_NAME, uvIntersection != NULL);
+    //   textureColor = textureMaterial->texture->getValue(uvIntersection->u, uvIntersection->v);
+    // }
 
     // We know this light illuminates our point of intersection. 
     // So we can proceed with the rest of the lighting calculation
@@ -192,10 +189,10 @@ Scene::getColorOfRayOnPhongMaterial(
     {
       // Diffuse lighting is based on the angle between the normal
       // at the point of intersection and direction of the shadowRay
-      double diffuseFactor = shadowRay.v.normalizeDot(intersection.n);
+      double diffuseFactor = Glm::normalizeDot(shadowRay.v, intersection.n);
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
-      const Color diffuseColor(diffuseFactor * material->kd * light->color);
+      const Vec3 diffuseColor(diffuseFactor * material->kd * light->color);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
       CHECK(METHOD_NAME, diffuseColor >= 0);
       finalColor += diffuseColor;
@@ -204,14 +201,14 @@ Scene::getColorOfRayOnPhongMaterial(
     {
       // Specular lighting also factors in the angle between the normal
       // and the eye
-      const Vector halfwayVector = shadowRay.v.halfwayVector(-rayFromEye.v);
+      const Vec4 halfwayVector = Glm::halfwayVector(shadowRay.v, -rayFromEye.v);
       Log::trace(METHOD_NAME, "halfwayVector {}", halfwayVector);
-      double hDotn = halfwayVector.normalizeDot(intersection.n);
+      double hDotn = Glm::normalizeDot(halfwayVector, intersection.n);
       Log::trace(METHOD_NAME, "hDotn {}", hDotn);
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
-      const Color specularColor(specularFactor * material->ks * light->color);
+      const Vec3 specularColor(specularFactor * material->ks * light->color);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
       CHECK(METHOD_NAME, specularColor >= 0);
       finalColor += specularColor;
@@ -225,10 +222,10 @@ Scene::getColorOfRayOnPhongMaterial(
   // TODO it is very possible our color exceeds 1, we need to add 
   // some safeguards to clamp its range so that it doesn't act up when
   // we convert it to bytes
-  return finalColor.clamp();
+  return Glm::clamp(finalColor);
 }
 
-Color Scene::getColorOfRayOnReflectiveMaterial(
+Vec3 Scene::getColorOfRayOnReflectiveMaterial(
     const ReflectiveMaterial *material, 
     const Ray &rayFromEye,
     const GeometryIntersection &intersection,
@@ -238,12 +235,12 @@ Color Scene::getColorOfRayOnReflectiveMaterial(
   if (depth == 0) {
     // To avoid infinite recursion
     Log::trace(METHOD_NAME, "depth == 0, terminating");
-    return Color(0);
+    return Vec3(0);
   }
 
-  Vector normalizedN = intersection.n.normalize();
+  Vec4 normalizedN = Glm::normalize(intersection.n);
   Ray reflectedRay(intersection.p + normalizedN, 
-      rayFromEye.v.reflectAcross(normalizedN));
+      Glm::reflectAcross(rayFromEye.v, normalizedN));
   Log::trace(METHOD_NAME, "depth {} reflectedRay {}", depth, reflectedRay);
 
   return getColor(reflectedRay, depth-1);

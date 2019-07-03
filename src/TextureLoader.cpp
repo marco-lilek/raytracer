@@ -4,6 +4,8 @@
 
 #include <lodepng/lodepng.h>
 
+using namespace Glm;
+
 const Texture *
 TextureLoader::loadTexture(const std::string &name) {
   const char* TRACE_HEADER = "TextureLoader::loadTexture";
@@ -30,7 +32,7 @@ TextureLoader::loadTexture(const std::string &name) {
     x = Color::decode(image[i+0]);
     y = Color::decode(image[i+1]);
     z = Color::decode(image[i+2]); 
-    texture->data[i] = glm::dvec3(x,y,z);
+    texture->data[i] = Vec3(x,y,z);
 
     //texture->data[i+3] = 
   }

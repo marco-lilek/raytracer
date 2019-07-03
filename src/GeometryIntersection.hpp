@@ -1,18 +1,17 @@
 #pragma once
 #include "Intersection.hpp"
-#include "Point.hpp"
-#include "Vector.hpp"
+#include "Glm.hpp"
 
 struct GeometryIntersection : public Intersection {
   // The point of intersection
-  Point p;
+  Glm::Vec4 p;
 
   // The normal at the point of intersection
-  Vector n;
+  Glm::Vec4 n;
 
   GeometryIntersection(const ShooterPos sp,
-      const Point &p,
-      const Vector &n) : 
+      const Glm::Vec4 &p,
+      const Glm::Vec4 &n) : 
     Intersection(sp), 
     p(p),
     n(n) {} 
@@ -23,5 +22,6 @@ struct GeometryIntersection : public Intersection {
 
   virtual std::ostream& dump(std::ostream& o) const {
     return o;
+    // TODO
   }
 };

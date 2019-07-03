@@ -1,22 +1,23 @@
 #pragma once
 
-#include "Point.hpp"
-#include "Vector.hpp"
+#include "Glm.hpp"
 #include "Ray.hpp"
 
 struct Camera : public Object {
-  Point eye;
-  Vector up;
-  Vector towards;
+  Glm::Vec4 eye;
+  Glm::Vec4 up;
+  Glm::Vec4 towards;
   int width, height;
   double fov;
-  glm::mat4 pointToWorld;
+  Glm::Mat4 pointToWorld;
 
-  Camera(Point eye,
-      Vector up,
-      Vector towards,
+  Camera(
+      const Glm::Vec3 &eye,
+      const Glm::Vec3 &up,
+      const Glm::Vec3 &towards,
       int width,
-      int height, double fov);
+      int height,
+      double fov);
 
   Ray getRayFromEyeToScreen(int, int) const;
 

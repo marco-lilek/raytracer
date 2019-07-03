@@ -1,5 +1,4 @@
 #include "Mesh.hpp"
-#include "ObjLoader.hpp"
 #include "Log.hpp"
 #include "Constants.hpp"
 #include "MeshLoader.hpp"
@@ -8,6 +7,9 @@
 
 #include <iostream>
 
+#include "Glm.hpp"
+
+using namespace Glm;
 using namespace std;
 
 Mesh::Mesh(const std::string &name) : Geometry()
@@ -22,13 +24,13 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
   double beta = -1;
   double gamma = -1;
 
-  const glm::dvec3 &ev = incomingRay.from;
-  const glm::dvec3 dv(incomingRay.v);
+  const Vec3 &ev = incomingRay.from;
+  const Vec3 dv(incomingRay.v);
   double a, b, c, d, e, f, g, h, i, j, k, l;
   for (int faceIdx = 0; faceIdx < positions.size(); faceIdx += 3) {
-    glm::dvec3 va(positions[faceIdx]);
-    glm::dvec3 vb(positions[faceIdx + 1]);
-    glm::dvec3 vc(positions[faceIdx + 2]);
+    Vec3 va(positions[faceIdx]);
+    Vec3 vb(positions[faceIdx + 1]);
+    Vec3 vc(positions[faceIdx + 2]);
 
     // TODO explain how this works
     a = va.x - vb.x; b = va.y - vb.y; c = va.z - vb.z;
@@ -91,18 +93,18 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
     return new Intersection(GeometryIntersection::Miss);
   }
 
-  Point poi(incomingRay.pointAt(closestDistToIntersect));
+  Vec4 poi(incomingRay.pointAt(closestDistToIntersect));
   return constructIntersection(hitFace, poi, beta, gamma);
 }
 
 Intersection *Mesh::constructIntersection(
-      int hitFace, Point poi, double beta, double gamma) const {
+      int hitFace, Vec4 poi, double beta, double gamma) const {
 
-  glm::vec3 va(positions[hitFace]);
-  glm::vec3 vb(positions[hitFace + 1]);
-  glm::vec3 vc(positions[hitFace + 2]);
+  Vec3 va(positions[hitFace]);
+  Vec3 vb(positions[hitFace + 1]);
+  Vec3 vc(positions[hitFace + 2]);
 
-  Vector normal(glm::cross(vb - va, vc - vb));
+  Vec4 normal(glm::cross(vb - va, vc - vb), 0);
 
   return new GeometryIntersection(
       GeometryIntersection::Towards,

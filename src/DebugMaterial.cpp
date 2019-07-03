@@ -1,19 +1,20 @@
 #include "DebugMaterial.hpp"
 
+using namespace Glm;
 
-Color DebugMaterial::getColor(
+Vec3 DebugMaterial::getColor(
     const GeometryIntersection::ShooterPos &shooterPos) const {
   switch (shooterPos) {
     case GeometryIntersection::Towards:
-      return Color(1); // White
+      return Vec3(1); // White
     break;
     case GeometryIntersection::Inside:
-      return Color(1,0,0); // Red
+      return Vec3(1,0,0); // Red
     break;
     case GeometryIntersection::Past:
     case GeometryIntersection::Miss:
     default:
-      return Color(0); // Black
+      return Vec3(0); // Black
     break;
   };
 }

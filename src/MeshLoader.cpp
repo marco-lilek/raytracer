@@ -4,6 +4,7 @@
 #include "Log.hpp"
 
 using namespace std;
+using namespace Glm;
 
 MeshLoader::MeshLoader(const std::string &filename) : filename(filename) {
 }
@@ -65,8 +66,8 @@ void MeshLoader::loadMesh(UVMesh *mesh) const {
     auto normal = aiMesh->mNormals[i];
     auto uvcoord = aiMesh->mTextureCoords[0][i];
 
-    mesh->normals[i] = glm::vec3(normal.x, normal.y, normal.z);
-    mesh->uvCoords[i] = glm::vec2(uvcoord.x, uvcoord.y);
+    mesh->normals[i] = Vec3(normal.x, normal.y, normal.z);
+    mesh->uvCoords[i] = Vec2((double)uvcoord.x, (double)uvcoord.y);
   }
 
   mesh->tangents.resize(nv);
@@ -77,7 +78,7 @@ void MeshLoader::loadMesh(UVMesh *mesh) const {
 
   for (int i = 0; i < nv; i++) {
     auto tangent = aiMesh->mTangents[i];
-    mesh->tangents[i] = glm::vec3(
+    mesh->tangents[i] = Vec3(
         tangent.x, tangent.y, tangent.z);
   }
 

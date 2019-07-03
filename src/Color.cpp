@@ -1,9 +1,11 @@
 #include "Color.hpp"
 
-std::array<uint8_t, 3> Color::toBytes() const {
+using namespace Glm;
+
+std::array<uint8_t, 3> Color::toBytes(const Vec3 &v) {
   std::array<uint8_t, 3> asBytes;
   for (int i = 0; i < 3; i++) {
-    asBytes[i] = enc(rgb[i]);
+    asBytes[i] = enc(v[i]);
   }
   return asBytes;
 }

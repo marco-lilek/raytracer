@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Point.hpp"
-#include "Vector.hpp"
 #include "GeometryIntersection.hpp"
 #include <memory>
 #include "Log.hpp"

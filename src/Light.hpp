@@ -4,13 +4,13 @@
 
 #include <glm/glm.hpp>
 #include "Color.hpp"
-#include "Point.hpp"
+#include "Glm.hpp"
 
 struct Light : public Object {
-  const Color color;
-  const Point pos;
-  Light(const Color &color, const Point &pos)
-      : color(color), pos(pos)
+  const Glm::Vec3 color;
+  const Glm::Vec4 pos;
+  Light(const Glm::Vec3 &color, const Glm::Vec3 &pos)
+      : color(color), pos(Glm::Vec4(pos,1))
   {
   }
 

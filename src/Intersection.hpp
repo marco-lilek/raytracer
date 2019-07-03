@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Object.hpp"
+
 struct Intersection : public Object {
   // where the fired ray is positioned relative to the target
   enum ShooterPos {

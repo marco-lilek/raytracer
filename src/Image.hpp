@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Color.hpp"
+#include "Glm.hpp"
 
 class Image {
   std::vector<uint8_t> data;
@@ -40,7 +41,7 @@ public:
   void drawPixel(
     int x,
     int y,
-    Color c);
+    Glm::Vec3 color);
 
   virtual ~Image();
 };

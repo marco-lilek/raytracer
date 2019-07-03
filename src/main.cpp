@@ -3,7 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "Debug.hpp"
+#include "ViewWindow.hpp"
+#include "RuntimeConfig.hpp"
 #include "Image.hpp"
 #include "Light.hpp"
 #include "Lua.hpp"

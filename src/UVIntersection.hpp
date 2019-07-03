@@ -6,8 +6,8 @@ struct UVIntersection : public GeometryIntersection {
   double u, v;
 
   UVIntersection(const ShooterPos sp,
-      const Point &p,
-      const Vector &n,
+      const Glm::Vec4 &p,
+      const Glm::Vec4 &n,
       const double u,
       const double v) : 
     GeometryIntersection(sp, p, n),

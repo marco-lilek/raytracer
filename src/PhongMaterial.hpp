@@ -1,19 +1,20 @@
 #pragma once
 
 #include "Material.hpp"
-#include <glm/glm.hpp>
 
 #include <iostream>
 
+#include "Glm.hpp"
+
 struct PhongMaterial : public Material {
-  const Color kd;
-  const Color ks;
+  const Glm::Vec3 kd;
+  const Glm::Vec3 ks;
 
   const double shininess;
 
   PhongMaterial(
-    const Color &kd,
-    const Color &ks,
+    const Glm::Vec3 &kd,
+    const Glm::Vec3 &ks,
     const double &shininess) : 
     kd(kd), 
     ks(ks),

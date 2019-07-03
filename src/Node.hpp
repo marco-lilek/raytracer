@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -9,17 +8,19 @@
 #include "Ray.hpp"
 #include "PhysicalIntersection.hpp"
 
+#include "Glm.hpp"
+
 class Node : public Object {
   std::vector<Node *> children;
 
   // M
-  glm::dmat4 modelTransform;
+  Glm::Mat4 modelTransform;
 
   // M^-1
-  glm::dmat4 invModelTransform;
+  Glm::Mat4 invModelTransform;
 
   // (M^-1)^T
-  glm::dmat4 invTransModelTransform;
+  Glm::Mat4 invTransModelTransform;
 
 public:
   std::string name;
@@ -51,6 +52,6 @@ public:
   virtual std::ostream& dump(std::ostream& o) const {
     // For the sake of brevity avoid dumping the full node tree
     return o << "name " << name 
-      << " modelTransform " << glm::to_string(modelTransform);
+      << " modelTransform " << modelTransform;
   }
 };

@@ -1,10 +1,3 @@
-#include "PhongMaterial.hpp"
-#include "Debug.hpp"
-#include "Light.hpp"
-#include "Math.hpp"
-#include "Node.hpp"
-#include "LightRay.hpp"
-
 // glm::dvec3
 // PhongMaterial::intersect(
 //   const Scene &scene,

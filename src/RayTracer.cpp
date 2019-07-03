@@ -2,11 +2,11 @@
 #include "Scene.hpp"
 #include "Image.hpp"
 #include "Log.hpp"
-#include "RayGun.hpp"
 #include "Camera.hpp"
 #include "RuntimeConfig.hpp"
 
 using namespace std;
+using namespace Glm;
 
 void
 RayTracer::render(
@@ -63,13 +63,13 @@ RayTracer::render(
         Log::trace(LOCATION, "firing ray to i {} j {}", i, j);
         const Ray rayFromEyeToScreen = camera.getRayFromEyeToScreen(i, j);
         Log::trace(LOCATION, "rayFromEyeToScreen {}", rayFromEyeToScreen);
-        const Color pixelColor = scene.getColor(rayFromEyeToScreen);
+        const Vec3 pixelColor = scene.getColor(rayFromEyeToScreen);
         Log::trace(LOCATION, "pixelColor {}", pixelColor);
         img.drawPixel(i, j, pixelColor);
       } catch (const AssertionError &e) {
         Log::error(LOCATION, "i {} j {}", i, j);
         if (RuntimeConfig::get().drawDeadPixels) {
-          img.drawPixel(i, j, Color(0));
+          img.drawPixel(i, j, Vec3(0));
         } else {
           throw;
         }

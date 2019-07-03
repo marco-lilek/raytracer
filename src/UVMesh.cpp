@@ -1,9 +1,11 @@
 #include "UVMesh.hpp"
 #include "UVIntersection.hpp"
 
+using namespace Glm;
+
 Intersection *UVMesh::constructIntersection(
       int hitFace,
-      Point poi,
+      Vec4 poi,
       double beta,
       double gamma) const {
 
@@ -18,11 +20,11 @@ Intersection *UVMesh::constructIntersection(
   double u = ua + beta * ub + gamma * uc;
   double v = va + beta * vb + gamma * vc;
 
-  glm::vec3 na(positions[hitFace]);
-  glm::vec3 nb(positions[hitFace + 1]);
-  glm::vec3 nc(positions[hitFace + 2]);
+  Vec3 na(positions[hitFace]);
+  Vec3 nb(positions[hitFace + 1]);
+  Vec3 nc(positions[hitFace + 2]);
 
-  Vector normal(glm::cross(nb - na, nc - nb));
+  Vec4 normal(glm::cross(nb - na, nc - nb), 0);
 
   return new UVIntersection(
       GeometryIntersection::Towards,

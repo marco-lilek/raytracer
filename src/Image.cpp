@@ -13,6 +13,7 @@
 #include "Log.hpp"
 
 using namespace std;
+using namespace Glm;
 
 Image::Image(int width, int height)
   : width(width), height(height),
@@ -54,10 +55,10 @@ Image::drawPixel(
 void Image::drawPixel(
   int x,
   int y,
-  Color c)
+  Vec3 c)
 {
   const char *TRACE_HEADER = "Image::drawPixel";
-  array<uint8_t, 3> asBytes = c.toBytes();
+  array<uint8_t, 3> asBytes = Color::toBytes(c);
   drawPixel(x,y,asBytes[0],asBytes[1], asBytes[2]);
 }
 
