@@ -14,8 +14,6 @@ using namespace std;
 
 Mesh::Mesh(const std::string &name) : Geometry()
 {
-  MeshLoader loader(name);
-  loader.loadMesh(this);
 }
 
 Intersection *Mesh::intersect(const Ray &incomingRay) const {

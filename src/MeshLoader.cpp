@@ -72,6 +72,7 @@ void MeshLoader::loadMesh(UVMesh *mesh) const {
 
   mesh->tangents.resize(nv);
 
+  // TODO maybe generate smooth normals
   scene = importer.ApplyPostProcessing(
     aiProcess_CalcTangentSpace);
   CHECK(TRACE_HEADER, verifyScene(scene));

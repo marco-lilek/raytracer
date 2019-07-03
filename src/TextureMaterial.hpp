@@ -11,7 +11,7 @@ struct TextureMaterial : public PhongMaterial {
   const Texture *texture;
 
   TextureMaterial(const std::string &name) : 
-    PhongMaterial(Glm::Vec4(0), Glm::Vec4(0), 0), 
+    PhongMaterial(Glm::Vec4(1), Glm::Vec4(1), 1), 
     texture(TextureLoader::loadTexture(name)) {
 
     CHECK("TextureMaterial::TextureMaterial", texture != NULL);

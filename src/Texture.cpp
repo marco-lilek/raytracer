@@ -10,6 +10,7 @@ Texture::getValue(double u, double v) const {
   Log::check(TRACE_HEADER, v >= 0.0 && v <= 1.0, "range v {}", v);
   int x = u * width;
   int y = v * height;
+  Log::debug(TRACE_HEADER, "x {} y {}", x, y);
 
   return data[y * width + x];
 }

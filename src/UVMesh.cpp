@@ -1,5 +1,7 @@
 #include "UVMesh.hpp"
 #include "UVIntersection.hpp"
+#include "Log.hpp"
+#include "Constants.hpp"
 
 using namespace Glm;
 
@@ -8,6 +10,7 @@ Intersection *UVMesh::constructIntersection(
       Vec4 poi,
       double beta,
       double gamma) const {
+  const char *METHOD_NAME = "UVMesh::constructIntersection";
 
   double ua(uvCoords[hitFace][0]);
   double ub(uvCoords[hitFace+1][0]);
@@ -17,14 +20,17 @@ Intersection *UVMesh::constructIntersection(
   double vb(uvCoords[hitFace+1][1]);
   double vc(uvCoords[hitFace+2][1]);
 
-  double u = ua + beta * ub + gamma * uc;
-  double v = va + beta * vb + gamma * vc;
+  double alpha = (1.0 - beta - gamma);
+  Log::check(METHOD_NAME, alpha + constants::EPSILON >= 0, "alpha {}", alpha);
+  double u = glm::clamp(alpha * ua + beta * ub + gamma * uc, 0.0, 1.0);
+  double v = glm::clamp(alpha * va + beta * vb + gamma * vc, 0.0, 1.0);
 
-  Vec3 na(positions[hitFace]);
-  Vec3 nb(positions[hitFace + 1]);
-  Vec3 nc(positions[hitFace + 2]);
+  Vec3 na(normals[hitFace]);
+  Vec3 nb(normals[hitFace + 1]);
+  Vec3 nc(normals[hitFace + 2]);
 
-  Vec4 normal(glm::cross(nb - na, nc - nb), 0);
+  // This time we have the normal available in the mesh info
+  Vec4 normal(alpha  * na + beta * nb + gamma * nc, 0);
 
   return new UVIntersection(
       GeometryIntersection::Towards,

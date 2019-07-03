@@ -3,8 +3,9 @@ red = {0.5,0,0};
 gre = {0,0.5,0};
 blu = {0,0,0.5};
 
-sphere_square_uv = g.mesh("dodeca.obj")
+sphere_square_uv = g.uvmesh("sphere-square-uv.obj")
 
+--material = g.texture('earth.png')
 material = g.phong_material(red, gre, 50)
 sphere = g.geometry_node("sphere", sphere_square_uv, material) 
 sphere:scale(1.5,1.5,1.5)

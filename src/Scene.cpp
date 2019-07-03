@@ -172,19 +172,24 @@ Scene::getColorOfRayOnPhongMaterial(
       }
     }
 
-    Vec3 textureColor(0);
-    // const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
-    // if (textureMaterial != NULL) {
-    //   // If we have a texture, we must be able to cast the intersection to a UVintersection
-    //   const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
-    //   CHECK(METHOD_NAME, uvIntersection != NULL);
-    //   textureColor = textureMaterial->texture->getValue(uvIntersection->u, uvIntersection->v);
-    // }
-
     // We know this light illuminates our point of intersection. 
     // So we can proceed with the rest of the lighting calculation
     Log::trace(METHOD_NAME, "light{} illuminates intersection.p {}", 
         lightIdx, intersection.p);
+
+
+    Vec3 textureColor(1);
+    const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
+    if (textureMaterial != NULL) {
+      // If we have a texture, we must be able to cast the intersection to a UVintersection
+      const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
+      CHECK(METHOD_NAME, uvIntersection != NULL);
+      double u = uvIntersection->u;
+      double v = uvIntersection->v;
+      textureColor = textureMaterial->texture->getValue(u, v);
+
+      Log::trace(METHOD_NAME, "u {} v {} textureColor {}", u, v, textureColor);
+    }
 
     {
       // Diffuse lighting is based on the angle between the normal
@@ -192,7 +197,7 @@ Scene::getColorOfRayOnPhongMaterial(
       double diffuseFactor = Glm::normalizeDot(shadowRay.v, intersection.n);
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
-      const Vec3 diffuseColor(diffuseFactor * material->kd * light->color);
+      const Vec3 diffuseColor(diffuseFactor * material->kd * light->color * textureColor);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
       CHECK(METHOD_NAME, diffuseColor >= 0);
       finalColor += diffuseColor;
@@ -208,7 +213,7 @@ Scene::getColorOfRayOnPhongMaterial(
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
-      const Vec3 specularColor(specularFactor * material->ks * light->color);
+      const Vec3 specularColor(specularFactor * material->ks * light->color * textureColor);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
       CHECK(METHOD_NAME, specularColor >= 0);
       finalColor += specularColor;

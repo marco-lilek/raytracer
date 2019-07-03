@@ -27,13 +27,18 @@ TextureLoader::loadTexture(const std::string &name) {
 
   Texture *texture = new Texture(width, height);
 
-  for (int i = 0; i < numPixels; i += NUM_BYTES_PER_PIXEL) {
-    double x,y,z;
-    x = Color::decode(image[i+0]);
-    y = Color::decode(image[i+1]);
-    z = Color::decode(image[i+2]); 
-    texture->data[i] = Vec3(x,y,z);
+  double x,y,z;
+  for (int i = 0; i < numPixels; i++) {
+    int sidx = i*NUM_BYTES_PER_PIXEL;
+    x = Color::decode(image[sidx+0]);
+    y = Color::decode(image[sidx+1]);
+    z = Color::decode(image[sidx+2]); 
+    Vec3 data(x,y,z);
+    texture->data[i] = data;
+    //Log::trace("sdf", "i {} data {}", i, data);
 
     //texture->data[i+3] = 
   }
+
+  return texture;
 }

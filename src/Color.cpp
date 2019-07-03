@@ -12,7 +12,7 @@ std::array<uint8_t, 3> Color::toBytes(const Vec3 &v) {
 
 double Color::decode(uint8_t v) {
   const char * TRACE_HEADER = "Color::enc";
-  int asDouble = (double)v / 255;
+  double asDouble = ((double)v) / 255.0;
   return asDouble;
 }
 

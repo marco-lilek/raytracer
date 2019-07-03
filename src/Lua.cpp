@@ -40,9 +40,19 @@ echo()
 //
 // Make sure the arguments (type + const + ref vs pointer) are correct
 
+Mesh* create_uvmesh(const string&name) {
+  // TODO: Use the meshloader
+  UVMesh *mesh = new UVMesh(name);
+  MeshLoader loader(name);
+  loader.loadMesh(mesh);
+  return mesh;
+}
+
 Mesh* create_mesh(const string&name) {
-  // Use the meshloader
-  return new Mesh(name);
+  Mesh *mesh = new Mesh(name);
+  MeshLoader loader(name);
+  loader.loadMesh(mesh);
+  return mesh;
 }
 
 Material *create_texture(const string&name) {
@@ -97,6 +107,7 @@ initNamespace(lua_State *L)
   getGlobalNamespace(L)
     .beginNamespace("g")
     .addFunction("echo", echo)
+    .addFunction("uvmesh", create_uvmesh)
     .addFunction("mesh", create_mesh)
     .addFunction("texture", create_texture)
     .addFunction("phong_material", create_phong_material)
@@ -112,13 +123,9 @@ initNamespace(lua_State *L)
     .beginClass<Light>("Light").endClass()
 
     .beginClass<Geometry>("Geometry").endClass()
-    .deriveClass<Mesh, Geometry>("Geometry").endClass()
+    .deriveClass<Mesh, Geometry>("Mesh").endClass()
 
     .beginClass<Material>("Material").endClass()
-    .deriveClass<DebugMaterial, Material>("DebugMaterial").endClass()
-    .deriveClass<ReflectiveMaterial, Material>("ReflectiveMaterial").endClass()
-    .deriveClass<PhongMaterial, Material>("PhongMaterial").endClass()
-    .deriveClass<TextureMaterial, PhongMaterial>("TextureMaterial").endClass() 
 
     .beginClass<Node>("Node")
     .addFunction("scale", &Node::scale)
@@ -127,9 +134,6 @@ initNamespace(lua_State *L)
     .addFunction("addChild", &Node::addChild)
     // .addFunction("intersect", &Node::intersect)
     .endClass()
-
-    .deriveClass<PrimitiveNode, Node>("PrimitiveNode").endClass()
-    .deriveClass<GeometryNode, Node>("GeometryNode").endClass()
 
     .beginClass<RayTracer>("RayTracer").endClass()
     .endNamespace();
