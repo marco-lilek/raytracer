@@ -60,3 +60,7 @@ std::ostream& operator<<(std::ostream& out, const Glm::Vec3& g) {
 std::ostream& operator<<(std::ostream& out, const Glm::Mat4& g) {
     return out << glm::to_string(g);
 }
+
+std::ostream& operator<<(std::ostream& out, const Glm::Mat3& g) {
+    return out << glm::to_string(g);
+}

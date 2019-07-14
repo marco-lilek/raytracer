@@ -14,6 +14,7 @@
 #include "Node.hpp"
 #include "PhysicalIntersection.hpp"
 #include "GeometryIntersection.hpp"
+#include "UVIntersection.hpp"
 
 using namespace glm;
 using namespace std;
@@ -110,11 +111,17 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
     return physicalIntersection;
   }
 
-  GeometryIntersection &geometry = *physicalIntersection.geometry.get();
-  geometry.p = glm::dvec4(
-      modelTransform * geometry.p);
-  geometry.n = glm::dvec4(
-      invTransModelTransform * geometry.n);
+  GeometryIntersection *geometry = physicalIntersection.geometry.get();
+  geometry->p = glm::dvec4(
+      modelTransform * geometry->p);
+  geometry->n = glm::dvec4(
+      invTransModelTransform * geometry->n);
+
+  if (UVIntersection *uvIntersection = 
+      dynamic_cast<UVIntersection *>(geometry)) {
+    uvIntersection->t = glm::dvec4(
+        invTransModelTransform * uvIntersection->t);
+  }
 
   return physicalIntersection;
 }

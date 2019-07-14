@@ -55,8 +55,16 @@ Mesh* create_mesh(const string&name) {
   return mesh;
 }
 
+Material *create_bump(
+    const string&name, 
+    const Glm::Vec3 &kd,
+    const Glm::Vec3 &ks,
+    const double shininess) {
+  return new TextureMaterial(NULL, name.c_str(), kd, ks, shininess);
+}
+
 Material *create_texture(const string&name) {
-  return new TextureMaterial(name);
+  return new TextureMaterial(name.c_str(), NULL, Glm::Vec3(1), Glm::Vec3(1), 1);
 }
 
 Material *create_phong_material(const Glm::Vec3 &kd,
@@ -110,6 +118,7 @@ initNamespace(lua_State *L)
     .addFunction("uvmesh", create_uvmesh)
     .addFunction("mesh", create_mesh)
     .addFunction("texture", create_texture)
+    .addFunction("bump", create_bump)
     .addFunction("phong_material", create_phong_material)
 
     .addFunction("node", create_node)

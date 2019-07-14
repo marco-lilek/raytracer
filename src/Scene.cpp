@@ -138,17 +138,6 @@ Scene::getColorOfRayOnPhongMaterial(
         light->pos - shooterPosOfShadow);
     Log::trace(METHOD_NAME, "shadowRay {}", shadowRay);
 
-    // we still need some correction to prevent the case when we get an
-    // obtuse angle between the normal and the shadow ray 
-    // because of our "shift" by epsilon
-    double shadowRayDotNormal = Glm::dot(shadowRay.v, intersection.n);
-    if (shadowRayDotNormal < 0) {
-      Log::trace(METHOD_NAME,
-          "no illumiation because shadowRayDotNormal {} < 0, shadowRay {} normal {}",
-          shadowRayDotNormal, shadowRay.v, intersection.n);
-      continue;
-    }
-
     {
       // Checking if the shadow ray reaches the light
       // if not, then we can skip the rest of the lighting calculation
@@ -179,28 +168,55 @@ Scene::getColorOfRayOnPhongMaterial(
 
 
     Vec3 textureColor(1);
-    const TextureMaterial *textureMaterial = dynamic_cast<const TextureMaterial *>(material);
-    if (textureMaterial != NULL) {
-      // If we have a texture, we must be able to cast the intersection to a UVintersection
-      const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
-      CHECK(METHOD_NAME, uvIntersection != NULL);
+    Vec4 normalForLighting = intersection.n;
+
+    const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
+    if (uvIntersection != NULL) {
+      const TextureMaterial *textureMaterial =
+          dynamic_cast<const TextureMaterial *>(material);
+
+      // TODO this check is actually not necessary
+      CHECK(METHOD_NAME, textureMaterial != NULL);
+
       double u = uvIntersection->u;
       double v = uvIntersection->v;
-      textureColor = textureMaterial->texture->getValue(u, v);
+
+      // Get the color from the texture
+      if (textureMaterial->texture != NULL) {
+        textureColor = textureMaterial->texture->getValue(u, v);
+      }
+
+      // Do bump mapping
+      if (textureMaterial->bump != NULL) {
+        Vec3 normalInTangentSpace = normalize(textureMaterial->bump->getValue(u, v));
+        Vec4 bitangent = cross(uvIntersection->n, uvIntersection->t);
+        Mat3 worldToTangentSpace = Mat3(
+            Vec3(bitangent), 
+            Vec3(uvIntersection->t),
+            Vec3(uvIntersection->n));
+        Log::debug(METHOD_NAME, "worldToTangentSpace {}", worldToTangentSpace);
+        normalForLighting = Vec4(worldToTangentSpace * normalInTangentSpace, 0);
+        Log::debug(METHOD_NAME, 
+            "intersection.n {} normalInTangentSpace {} normalForLighting {}", 
+            intersection.n, normalInTangentSpace, normalForLighting);
+      }
 
       Log::trace(METHOD_NAME, "u {} v {} textureColor {}", u, v, textureColor);
     }
 
+
     {
       // Diffuse lighting is based on the angle between the normal
       // at the point of intersection and direction of the shadowRay
-      double diffuseFactor = Glm::normalizeDot(shadowRay.v, intersection.n);
+      double diffuseFactor = Glm::normalizeDot(shadowRay.v, normalForLighting);
       Log::trace(METHOD_NAME, "diffuseFactor {}", diffuseFactor);
 
       const Vec3 diffuseColor(diffuseFactor * material->kd * light->color * textureColor);
       Log::trace(METHOD_NAME, "diffuseColor {}", diffuseColor);
-      CHECK(METHOD_NAME, diffuseColor >= 0);
-      finalColor += diffuseColor;
+      if (diffuseColor >= 0) {
+        CHECK(METHOD_NAME, diffuseColor >= 0);
+        finalColor += diffuseColor;
+      }
     }
 
     {
@@ -208,15 +224,18 @@ Scene::getColorOfRayOnPhongMaterial(
       // and the eye
       const Vec4 halfwayVector = Glm::halfwayVector(shadowRay.v, -rayFromEye.v);
       Log::trace(METHOD_NAME, "halfwayVector {}", halfwayVector);
-      double hDotn = Glm::normalizeDot(halfwayVector, intersection.n);
+      double hDotn = Glm::normalizeDot(halfwayVector, normalForLighting);
       Log::trace(METHOD_NAME, "hDotn {}", hDotn);
       double specularFactor = glm::pow(hDotn, material->shininess);
       Log::trace(METHOD_NAME, "specularFactor {}", specularFactor);
 
       const Vec3 specularColor(specularFactor * material->ks * light->color * textureColor);
       Log::trace(METHOD_NAME, "specularColor {}", specularColor);
-      CHECK(METHOD_NAME, specularColor >= 0);
-      finalColor += specularColor;
+
+      if (specularColor >= 0) {
+        CHECK(METHOD_NAME, specularColor >= 0);
+        finalColor += specularColor;
+      }
     }
 
     Log::trace(METHOD_NAME, "after light{}, finalColor {}", 

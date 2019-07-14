@@ -5,8 +5,8 @@ blu = {0,0,0.5};
 
 sphere_square_uv = g.uvmesh("sphere-square-uv.obj")
 
---material = g.texture('earth.png')
-material = g.phong_material(red, gre, 50)
+material = g.bump('crystal-normal.png', red, gre, 25)
+--material = g.phong_material(red, gre, 50)
 sphere = g.geometry_node("sphere", sphere_square_uv, material) 
 sphere:scale(1.5,1.5,1.5)
 sphere:translate(0,0,10)

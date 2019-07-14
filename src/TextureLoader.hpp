@@ -6,5 +6,5 @@
 #include <string>
 
 struct TextureLoader {
-  static const Texture *loadTexture(const std::string &name);
+  static const Texture *loadTexture(const char *textureName);
 };

@@ -12,6 +12,7 @@ namespace Glm {
   typedef glm::dvec2 Vec2;
 
   typedef glm::dmat4 Mat4;
+  typedef glm::dmat3 Mat3;
 
   Vec4 cross(const Vec4 &a, const Vec4 &b);
 
@@ -33,4 +34,6 @@ bool operator>=(const Glm::Vec3 &a, int v);
 
 std::ostream& operator<<(std::ostream& out, const Glm::Vec4& g);
 std::ostream& operator<<(std::ostream& out, const Glm::Vec3& g);
+
 std::ostream& operator<<(std::ostream& out, const Glm::Mat4& g);
+std::ostream& operator<<(std::ostream& out, const Glm::Mat3& g);

@@ -32,10 +32,19 @@ Intersection *UVMesh::constructIntersection(
   // This time we have the normal available in the mesh info
   Vec4 normal(alpha  * na + beta * nb + gamma * nc, 0);
 
+  Vec3 ta(tangents[hitFace]);
+  Vec3 tb(tangents[hitFace + 1]);
+  Vec3 tc(tangents[hitFace + 2]);
+
+  Vec4 tangent(alpha  * ta + beta * tb + gamma * tc, 0);
+
   return new UVIntersection(
       GeometryIntersection::Towards,
       poi, 
-      normal, u, v);
+      normal, 
+      tangent,
+      u,
+      v);
 }
 
 // void

@@ -7,11 +7,11 @@
 using namespace Glm;
 
 const Texture *
-TextureLoader::loadTexture(const std::string &name) {
+TextureLoader::loadTexture(const char *name) {
   const char* TRACE_HEADER = "TextureLoader::loadTexture";
   
   // TODO don't hard code the path
-  std::string filename = "../assets/" + name;
+  std::string filename = std::string("../assets/") + name;
 
   std::vector<unsigned char> image; //the raw pixels
   unsigned width, height;

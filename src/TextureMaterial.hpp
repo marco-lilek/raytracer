@@ -9,12 +9,21 @@
 
 struct TextureMaterial : public PhongMaterial {
   const Texture *texture;
+  const Texture *bump;
 
-  TextureMaterial(const std::string &name) : 
-    PhongMaterial(Glm::Vec4(1), Glm::Vec4(1), 1), 
-    texture(TextureLoader::loadTexture(name)) {
+  TextureMaterial(
+      const char *textureName,
+      const char *bumpName,
+      const Glm::Vec3 &kd,
+      const Glm::Vec3 &ks,
+      const double shininess) : 
+      PhongMaterial(kd, ks, shininess), 
+      texture(!textureName ? NULL : TextureLoader::loadTexture(textureName)),
+      bump(!bumpName ? NULL : TextureLoader::loadTexture(bumpName)) {
+    const char *METHOD_NAME = "TextureMaterial::TextureMaterial";
 
-    CHECK("TextureMaterial::TextureMaterial", texture != NULL);
+    CHECK(METHOD_NAME, !textureName || texture != NULL);
+    CHECK(METHOD_NAME, !bumpName || bump != NULL);
   }
 
   virtual ~TextureMaterial() {
@@ -27,7 +36,13 @@ struct TextureMaterial : public PhongMaterial {
 
   virtual std::ostream& dump(std::ostream& o) const {
     Material::dump(o);
-    o << "texture " << *texture;
+    if (texture) {
+      o << "texture " << *texture;
+    }
+
+    if (bump) {
+      o << "bump " << *bump;
+    }
     return o;
   }
 };

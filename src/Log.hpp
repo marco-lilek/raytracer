@@ -70,6 +70,14 @@ struct Log {
     }
   }
 
+  template <typename... Args>
+  static void
+  fail(
+      const char *location, 
+      const char *s,
+      const Args &... args) {
+    check(location, false, s, args...);
+  }
 
 private:
   static const char *
