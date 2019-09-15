@@ -1,18 +1,14 @@
 #include "Mesh.hpp"
 #include "Log.hpp"
 #include "Constants.hpp"
-#include "MeshLoader.hpp"
-
 #include "GeometryIntersection.hpp"
-
 #include <iostream>
-
 #include "Glm.hpp"
 
 using namespace Glm;
 using namespace std;
 
-Mesh::Mesh(const std::string &name) : Geometry()
+Mesh::Mesh(const std::string &name) : Geometry(), name(name)
 {
 }
 
@@ -95,17 +91,45 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
   return constructIntersection(hitFace, poi, beta, gamma);
 }
 
-Intersection *Mesh::constructIntersection(
-      int hitFace, Vec4 poi, double beta, double gamma) const {
 
-  Vec3 va(positions[hitFace]);
-  Vec3 vb(positions[hitFace + 1]);
-  Vec3 vc(positions[hitFace + 2]);
+bool
+Mesh::verifyScene(const aiScene *scene) const
+{
+  if (!scene)
+    return false;
+  if (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
+    return false;
+  if (!scene->mRootNode)
+    return false;
 
-  Vec4 normal(glm::cross(vb - va, vc - vb), 0);
-
-  return new GeometryIntersection(
-      GeometryIntersection::Towards,
-      poi, 
-      normal);
+  return true;
 }
+
+const aiScene *Mesh::loadScene(
+    Assimp::Importer &importer) const {
+  const char *TRACE_HEADER = "MeshLoader::loadScene";
+
+  // TODO dont hardcode
+  string fullpath = "../assets/obj/" + name;
+
+  Log::debug(TRACE_HEADER, "loading model from {}", fullpath);
+  const aiScene *scene = importer.ReadFile(fullpath,0);
+
+  CHECK(TRACE_HEADER, verifyScene(scene));
+  return scene;
+}
+
+const int Mesh::loadPositions(
+    const aiMesh* aiMesh) {
+  const char *TRACE_HEADER = "MeshLoader::loadVertices";
+  int numVertices = aiMesh->mNumVertices;
+  Log::debug(TRACE_HEADER, "numVertices {}", numVertices);
+
+  positions.resize(numVertices);
+  for (int i = 0; i < numVertices; i++) {
+    auto vertex = aiMesh->mVertices[i];
+    positions[i] = Vec3(vertex.x, vertex.y, vertex.z);
+  }
+  return numVertices;
+}
+

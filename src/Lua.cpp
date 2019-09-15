@@ -3,7 +3,7 @@
 #include "Lua.hpp"
 #include "RayTracer.hpp"
 #include "Cube.hpp"
-#include "Mesh.hpp"
+#include "SimpleMesh.hpp"
 #include "UVMesh.hpp"
 #include "Geometry.hpp"
 #include "Sphere.hpp"
@@ -41,18 +41,11 @@ echo()
 // Make sure the arguments (type + const + ref vs pointer) are correct
 
 Mesh* create_uvmesh(const string&name) {
-  // TODO: Use the meshloader
-  UVMesh *mesh = new UVMesh(name);
-  MeshLoader loader(name);
-  loader.loadMesh(mesh);
-  return mesh;
+  return new UVMesh(name);
 }
 
 Mesh* create_mesh(const string&name) {
-  Mesh *mesh = new Mesh(name);
-  MeshLoader loader(name);
-  loader.loadMesh(mesh);
-  return mesh;
+  return new SimpleMesh(name);
 }
 
 Material *create_bump(

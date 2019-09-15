@@ -5,6 +5,44 @@
 
 using namespace Glm;
 
+UVMesh::UVMesh(const std::string &name) : Mesh(name)
+{
+  const char *TRACE_HEADER = "UVMesh::UVMesh";
+
+  Assimp::Importer importer;
+  const aiScene *scene = loadScene(importer);
+  const aiMesh *aiMesh = scene->mMeshes[0];
+  int nv = aiMesh->mNumVertices;
+  // TODO assert there is exactly 1 mesh in the scene
+  loadPositions(aiMesh);
+
+  normals.resize(nv);
+  uvCoords.resize(nv);
+
+  for (int i = 0; i < nv; i++) {
+    auto normal = aiMesh->mNormals[i];
+    auto uvcoord = aiMesh->mTextureCoords[0][i];
+
+    normals[i] = Vec3(normal.x, normal.y, normal.z);
+    uvCoords[i] = Vec2((double)uvcoord.x, (double)uvcoord.y);
+  }
+
+  tangents.resize(nv);
+
+  // TODO maybe generate smooth normals
+  scene = importer.ApplyPostProcessing(
+    aiProcess_CalcTangentSpace);
+  CHECK(TRACE_HEADER, verifyScene(scene));
+
+  for (int i = 0; i < nv; i++) {
+    auto tangent = aiMesh->mTangents[i];
+    tangents[i] = Vec3(
+        tangent.x, tangent.y, tangent.z);
+  }
+
+  Log::info(TRACE_HEADER, "loaded uvmesh from {}", name);
+}
+
 Intersection *UVMesh::constructIntersection(
       int hitFace,
       Vec4 poi,
