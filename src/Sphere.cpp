@@ -67,7 +67,7 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
     Log::trace(METHOD_NAME, "l {} r {}", l , r);
     if (l < 0 && r < 0) {
       // The whole sphere is behind us
-      return new Intersection(GeometryIntersection::Past);
+      return new GeometryIntersection(GeometryIntersection::Past);
     } else if (l < 0 || r < 0) {
       // One of the intersections in certainly behind us
       shooterPos = GeometryIntersection::Inside;

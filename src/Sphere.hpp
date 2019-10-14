@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Geometry.hpp"
+#include "GeometryIntersection.hpp"
 
 class Sphere : public Geometry {
 public:
   virtual ~Sphere() {}
-  virtual Intersection *intersect(const Ray &incomingRay) const;
+  virtual GeometryIntersection *intersect(const Ray &incomingRay) const;
 
   virtual const char * type() const {
     return "Sphere";

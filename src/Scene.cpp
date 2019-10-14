@@ -183,6 +183,7 @@ Scene::getColorOfRayOnPhongMaterial(
     Vec3 textureColor(1);
     Vec4 normalForLighting = intersection.n;
 
+    // We only do bump/texture mapping for uv intersections
     const UVIntersection *uvIntersection = dynamic_cast<const UVIntersection *>(&intersection);
     if (uvIntersection != NULL) {
       const TextureMaterial *textureMaterial =

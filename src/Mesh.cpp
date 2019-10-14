@@ -110,9 +110,10 @@ const aiScene *Mesh::loadScene(
   const char *TRACE_HEADER = "MeshLoader::loadScene";
 
   // TODO dont hardcode
-  string fullpath = "../assets/obj/" + name;
+  string fullpath = "../assets/obj/" + name + ".obj";
 
   Log::debug(TRACE_HEADER, "loading model from {}", fullpath);
+
   const aiScene *scene = importer.ReadFile(fullpath,0);
 
   CHECK(TRACE_HEADER, verifyScene(scene));

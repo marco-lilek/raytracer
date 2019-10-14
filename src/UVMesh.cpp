@@ -29,7 +29,6 @@ UVMesh::UVMesh(const std::string &name) : Mesh(name)
 
   tangents.resize(nv);
 
-  // TODO maybe generate smooth normals
   scene = importer.ApplyPostProcessing(
     aiProcess_CalcTangentSpace);
   CHECK(TRACE_HEADER, verifyScene(scene));

@@ -140,7 +140,7 @@ initNamespace(lua_State *L)
 
     .addFunction("node", create_node)
     .addFunction("geometry_node", create_geometry_node)
-    .addFunction("primitive_node", create_primitive_node)
+    //.addFunction("primitive_node", create_primitive_node)
 
     .addFunction("light", create_light)
     .addFunction("camera", create_camera)
