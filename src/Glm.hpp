@@ -28,6 +28,7 @@ namespace Glm {
   Glm::Vec4 reflectAcross(const Glm::Vec4 &a, const Glm::Vec4 &n);
   Glm::Vec3 clamp(const Glm::Vec3 &v);
 
+  // double cos(const Vec4&a, const vec4&b);
 };
 
 bool operator>=(const Glm::Vec3 &a, int v);

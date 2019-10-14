@@ -45,6 +45,10 @@ Glm::Vec3 Glm::clamp(const Glm::Vec3 &v) {
   return glm::clamp(v, Glm::Vec3(0), Glm::Vec3(1));
 }
 
+// double Glm::cos(const Vec4&a, const vec4&b) {
+//   return Glm::dot(a,b) / 
+// }
+
 bool operator>=(const Glm::Vec3 &a, int v) {
   return a.x >= v && a.y >= v && a.z >= v;
 }

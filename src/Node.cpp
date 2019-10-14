@@ -135,7 +135,7 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
   // Default init we have no hit
   PhysicalIntersection closestIntersection;
 
-  // Since the distance is always positive we can use -1 to prime the loop
+  // Since the distance is always non-negative we can use -1 to prime the loop
   double closestDistance = -1;
 
   for (auto childIt = children.begin(); 
@@ -148,6 +148,10 @@ const PhysicalIntersection Node::intersectImpl(const Ray &r) const
       continue;
     } else {
       double thisDistance = Glm::distanceTo(r.from, intersectionFromChild.geometry.get()->p);
+      if (thisDistance <= constants::EPSILON) {
+        continue;
+      }
+
       if (closestDistance == -1 || thisDistance <= closestDistance) {
         Log::trace(METHOD_NAME, "thisDistance {} closestDistance {}",
            thisDistance, closestDistance); 

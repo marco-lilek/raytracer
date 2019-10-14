@@ -72,7 +72,7 @@ Intersection *Mesh::intersect(const Ray &incomingRay) const {
       continue;
     } 
 
-    if (thisBeta + thisGamma - constants::EPSILON > 1.0) {
+    if (thisBeta + thisGamma > 1.0) {
         continue;
     }
 

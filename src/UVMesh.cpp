@@ -59,7 +59,7 @@ Intersection *UVMesh::constructIntersection(
   double vc(uvCoords[hitFace+2][1]);
 
   double alpha = (1.0 - beta - gamma);
-  Log::check(METHOD_NAME, alpha + constants::EPSILON >= 0, "alpha {}", alpha);
+  //Log::check(METHOD_NAME, alpha + constants::EPSILON >= 0, "alpha {}", alpha);
   double u = glm::clamp(alpha * ua + beta * ub + gamma * uc, 0.0, 1.0);
   double v = glm::clamp(alpha * va + beta * vb + gamma * vc, 0.0, 1.0);
 

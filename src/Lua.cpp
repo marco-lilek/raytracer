@@ -17,6 +17,7 @@
 #include "DebugMaterial.hpp"
 #include "PhongMaterial.hpp"
 #include "ReflectiveMaterial.hpp"
+#include "RefractiveMaterial.hpp"
 #include "TextureMaterial.hpp"
 #include "Camera.hpp"
 
@@ -40,11 +41,11 @@ echo()
 //
 // Make sure the arguments (type + const + ref vs pointer) are correct
 
-Mesh* create_uvmesh(const string&name) {
+Geometry* create_uvmesh(const string&name) {
   return new UVMesh(name);
 }
 
-Mesh* create_mesh(const string&name) {
+Geometry* create_mesh(const string&name) {
   return new SimpleMesh(name);
 }
 
@@ -66,6 +67,14 @@ Material *create_phong_material(const Glm::Vec3 &kd,
   return new PhongMaterial(kd, ks, shininess);
 }
 
+Material *create_reflective_material() {
+  return new ReflectiveMaterial();
+}
+
+Material *create_refractive_material(const double indexOfRefraction) {
+  return new RefractiveMaterial(indexOfRefraction);
+}
+
 Node *create_node(const string&name) {
   return new Node(name);
 }
@@ -75,6 +84,19 @@ Node *create_geometry_node(
     const Geometry *const p,
     const Material *m) {
   return new GeometryNode(name, p, m);
+}
+
+Node *create_primitive_node(
+    const string&name,
+    const string&type,
+    const Material *m) {
+  Geometry *prim = NULL;
+  if (type == "sphere") {
+    prim = new Sphere();
+  } else if (type == "cube") {
+    prim = new Cube();
+  }
+  return new GeometryNode(name, prim, m);
 }
 
 const Light *create_light(
@@ -113,9 +135,12 @@ initNamespace(lua_State *L)
     .addFunction("texture", create_texture)
     .addFunction("bump", create_bump)
     .addFunction("phong_material", create_phong_material)
+    .addFunction("reflective_material", create_reflective_material)
+    .addFunction("refractive_material", create_refractive_material)
 
     .addFunction("node", create_node)
     .addFunction("geometry_node", create_geometry_node)
+    .addFunction("primitive_node", create_primitive_node)
 
     .addFunction("light", create_light)
     .addFunction("camera", create_camera)
@@ -125,7 +150,6 @@ initNamespace(lua_State *L)
     .beginClass<Light>("Light").endClass()
 
     .beginClass<Geometry>("Geometry").endClass()
-    .deriveClass<Mesh, Geometry>("Mesh").endClass()
 
     .beginClass<Material>("Material").endClass()
 

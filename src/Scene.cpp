@@ -8,6 +8,7 @@
 #include "PhysicalNode.hpp"
 #include "UVIntersection.hpp"
 #include "TextureMaterial.hpp"
+#include "RefractiveMaterial.hpp"
 #include "Glm.hpp"
 
 #include <iostream>
@@ -48,13 +49,16 @@ const Vec3
 Scene::getColor(const Ray &rayFromEye) const
 {
   // TODO parameterize
-  int maxIterations = 3;
+  int maxIterations = 4;
+  static const RefractiveMaterial air(1);
 
-  return getColor(rayFromEye, maxIterations);
+  stack<const RefractiveMaterial *> media;
+  media.push(&air);
+  return getColor(rayFromEye, maxIterations, media);
 }
 
 const Vec3
-Scene::getColor(const Ray &rayFromEye, int depth) const
+Scene::getColor(const Ray &rayFromEye, int depth, std::stack<const RefractiveMaterial *> media) const
 {
   const char *METHOD = "Scene::getColor";
   Log::trace(METHOD, "rayFromEye: {}", rayFromEye);
@@ -84,14 +88,23 @@ Scene::getColor(const Ray &rayFromEye, int depth) const
         material, rayFromEye, *intersection.geometry.get());
   }
 
+  // TODO come up with a cleaner way to pass forward these params
+  // Recursive interacions need to pass on
+  // depth
+  // indexOfRefraction
   if (const ReflectiveMaterial *material = 
       dynamic_cast<const ReflectiveMaterial *>(intersection.hitNode->material)) {
     return getColorOfRayOnReflectiveMaterial(
-        material, rayFromEye, *intersection.geometry.get(), depth);
+        material, rayFromEye, *intersection.geometry.get(), depth, media);
   }
 
-  // TODO assert(0)
-  // Should never be reached
+  if (const RefractiveMaterial *material = 
+      dynamic_cast<const RefractiveMaterial *>(intersection.hitNode->material)) {
+    return getColorOfRayOnRefractiveMaterial(
+        material, rayFromEye, *intersection.geometry.get(), depth, media);
+  }
+
+  Log::fail(METHOD, "should never be reached");
   return Vec3(1,0,1); // #ff00ff
 }
 
@@ -131,7 +144,7 @@ Scene::getColorOfRayOnPhongMaterial(
     const Light *light = lights[lightIdx];
     Log::trace(METHOD_NAME, "checking light{} {}", lightIdx, *light);
 
-    const Vec4 shooterPosOfShadow = intersection.p + Glm::normalize(intersection.n);
+    const Vec4 shooterPosOfShadow = intersection.p;// + Glm::normalize(intersection.n) * constants::EPSILON;
 
     // Ray from the point of intersection to the light
     const Ray shadowRay(shooterPosOfShadow, 
@@ -253,7 +266,8 @@ Vec3 Scene::getColorOfRayOnReflectiveMaterial(
     const ReflectiveMaterial *material, 
     const Ray &rayFromEye,
     const GeometryIntersection &intersection,
-    const int depth) const {
+    const int depth,
+    const std::stack<const RefractiveMaterial *> media) const {
   const char * METHOD_NAME = "Scene::getColorOfRayOnReflectiveMaterial";
   // A pure reflective material just returns the color from the reflected ray
   if (depth == 0) {
@@ -263,11 +277,113 @@ Vec3 Scene::getColorOfRayOnReflectiveMaterial(
   }
 
   Vec4 normalizedN = Glm::normalize(intersection.n);
-  Ray reflectedRay(intersection.p + normalizedN, 
+  Ray reflectedRay(intersection.p, 
       Glm::reflectAcross(rayFromEye.v, normalizedN));
   Log::trace(METHOD_NAME, "depth {} reflectedRay {}", depth, reflectedRay);
 
-  return getColor(reflectedRay, depth-1);
+  return getColor(reflectedRay, depth-1, media);
+}
+
+Glm::Vec3 Scene::getColorOfRayOnRefractiveMaterial(
+  const RefractiveMaterial *material, 
+  const Ray &rayFromEye,
+  const GeometryIntersection &intersection,
+  const int depth,
+  const std::stack<const RefractiveMaterial *> media) const {
+  const char * METHOD_NAME = "Scene::getColorOfRayOnRefractiveMaterial";
+  if (depth == 0) {
+    // To avoid infinite recursion
+    return Vec3(0);
+  }
+  
+  // TODO using the halfway vector? That means we need to also shoot a shadow ray
+  // for now just use the normal
+  const Vec4 normalizedN = Glm::normalize(intersection.n);
+  const Vec4 normalizedV = Glm::normalize(rayFromEye.v);
+  Log::trace(METHOD_NAME, "normalizedN {} normalizedV {}", normalizedN, normalizedV);
+
+  const double cosAngleIncidence = std::abs(Glm::dot(
+      normalizedN, normalizedV));
+
+  //Ray reflectedRay(shootPos, 
+  //    Glm::reflectAcross(rayFromEye.v, normalizedN));
+  //Vec3 reflectedColor = getColor(reflectedRay, depth-1, indexOfRefraction);
+  //Log::trace(METHOD_NAME, "depth {} reflectedRay {} reflectedColor {}", depth, reflectedRay, reflectedColor);
+
+  // let t be the refracted ray, i the incident ray
+  // t = t_T + t_||
+  //
+  // easy one:
+  // | t_|| | = sin O_t
+  // direction( t_|| ) = direction( i_|| )
+  //
+  // given n2 sin O_t = n1 sin O_i
+  // then
+  // sin O_t = n1 / n2 sin O_i
+  //
+  // and
+  // sin O_i = | i_|| | = | i + cos O_i n |
+  //
+  // so
+  // | t_|| | = n1 / n2 | i + cos O_i n |
+  // giving
+  // t_|| = n1 / n2 [ i + cos O_i n ]
+  //
+  // next:
+  // | t_T | = sqrt( | t |^2 - | t_|| |^2)
+  //         = sqrt( 1 - | t_|| |^2)
+  //
+  // | t_|| |^2 = (n1 / n2)^2 sin^2 O_i
+  //            = (n1 / n2)^2 (1 - cos^2 O_i)
+  // 
+  // so
+  // t_T = - n sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2)
+  //
+  // finally
+  // t = t_T + t_||
+  //   = - n sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2) +
+  //     n1 / n2 [ i + cos O_i n ]
+  //   = n1 / n2 i + [ n1 / n2 cos O_i - sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2)] n
+
+  const RefractiveMaterial *prevMedium = media.top();
+  const double indexOfRefractionRatio = 
+    prevMedium->indexOfRefraction / material->indexOfRefraction;
+  
+  Log::trace(METHOD_NAME, "depth {} indexOfRefractionRatio {} cosAngleIncidence {}", depth, indexOfRefractionRatio, cosAngleIncidence);
+
+  // also used to check for total internal reflection, when <= 1
+  // using the squared value so we can reuse the cos
+  const double lenRefractedParallelComponentSquared = 
+    indexOfRefractionRatio * indexOfRefractionRatio * (1.0 - cosAngleIncidence * cosAngleIncidence);
+
+  Log::trace(METHOD_NAME, "lenRefractedParallelComponentSquared {}", lenRefractedParallelComponentSquared);
+
+  // total internal reflection
+  if (lenRefractedParallelComponentSquared >= 1.0) {
+    Log::trace(METHOD_NAME, "depth {} total internal reflection", depth);
+    return Vec3(1,0,1);
+  }
+
+  // If we are inside the material, we need to fire from outside
+  // if we are outside, we need to fire from inside
+  const Vec4 shooterPos = intersection.p;// + constants::EPSILON * normalizedN * (prevMedium == material ? 1.0 : -1.0);
+  Ray refractedRay(shooterPos, 
+      indexOfRefractionRatio * normalizedV + 
+      (indexOfRefractionRatio * cosAngleIncidence - 
+        std::sqrt(1.0 - lenRefractedParallelComponentSquared)) * normalizedN);
+
+  std::stack<const RefractiveMaterial *> mediaAfterRefraction(media);
+  mediaAfterRefraction.push(material);
+
+  Vec3 refractedColor = getColor(refractedRay, depth-1, mediaAfterRefraction);
+  Log::trace(METHOD_NAME, "depth {} refractedRay {} refractedColor {}", depth, refractedRay, refractedColor);
+
+  //const double R_0 = std::pow((indexOfRefraction - material->indexOfRefraction) / (indexOfRefraction + material->indexOfRefraction), 2);
+  //const double R_schlick = R_0 + (1.0 - R_0) * std::pow((1-cosAngleIncidence), 5);
+  //Log::check(METHOD_NAME, R_schlick >= 0 && R_schlick <= 1, "R_schlick {}", R_schlick);
+
+  //const Vec3 finalColor = R_schlick * reflectedColor + (1-R_schlick) * refractedColor;
+  return refractedColor;
 }
 
 // const Intersection

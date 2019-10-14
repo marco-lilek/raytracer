@@ -5,10 +5,12 @@
 #include "Object.hpp"
 #include "GeometryIntersection.hpp"
 #include "ReflectiveMaterial.hpp"
+#include "RefractiveMaterial.hpp"
 #include "TextureMaterial.hpp"
 #include "Glm.hpp"
 #include "Ray.hpp"
 #include <vector>
+#include <stack>
 
 class Node;
 class PhongMaterial;
@@ -19,7 +21,7 @@ struct Scene : public Object {
   Glm::Vec3 ambientLight;
 
   // const glm::dvec3 fireRay(const LightRay &r) const;
-  const Glm::Vec3 getColor(const Ray &r, int depth) const;
+  const Glm::Vec3 getColor(const Ray &r, int depth, const std::stack<const RefractiveMaterial *> media) const;
 
 public:
   Scene(
@@ -50,5 +52,13 @@ private:
     const ReflectiveMaterial *material, 
     const Ray &rayFromEye,
     const GeometryIntersection &intersection,
-    const int depth) const;
+    const int depth,
+    const std::stack<const RefractiveMaterial *> media) const;
+
+  Glm::Vec3 getColorOfRayOnRefractiveMaterial(
+    const RefractiveMaterial *material, 
+    const Ray &rayFromEye,
+    const GeometryIntersection &intersection,
+    const int depth,
+    const std::stack<const RefractiveMaterial *> media) const;
 };

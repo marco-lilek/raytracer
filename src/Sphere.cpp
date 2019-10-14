@@ -38,6 +38,7 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   size_t numRoots = quadraticRoots(A, B, C, roots);
 
   if (numRoots == 0) {
+    Log::trace(METHOD_NAME, "total miss, numRoots {}", numRoots);
     // Total miss
     return new Intersection(GeometryIntersection::Miss);
   }
@@ -85,7 +86,7 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
 
   // Since we already assume the sphere is centered at 0,0,0, the normal
   // is the same as the point of intersection
-  Vec4 normal = Vec4(pointOfIntersection);
+  Vec4 normal = Vec4(pointOfIntersection.x, pointOfIntersection.y, pointOfIntersection.z, 0);
 
   return new GeometryIntersection(shooterPos, 
       pointOfIntersection, normal);
