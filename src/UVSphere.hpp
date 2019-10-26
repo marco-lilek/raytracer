@@ -1,18 +1,16 @@
+//
+// Created by mllilek on 10/22/19.
+//
 #pragma once
 
 #include "Sphere.hpp"
+#include "Intersection.hpp"
 
-class UVSphere : public Sphere {
-public:
-  virtual ~UVSphere() {}
-  virtual Intersection *intersect(const Ray &incomingRay) const;
+struct UVSphere : public Sphere {
+  Intersection intersect(const Ray &incomingRay) const override;
 
-  virtual const char * type() const {
-    return "UVSphere";
-  }
-
-  virtual std::ostream& dump(std::ostream& o) const {
-    Geometry::dump(o);
-    return o;
+  bool isUV() const override {
+    return true;
   }
 };
+

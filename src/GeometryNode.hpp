@@ -3,27 +3,25 @@
 #include "Material.hpp"
 #include "Node.hpp"
 #include "Geometry.hpp"
-#include "PhysicalNode.hpp"
 
-class GeometryNode : public PhysicalNode {
-  const Geometry *const geometry;
+struct Geometry;
+struct Texture;
 
-public:
-  GeometryNode(
-    const std::string &name,
-    const Geometry *const p,
-    const Material *m)
-      : PhysicalNode(name, m), geometry(p)
-  {}
+struct GeometryNode : public Node {
+  Material *m;
+  Texture *bump;
 
-  virtual const PhysicalIntersection intersectImpl(const Ray &r) const;
+  const Geometry *g;
 
-  virtual const char * type() const {
-    return "GeometryNode";
+  GeometryNode(const std::string &name, const Geometry *g) :
+    Node(name), m(nullptr), g(g), bump(nullptr) {}
+  ~GeometryNode() override {};
+
+  bool isUV() const {
+    return g != nullptr && g->isUV();
   }
 
-  virtual std::ostream& dump(std::ostream& o) const {
-    Node::dump(o);
-    return o << " geometry " << *geometry;
-  }
+private:
+  virtual Intersection intersectImpl(const Ray &incomingRay) const;
 };
+

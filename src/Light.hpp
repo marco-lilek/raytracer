@@ -3,23 +3,14 @@
 #include <vector>
 
 #include <glm/glm.hpp>
-#include "Color.hpp"
-#include "Glm.hpp"
 
-struct Light : public Object {
-  const Glm::Vec3 color;
-  const Glm::Vec4 pos;
-  Light(const Glm::Vec3 &color, const Glm::Vec3 &pos)
-      : color(color), pos(Glm::Vec4(pos,1))
-  {
-  }
+struct Light {
+  glm::dvec3 colour;
+  glm::dvec3 position;
+  glm::dvec3 falloff;
 
-  virtual const char * type() const {
-    return "Light";
-  }
+  Light() {
 
-  virtual std::ostream& dump(std::ostream& o) const {
-    return o << pos;
   }
 };
 

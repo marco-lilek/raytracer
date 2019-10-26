@@ -11,39 +11,20 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "Color.hpp"
-#include "Glm.hpp"
+#include <glm/detail/type_vec.hpp>
 
 class Image {
-  std::vector<uint8_t> data;
+  std::vector<glm::dvec3> data;
 
 public:
-  int width, height;
-  Image(int width, int height);
+  const int width, height;
+  Image(int width, int height) :
+    width(width),
+    height(height),
+    data(width * height) {}
 
-  void render(const std::string &fname);
-  void drawPixel(
-    int x,
-    int y,
-    uint8_t r,
-    uint8_t g,
-    uint8_t b,
-    uint8_t a);
-
-  void drawPixel(
-    int x,
-    int y,
-    uint8_t r,
-    uint8_t g,
-    uint8_t b);
-
-  void drawPixel(
-    int x,
-    int y,
-    Glm::Vec3 color);
-
-  virtual ~Image();
+  void savePng(const std::string &fname);
+  void draw(const glm::dvec3 &color, int x, int y);
 };
 
 #endif /* SRC_IMAGE_HPP_ */

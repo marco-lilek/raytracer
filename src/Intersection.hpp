@@ -1,36 +1,44 @@
+//
+// Created by mllilek on 10/16/19.
+//
+
 #pragma once
 
-#include "Object.hpp"
+#include <glm/detail/type_vec.hpp>
+#include <glm/vec4.hpp>
 
-struct Intersection : public Object {
-  // where the fired ray is positioned relative to the target
-  enum ShooterPos {
-    Miss, // (shooter)/^ object
-    Past, // (object) (shooter)----->
-    Inside, // (object (shooter)---)--->
-    Towards, // (shooter)----->(object)
+struct GeometryNode;
+
+struct Intersection {
+  enum Type {
+    CompleteMiss,
+    ObjectBehindRay,
+    RayInsideObject,
+    RayHitsObject
   };
 
-  ShooterPos shooterPos;
-
-  Intersection(const ShooterPos &sp) : 
-    shooterPos(sp) {}
-
-  virtual bool isHit() const {
-    return Inside == shooterPos || Towards == shooterPos;
+  bool isHit() const {
+    return type == RayInsideObject || type == RayHitsObject;
   }
 
-  virtual const char * type() const {
-    return "Intersection";
-  }
+  Type type;
+  const GeometryNode *node;
+  glm::dvec4 p;
+  glm::dvec4 n;
 
-  virtual std::ostream& dump(std::ostream& o) const {
-    static const char *ShooterPosStr[] = {
-        "Miss",
-        "Past",
-        "Inside",
-        "Towards"
-    };
-    return o << "shooterPos " << ShooterPosStr[shooterPos];
+  // UV
+  double u,v;
+  glm::dvec4 t;
+
+  Intersection &operator=( const Intersection& o) = default;
+  Intersection() {
+    type = Type::CompleteMiss;
+    node = (GeometryNode*)0xdeadbeef;
+    p = glm::dvec4(0);
+    n = glm::dvec4(0);
+    u = 0;
+    v = 0;
+    t = glm::dvec4(0);
   }
 };
+

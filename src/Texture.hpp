@@ -1,26 +1,17 @@
-#pragma once
+//
+// Created by mllilek on 10/22/19.
+//
 
-#include "Object.hpp"
-#include "Glm.hpp"
+#pragma once
+#include <glm/glm.hpp>
 #include <vector>
 
-struct Texture : public Object {
-  std::vector<Glm::Vec3> data;
+struct Texture {
+  std::vector<glm::dvec3> data;
   int width, height;
-  
-  Texture(int width, int height) : 
-    width(width),
-    height(height) {
-    data.resize(width * height);
-  }
 
-  Glm::Vec3 getValue(double u, double v) const; 
+  Texture(const std::string &name, const std::string &texture);
 
-  virtual const char * type() const {
-    return "Texture";
-  }
-
-  virtual std::ostream& dump(std::ostream& o) const {
-    return o;
-  }
+  glm::dvec3 getValue(double u, double v) const;
 };
+

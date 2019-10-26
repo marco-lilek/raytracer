@@ -1,34 +1,35 @@
-cmake_minimum_required(VERSION 3.10)
-set(CMAKE_C_COMPILER "gcc")
-set(CMAKE_CXX_COMPILER "g++")
+cmake_minimum_required(VERSION 3.15)
+set(CMAKE_FIND_DEBUG_MODE 1)
+project(raytracer2)
 
-set(THIRDPARTY src/thirdparty)
-set(CMAKE_BUILD_TYPE Debug) 
-
-#set(CMAKE_EXPORT_COMPILE_COMMANDS 1) 
-add_library(lodepng STATIC ${THIRDPARTY}/lodepng/lodepng.cpp ${THIRDPARTY}/lodepng/lodepng.h)
-
-add_library(polyroots ${THIRDPARTY}/polyroots.cpp ${THIRDPARTY}/polyroots.hpp)
-
-add_library(fmtlib ${THIRDPARTY}/format.cc)
-
+set(CMAKE_CXX_STANDARD 14)
+set(THIRDPARTY_ROOT thirdparty)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
 
+include_directories(BEFORE SYSTEM include)
+link_directories(lib)
+
+add_library(polyroots ${THIRDPARTY_ROOT}/polyroots.cpp)
+add_library(lodepng ${THIRDPARTY_ROOT}/lodepng.cpp)
+find_package(fmt REQUIRED)
+find_package(Threads REQUIRED)
 find_package(Lua "5.3" REQUIRED)
 find_package(Assimp "4.1" REQUIRED)
-
-file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp src/*.h)
-
+find_package(spdlog REQUIRED)
+file(GLOB SOURCES src/*.cpp src/*.hpp src/*.h)
 add_executable(raytracer ${SOURCES})
+
+get_directory_property( DirDefs COMPILE_DEFINITIONS )
 
 target_compile_definitions(raytracer PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-target_include_directories(raytracer SYSTEM PUBLIC ${THIRDPARTY})
-target_include_directories(raytracer PUBLIC src)
-target_compile_definitions(raytracer
-    PUBLIC GLM_ENABLE_EXPERIMENTAL)
-
-target_link_libraries(raytracer lodepng polyroots fmtlib
-    ${LUA_LIBRARIES} ${ASSIMP_LIBRARIES})
-set(CMAKE_EXPORT_COMPILE_COMMANDS YES) 
+target_link_libraries(
+        raytracer
+        polyroots
+        lodepng
+        fmt
+        spdlog::spdlog
+        ${LUA_LIBRARIES}
+        ${ASSIMP_LIBRARIES})
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/logs")

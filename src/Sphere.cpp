@@ -1,18 +1,16 @@
+//
+// Created by mllilek on 10/15/19.
+//
+
+#include <glm/glm.hpp>
+#include <polyroots/polyroots.hpp>
 #include "Sphere.hpp"
-#include "Constants.hpp"
-#include "Log.hpp"
-#include <iostream>
-#include <polyroots.hpp>
-#include "GeometryIntersection.hpp"
+#include "maths.hpp"
+#include "constants.hpp"
 
-#include "Glm.hpp"
+Intersection Sphere::intersect(const Ray &incomingRay) const {
+  Intersection intersection;
 
-using namespace std;
-using namespace Glm;
-
-Intersection *Sphere::intersect(const Ray &incomingRay) const {
-  const char * METHOD_NAME = "Sphere::intersect";
-  
   // Intersecting with a sphere centered at 0,0,0 with radius 1
   // then for any point on the sphere (x,y,z) we have
   // x^2 + y^2 + z^2 = 1^2
@@ -24,10 +22,10 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   // a.x^2 + 2a.xtd.x + t^2d.x^2 ... = 1
   // t^2(d.x^2 + d.y^2 + d.z^2) + 2t(a.x*d.x + a.y*d.y ..) + dot(a,a) - 1 = 0
   // t^2 dot(d,d) + t 2dot(a,d) + (dot(a,a) - 1) = 0
-  // quadractic formula badaboombadabing eh whats it take to get a coffe over here
+  // quadractic formula badaboombadabing
 
-  Vec3 a(incomingRay.from);
-  Vec3 d(incomingRay.v);
+  glm::vec3 a(incomingRay.p);
+  glm::vec3 d(incomingRay.v);
 
   // The coefficients as described in the comment above
   float A = glm::dot(d, d);
@@ -38,9 +36,8 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   size_t numRoots = quadraticRoots(A, B, C, roots);
 
   if (numRoots == 0) {
-    Log::trace(METHOD_NAME, "total miss, numRoots {}", numRoots);
-    // Total miss
-    return new Intersection(GeometryIntersection::Miss);
+    intersection.type = Intersection::CompleteMiss;
+    return intersection;
   }
 
   // For ray a + td, the closest t for which we intersect the sphere
@@ -49,45 +46,48 @@ Intersection *Sphere::intersect(const Ray &incomingRay) const {
   if (numRoots == 1) {
     // Easy case
     float root = roots[0];
-    
+
     // But still reject if its behind us
     if (root < 0) {
-      return new Intersection(GeometryIntersection::Past);
+      intersection.type = Intersection::ObjectBehindRay;
+      return intersection;
     }
 
     t = roots[0];
   }
 
   // Great we intersect twice, but the sphere could still be behind us
-  GeometryIntersection::ShooterPos shooterPos;
   if (numRoots == 2) {
     float l, r;
     l = roots[0];
     r = roots[1];
-    Log::trace(METHOD_NAME, "l {} r {}", l , r);
     if (l < 0 && r < 0) {
+      intersection.type = Intersection::ObjectBehindRay;
       // The whole sphere is behind us
-      return new GeometryIntersection(GeometryIntersection::Past);
     } else if (l < 0 || r < 0) {
-      // One of the intersections in certainly behind us
-      shooterPos = GeometryIntersection::Inside;
+      // One of the points of intersections in certainly behind us
+      intersection.type = Intersection::RayInsideObject;
       // We're inside the sphere!
       t = glm::max(l, r);
     } else {
-      shooterPos = GeometryIntersection::Towards;
+      intersection.type = Intersection::RayHitsObject;
       // The sphere is in front of us
       // So return the point of intersection closer to us
       t = glm::min(l, r);
     }
   }
 
-  Log::trace(METHOD_NAME, "t {}", t);
-  Vec4 pointOfIntersection = incomingRay.pointAt(t);
+  if (t < constants::EPSILON) {
+    intersection.type = Intersection::CompleteMiss;
+    return intersection;
+  }
+
+  glm::dvec3 poi(maths::traceRay(incomingRay.p, incomingRay.v, t));
 
   // Since we already assume the sphere is centered at 0,0,0, the normal
   // is the same as the point of intersection
-  Vec4 normal = Vec4(pointOfIntersection.x, pointOfIntersection.y, pointOfIntersection.z, 0);
 
-  return new GeometryIntersection(shooterPos, 
-      pointOfIntersection, normal);
+  intersection.p = glm::dvec4(poi, 1.0);
+  intersection.n = glm::dvec4(poi, 0.0);
+  return intersection;
 }

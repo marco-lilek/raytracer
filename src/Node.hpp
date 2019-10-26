@@ -3,55 +3,43 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#include "Material.hpp"
+#include <glm/detail/type_mat.hpp>
+#include <glm/detail/type_mat4x4.hpp>
 #include "Ray.hpp"
-#include "PhysicalIntersection.hpp"
+#include "Intersection.hpp"
 
-#include "Glm.hpp"
-
-class Node : public Object {
-  std::vector<Node *> children;
-
-  // M
-  Glm::Mat4 modelTransform;
-
-  // M^-1
-  Glm::Mat4 invModelTransform;
-
-  // (M^-1)^T
-  Glm::Mat4 invTransModelTransform;
-
+class Node {
 public:
   std::string name;
 
-  Node(const std::string &name);
-  virtual ~Node();
+  Node(const std::string &name) :
+  name(name),
+  modelTransform(1),
+  invModelTransform(1),
+  invTransModelTransform(1) {}
 
-  void dumpNodeTree(std::ostream &o) const;
+  virtual ~Node() {}
 
   void rotate(char axis, float angle);
-  void scale(double x, double y, double z);
-  void translate(double x, double y, double z);
+  void scale(glm::dvec3 scale);
+  void translate(glm::dvec3 translation);
+  void addChild(Node *child);
+
+  Intersection intersect(const Ray &incomingRay) const;
+private:
+  virtual Intersection intersectImpl(const Ray &incomingRay) const;
+
+  std::vector<Node *> children;
+
+  // M
+  glm::dmat4 modelTransform;
+
+  // M^-1
+  glm::dmat4 invModelTransform;
+
+  // (M^-1)^T
+  glm::dmat4 invTransModelTransform;
 
   void updateModelTransform(const glm::dmat4 &mat);
 
-  void
-  addChild(Node *child)
-  {
-    children.push_back(child);
-  }
-
-  const PhysicalIntersection intersect(const Ray &r) const;
-  virtual const PhysicalIntersection intersectImpl(const Ray &r) const;
-
-  virtual const char * type() const {
-    return "Node";
-  }
-
-  virtual std::ostream& dump(std::ostream& o) const {
-    // For the sake of brevity avoid dumping the full node tree
-    return o << "name " << name 
-      << " modelTransform " << modelTransform;
-  }
 };

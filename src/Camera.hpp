@@ -1,31 +1,26 @@
 #pragma once
 
-#include "Glm.hpp"
+#include <glm/detail/type_vec.hpp>
+#include <glm/vec4.hpp>
+#include <glm/detail/type_mat.hpp>
+#include <glm/detail/type_mat4x4.hpp>
 #include "Ray.hpp"
 
-struct Camera : public Object {
-  Glm::Vec4 eye;
-  Glm::Vec4 up;
-  Glm::Vec4 towards;
+struct Camera {
+  glm::dvec4 eye;
+  glm::dvec4 up;
+  glm::dvec4 towards;
   int width, height;
   double fov;
-  Glm::Mat4 pointToWorld;
+  glm::dmat4 pointToWorld;
 
   Camera(
-      const Glm::Vec3 &eye,
-      const Glm::Vec3 &up,
-      const Glm::Vec3 &towards,
+      const glm::dvec3 &eye,
+      const glm::dvec3 &up,
+      const glm::dvec3 &towards,
       int width,
       int height,
       double fov);
 
-  Ray getRayFromEyeToScreen(int, int) const;
-
-  virtual const char * type() const {
-    return "Camera";
-  }
-
-  virtual std::ostream& dump(std::ostream& o) const {
-    return o << "eye " << eye << " up " << up << " towards " << towards;
-  }
+  Ray getRayFromEyeToScreen(int x, int y) const;
 };

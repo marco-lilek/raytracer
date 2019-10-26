@@ -1,16 +1,45 @@
-#include "Log.hpp"
+//
+// Created by mllilek on 10/22/19.
+//
+
+#include <lodepng.h>
 #include "Texture.hpp"
 
-using namespace Glm;
+namespace {
+  double decodeColor(uint8_t v) {
+    return (double)v / 255.0;
+  }
+}
 
-Vec3
-Texture::getValue(double u, double v) const {
-  const char * TRACE_HEADER = "Texture::getValue";
-  Log::check(TRACE_HEADER, u >= 0.0 && u <= 1.0, "range u {}", u);
-  Log::check(TRACE_HEADER, v >= 0.0 && v <= 1.0, "range v {}", v);
+glm::dvec3 Texture::getValue(double u, double v) const {
   int x = u * width;
   int y = v * height;
-  Log::debug(TRACE_HEADER, "x {} y {}", x, y);
-
   return data[y * width + x];
+}
+
+Texture::Texture(const std::string &name, const std::string &texture) {
+  // TODO don't hard code the path
+  std::string filename = std::string("../assets/textures/") + texture + ".png";
+  std::vector<unsigned char> image; //the raw pixels
+
+  unsigned width, height;
+  unsigned error = lodepng::decode(image, width, height, filename);
+  // TODO check errors
+
+  int NUM_BYTES_PER_PIXEL = 4;
+  int numPixels = width * height;
+
+  this->width = width;
+  this->height = height;
+  data.resize(width * height);
+
+  double x,y,z;
+  for (int i = 0; i < numPixels; i++) {
+    int sidx = i*NUM_BYTES_PER_PIXEL;
+    x = decodeColor(image[sidx+0]);
+    y = decodeColor(image[sidx+1]);
+    z = decodeColor(image[sidx+2]);
+    this->data[i] = glm::dvec3(x,y,z);
+    //Log::trace("sdf", "i {} data {}", i, data);
+  }
 }

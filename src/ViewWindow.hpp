@@ -2,22 +2,11 @@
 
 #include <string>
 #include <sstream>
-#include "Object.hpp"
 
-struct ViewWindow : public Object {
+struct ViewWindow {
   int x1,x2,y1,y2;
 
   ViewWindow() : x1(0),x2(0),y1(0),y2(0) {}
-
-  static ViewWindow fromPoint(const std::string &pointStr) {
-    std::istringstream ss(pointStr);
-    int x,y;
-    ss >> x;
-    ss.ignore(1,',');
-    ss >> y;
-    ss.ignore(1,',');
-    return ViewWindow(x,x+1,y,y+1);
-  }
 
   ViewWindow(int x1,int x2,int y1,int y2) : x1(x1),x2(x2),y1(y1),y2(y2) {}
 
@@ -39,12 +28,18 @@ struct ViewWindow : public Object {
     return x2 <= x1 || y2 <= y1;
   }
 
-  virtual const char* type() const {
-    return "ViewWindow";
+  static ViewWindow *fromWindow(const std::string &windowStr) {
+    return new ViewWindow(windowStr);
   }
 
-  virtual std::ostream& dump(std::ostream& o) const {
-    o << x1 << "," << x2 << " " << y1 << "," << y2;
-  }
 
+  static ViewWindow *fromPoint(const std::string &pointStr) {
+    std::istringstream ss(pointStr);
+    int x,y;
+    ss >> x;
+    ss.ignore(1,',');
+    ss >> y;
+    ss.ignore(1,',');
+    return new ViewWindow(x,x+1,y,y+1);
+  }
 };

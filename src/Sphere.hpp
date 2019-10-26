@@ -1,19 +1,13 @@
+//
+// Created by mllilek on 10/15/19.
+//
+
 #pragma once
 
 #include "Geometry.hpp"
-#include "GeometryIntersection.hpp"
 
-class Sphere : public Geometry {
-public:
-  virtual ~Sphere() {}
-  virtual GeometryIntersection *intersect(const Ray &incomingRay) const;
+struct Sphere : public Geometry {
 
-  virtual const char * type() const {
-    return "Sphere";
-  }
-
-  virtual std::ostream& dump(std::ostream& o) const {
-    Geometry::dump(o);
-    return o;
-  }
+  Intersection intersect(const Ray &incomingRay) const override;
 };
+

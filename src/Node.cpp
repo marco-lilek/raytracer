@@ -1,90 +1,63 @@
-/*
- * Node.cpp
- *
- *  Created on: Feb 20, 2019
- *      Author: mllilek
- */
-#include <algorithm>
-#include <glm/ext.hpp>
+//
+// Created by mllilek on 10/15/19.
+//
+
 #include <glm/gtx/transform.hpp>
 #include <iostream>
-#include <fmt/format.h>
-
-#include "Material.hpp"
 #include "Node.hpp"
-#include "PhysicalIntersection.hpp"
-#include "GeometryIntersection.hpp"
-#include "UVIntersection.hpp"
+#include "maths.hpp"
+#include "constants.hpp"
+#include "Log.hpp"
 
-using namespace glm;
-using namespace std;
-
-Node::Node(const std::string &name) : 
-  name(name), 
-  modelTransform(1),
-  invModelTransform(1),
-  invTransModelTransform(1)
-{
-}
-
-Node::~Node() {}
-
-void Node::dumpNodeTree(std::ostream &o) const {
-  o << *this << " ";
-  for (int i = 0; i < children.size(); i++) {
-    children[i]->dumpNodeTree(o);
-  }
-}
-
-void
-Node::rotate(char axis, float angle)
-{
-  const char *TRACE_HEADER = "Node::rotate";
-  vec3 rot_axis;
+void Node::rotate(char axis, float angle) {
+  glm::vec3 rot_axis;
 
   switch (axis) {
-  case 'x': rot_axis = vec3(1, 0, 0); break;
-  case 'y': rot_axis = vec3(0, 1, 0); break;
-  case 'z': rot_axis = vec3(0, 0, 1); break;
-  default:
-    Log::check(TRACE_HEADER, false, "axis {} angle {}", axis, angle);
-    break;
+    case 'x': rot_axis = glm::dvec3(1, 0, 0); break;
+    case 'y': rot_axis = glm::dvec3(0, 1, 0); break;
+    case 'z': rot_axis = glm::dvec3(0, 0, 1); break;
+    default:
+      break;
   }
-  mat4 rot = glm::rotate(glm::radians(angle), rot_axis);
-  //Log::info(TRACE_HEADER, "rot {}", glm::to_string(rot));
-  updateModelTransform(rot);
+  glm::mat3 rot = glm::rotate(glm::radians(angle), rot_axis);
+  updateModelTransform(glm::dmat4(rot));
 }
 
-void
-Node::scale(double x, double y, double z)
-{
-  updateModelTransform(glm::scale(glm::dvec3(x,y,z)));
+void Node::scale(glm::dvec3 scale) {
+  updateModelTransform(glm::scale(scale));
 }
 
-void
-Node::translate(double x, double y, double z)
-{
-  updateModelTransform(glm::translate(glm::dvec3(x,y,z)));
+void Node::translate(glm::dvec3 translation) {
+  updateModelTransform(glm::translate(translation));
 }
 
-const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
-{
-  const char *METHOD_NAME = "Node::intersect";
-  Log::trace(METHOD_NAME, "this: {}", *this);
-  Log::trace(METHOD_NAME, "incomingRay: {}", incomingRay);
+void Node::addChild(Node *child) {
+  children.push_back(child);
+}
 
+void Node::updateModelTransform(const glm::dmat4 &mat) {
+  modelTransform = mat * modelTransform;
+  glm::mat3 inv3x3(glm::inverse(glm::mat3(modelTransform)));
+  invModelTransform = glm::inverse(modelTransform);
+
+  // Keep only the upper 3x3 portion of the matrix since this is the only part
+  // pertinent for vectors
+  invTransModelTransform = glm::mat4(glm::transpose(inv3x3));
+}
+
+Intersection Node::intersect(const Ray &incomingRay) const {
   // Applying the model transformations M
   //
   // For some point p in the model space
   // Mp is p in the world space
-  // 
-  // So for some point q in the world space 
+  //
+  // So for some point q in the world space
   // inverse(M)q is q in the model space
-  Ray rayInModelSpace(glm::dvec4(invModelTransform * incomingRay.from),
-      glm::dvec4(invModelTransform * incomingRay.v));
+  Ray rayInModelSpace(
+          glm::dvec4(invModelTransform * incomingRay.p),
+          glm::dvec4(invModelTransform * incomingRay.v));
 
-  const PhysicalIntersection physicalIntersection = 
-    intersectImpl(rayInModelSpace);
+  Intersection intersection = intersectImpl(rayInModelSpace);
 
   // By similar reasoning, we have to apply the model transformations
   // on all outgoing vectors/points in the model space to return them to
@@ -107,74 +80,50 @@ const PhysicalIntersection Node::intersect(const Ray &incomingRay) const
   //
   // So n' = N n = (M^-1)^T n
 
-  if (!physicalIntersection.isHit()) {
-    return physicalIntersection;
+  if (!intersection.isHit()) {
+    return intersection;
   }
 
-  GeometryIntersection *geometry = physicalIntersection.geometry.get();
-  geometry->p = glm::dvec4(
-      modelTransform * geometry->p);
-  geometry->n = glm::dvec4(
-      invTransModelTransform * geometry->n);
+  intersection.p = glm::dvec4(modelTransform * intersection.p);
+  intersection.n = glm::dvec4(invTransModelTransform * intersection.n);
 
-  if (UVIntersection *uvIntersection = 
-      dynamic_cast<UVIntersection *>(geometry)) {
-    uvIntersection->t = glm::dvec4(
-        invTransModelTransform * uvIntersection->t);
-  }
-
-  return physicalIntersection;
+  //if (UVIntersection *uvIntersection =
+  //            dynamic_cast<UVIntersection *>(geometry)) {
+  //  uvIntersection->t = glm::dvec4(
+  //          invTransModelTransform * uvIntersection->t);
+  //}
+  return intersection;
 }
 
-const PhysicalIntersection Node::intersectImpl(const Ray &r) const
-{
-  const char * METHOD_NAME = "Node::intersectImpl";
-  // For a node, we need to return the intersection 
+Intersection Node::intersectImpl(const Ray &incomingRay) const {
+  // For a node, we need to return the intersection
   // from the child node with the closest point of intersection
-
-  // Default init we have no hit
-  PhysicalIntersection closestIntersection;
 
   // Since the distance is always non-negative we can use -1 to prime the loop
   double closestDistance = -1;
 
-  for (auto childIt = children.begin(); 
-      childIt != children.end();
-      ++childIt) {
+  Intersection closestIntersection;
+
+  for (auto childIt = children.begin();
+       childIt != children.end();
+       ++childIt) {
     Node *child = *childIt;
 
-    PhysicalIntersection intersectionFromChild = child->intersect(r);
-    if (!intersectionFromChild.isHit()) {
+    Intersection childIntersection = child->intersect(incomingRay);
+    if (!childIntersection.isHit()) {
       continue;
     } else {
-      double thisDistance = Glm::distanceTo(r.from, intersectionFromChild.geometry.get()->p);
-      if (thisDistance <= constants::EPSILON) {
-        continue;
-      }
-
+      double thisDistance = maths::distance3d(
+              incomingRay.p, childIntersection.p);
+      // Too close, probably just caused by numerical error,
+      // so we wont consider it an intersection
       if (closestDistance == -1 || thisDistance <= closestDistance) {
-        Log::trace(METHOD_NAME, "thisDistance {} closestDistance {}",
-           thisDistance, closestDistance); 
-        closestIntersection = intersectionFromChild;
+        closestIntersection = childIntersection;
         closestDistance = thisDistance;
       }
     }
   }
 
-  Log::trace(METHOD_NAME, "closestIntersection {}", closestIntersection);
-
   return closestIntersection;
-}
-
-void
-Node::updateModelTransform(const glm::dmat4 &mat)
-{
-  modelTransform = mat * modelTransform;
-  glm::mat3 inv3x3(glm::inverse(glm::mat3(modelTransform)));
-  invModelTransform = glm::inverse(modelTransform);
-
-  // Keep only the upper 3x3 portion of the matrix since this is the only part
-  // pertinent for vectors
-  invTransModelTransform = glm::mat4(glm::transpose(inv3x3));
 }
 

@@ -1,8 +1,2 @@
-build
-*.txt
-compile_commands.json
-*.png
-*~
-thirdparty-sources
-
-
+.idea
+cmake-build-debug
