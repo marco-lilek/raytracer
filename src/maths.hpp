@@ -18,5 +18,12 @@ namespace maths {
   glm::vec3 halfwayVector3d(const glm::dvec3 &a, const glm::dvec3 &b);
 
   glm::dvec3 cross3d(const glm::dvec3 &a, const glm::dvec3 &b);
+
+  glm::dvec3 normalize3d(const glm::dvec3 &a);
+
+  // reflect a across n
+  glm::dvec3 reflect3d(const glm::dvec3 &a, const glm::dvec3 &n);
+
+  double angle3d(const glm::dvec3 &a, const glm::dvec3 &b);
 }
 

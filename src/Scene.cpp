@@ -2,6 +2,7 @@
 //
 
 #include <spdlog/spdlog.h>
+#include <glm/gtx/vector_angle.hpp>
 
 #include "Scene.hpp"
 #include "DebugMaterial.hpp"
@@ -9,6 +10,7 @@
 #include "maths.hpp"
 #include "GeometryNode.hpp"
 #include "Texture.hpp"
+#include "MirrorMaterial.hpp"
 
 Scene::Scene(
         const Node *const root,
@@ -19,13 +21,16 @@ Scene::Scene(
         globalIllumination(ambient) {}
 
 glm::dvec3 Scene::getColor(const Ray &r) {
-  // TODO parameterize
   int maxIterations = 4;
 
   return getColor(r, maxIterations);
 }
 
 glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
+  if (depth == 0) {
+    return glm::dvec3(0);
+  }
+
   const Intersection intersection(root->intersect(r));
 
   if (!intersection.isHit()) {
@@ -50,16 +55,15 @@ glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
     return getColorOfRayOnPhongMaterial(material, r, intersection);
   }
 
-  /*
   // Recursive interacions need to pass on
   // depth
   // indexOfRefraction
-  if (const ReflectiveMaterial *material =
-          dynamic_cast<const ReflectiveMaterial *>(intersection.hitNode->material)) {
-    return getColorOfRayOnReflectiveMaterial(
-            material, rayFromEye, *intersection.geometry.get(), depth, media);
+  if (const MirrorMaterial *material =
+          dynamic_cast<const MirrorMaterial *>(intersection.node->m)) {
+    return getColorOfRayOnMirror(material, r, intersection, depth);
   }
 
+  /*
   if (const RefractiveMaterial *material =
           dynamic_cast<const RefractiveMaterial *>(intersection.hitNode->material)) {
     return getColorOfRayOnRefractiveMaterial(
@@ -69,6 +73,18 @@ glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
 
   assert(0); // fail
   return glm::dvec3(1,0,1); // #ff00ff
+}
+
+
+glm::dvec3 Scene::getColorOfRayOnMirror(
+        const MirrorMaterial *material,
+        const Ray &rayFromEye,
+        const Intersection &intersection,
+        const int depth) const {
+  double angle = maths::angle3d(intersection.n, rayFromEye.v);
+  Ray reflectedRay(intersection.p,
+          glm::dvec4(maths::reflect3d(rayFromEye.v, intersection.n), 0.0));
+  return getColor(reflectedRay, depth-1);
 }
 
 glm::dvec3

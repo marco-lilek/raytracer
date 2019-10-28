@@ -4,4 +4,4 @@
 
 #include "constants.hpp"
 
-const double constants::EPSILON = 0.0005;
+const double constants::EPSILON = 0.0001;

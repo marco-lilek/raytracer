@@ -66,6 +66,7 @@ extern "C" {
 #include "Log.hpp"
 #include "UVSphere.hpp"
 #include "Texture.hpp"
+#include "MirrorMaterial.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 typedef std::map<std::string,Texture*> TextureMap;
@@ -352,6 +353,22 @@ int gr_material_cmd(lua_State* L)
   return 1;
 }
 
+// Create a mirror
+extern "C"
+int gr_mirror_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  data->material = new MirrorMaterial();
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
 // Add a child to a node
 extern "C"
 int gr_node_add_child_cmd(lua_State* L)
@@ -517,6 +534,7 @@ static const luaL_Reg grlib_functions[] = {
   {"uvsphere", gr_uvsphere_cmd},
   {"cube", gr_cube_cmd},
   {"material", gr_material_cmd},
+  {"mirror", gr_mirror_cmd},
   {"texture", gr_texture_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},

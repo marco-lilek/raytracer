@@ -9,6 +9,7 @@
 #include "Node.hpp"
 #include "Light.hpp"
 #include "PhongMaterial.hpp"
+#include "MirrorMaterial.hpp"
 
 class Scene {
   const Node *root;
@@ -32,5 +33,11 @@ private:
           const PhongMaterial *material,
           const Ray &rayFromEye,
           const Intersection &intersection) const;
+
+  glm::dvec3
+  getColorOfRayOnMirror(const MirrorMaterial *material,
+          const Ray &rayFromEye,
+          const Intersection &intersection,
+          const int depth) const;
 };
 

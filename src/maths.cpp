@@ -3,6 +3,7 @@
 //
 
 #include <glm/detail/type_vec.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include "maths.hpp"
 #include "constants.hpp"
 
@@ -31,3 +32,15 @@ glm::dvec3 maths::cross3d(const glm::dvec3 &a, const glm::dvec3 &b) {
   return glm::cross(a, b);
 }
 
+glm::dvec3 maths::normalize3d(const glm::dvec3 &a) {
+  return glm::normalize(a);
+}
+
+glm::dvec3 maths::reflect3d(const glm::dvec3 &a, const glm::dvec3 &n) {
+  const glm::dvec3 normalizedN(glm::normalize(n));
+  return a - 2 * glm::dot(a, normalizedN) * normalizedN;
+}
+
+double maths::angle3d(const glm::dvec3 &a, const glm::dvec3 &b) {
+  return glm::angle(glm::normalize(a), glm::normalize(b));
+}
