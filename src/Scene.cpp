@@ -10,7 +10,8 @@
 #include "maths.hpp"
 #include "GeometryNode.hpp"
 #include "Texture.hpp"
-#include "MirrorMaterial.hpp"
+#include "ReflectiveMaterial.hpp"
+#include "RefractiveMaterial.hpp"
 
 Scene::Scene(
         const Node *const root,
@@ -20,13 +21,18 @@ Scene::Scene(
         lights(lights),
         globalIllumination(ambient) {}
 
-glm::dvec3 Scene::getColor(const Ray &r) {
+glm::dvec3 Scene::getColor(const Ray &r, const Medium *startingMedium) {
   int maxIterations = 4;
 
-  return getColor(r, maxIterations);
+  std::stack<const Medium *> media;
+  media.push(startingMedium);
+  return getColor(r, maxIterations, media);
 }
 
-glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
+glm::dvec3 Scene::getColor(
+        const Ray &r,
+        int depth,
+        std::stack<const Medium *> &media) const {
   if (depth == 0) {
     return glm::dvec3(0);
   }
@@ -58,10 +64,17 @@ glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
   // Recursive interacions need to pass on
   // depth
   // indexOfRefraction
-  if (const MirrorMaterial *material =
-          dynamic_cast<const MirrorMaterial *>(intersection.node->m)) {
-    return getColorOfRayOnMirror(material, r, intersection, depth);
+  if (const ReflectiveMaterial *material =
+          dynamic_cast<const ReflectiveMaterial *>(intersection.node->m)) {
+    return getColorOfRayOnMirror(r, intersection, depth, media);
   }
+
+  if (const RefractiveMaterial *material =
+          dynamic_cast<const RefractiveMaterial *>(intersection.node->m)) {
+    return getColorOfRayOnRefractiveMaterial(
+            material, r, intersection, depth, media);
+  }
+
 
   /*
   if (const RefractiveMaterial *material =
@@ -77,14 +90,133 @@ glm::dvec3 Scene::getColor(const Ray &r, int depth) const {
 
 
 glm::dvec3 Scene::getColorOfRayOnMirror(
-        const MirrorMaterial *material,
         const Ray &rayFromEye,
         const Intersection &intersection,
-        const int depth) const {
+        const int depth,
+        std::stack<const Medium *> &media) const {
   double angle = maths::angle3d(intersection.n, rayFromEye.v);
   Ray reflectedRay(intersection.p,
           glm::dvec4(maths::reflect3d(rayFromEye.v, intersection.n), 0.0));
-  return getColor(reflectedRay, depth-1);
+  // Medium has not changed
+  return getColor(reflectedRay, depth-1, media);
+}
+
+glm::dvec3 Scene::getColorOfRayOnRefractiveMaterial(
+        const RefractiveMaterial *material,
+        const Ray &rayFromEye,
+        const Intersection &intersection,
+        const int depth,
+        std::stack<const Medium *> &media) const {
+  glm::dvec3 reflectedColor = getColorOfRayOnMirror(rayFromEye, intersection, depth, media);
+
+  // let t be the refracted ray, i the incident ray
+  // t = t_T + t_||
+  //
+  // easy one:
+  // | t_|| | = sin O_t
+  // direction( t_|| ) = direction( i_|| )
+  //
+  // given n2 sin O_t = n1 sin O_i
+  // then
+  // sin O_t = n1 / n2 sin O_i
+  //
+  // and
+  // sin O_i = | i_|| | = | i + cos O_i n |
+  //
+  // so
+  // | t_|| | = n1 / n2 | i + cos O_i n |
+  // giving
+  // t_|| = n1 / n2 [ i + cos O_i n ]
+  //
+  // next:
+  // | t_T | = sqrt( | t |^2 - | t_|| |^2)
+  //         = sqrt( 1 - | t_|| |^2)
+  //
+  // | t_|| |^2 = (n1 / n2)^2 sin^2 O_i
+  //            = (n1 / n2)^2 (1 - cos^2 O_i)
+  //
+  // so
+  // t_T = - n sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2)
+  //
+  // finally
+  // t = t_T + t_||
+  //   = - n sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2) +
+  //     n1 / n2 [ i + cos O_i n ]
+  //   = n1 / n2 i + [ n1 / n2 cos O_i - sqrt( 1 - [ (n1 / n2)^2 (1 - cos^2 O_i) ]^2)] n
+
+  const Medium *prevMedium = media.top();
+  const Medium *curMedium = material->medium.get();
+  const double n1 = prevMedium->indexOfRefraction;
+  const double n2 = curMedium->indexOfRefraction;
+
+  // Copy so we don't mutate the original stack
+  std::stack<const Medium *> mediaForTransmission(media);
+
+  // for vector x
+  // x = xSurf + xNorm
+  // xSurf is x along the plane defined by the normal
+  // xNorm is x in the direction of the normal
+  glm::dvec3 vNormalized = maths::normalize3d(rayFromEye.v);
+
+  // Ensure that nNormalized is always pointing in the opposite direction as v
+  glm::dvec3 nNormalized = maths::normalize3d(intersection.n);
+
+  // Bit of a hack: use the ptr to decide if we transmitting into or outside
+  // of an object. This may/may not bite me with CSG
+  if ((void*)(curMedium) == (void*)(prevMedium)) {
+    // We're inside, so the transmitted ray is moving outside the object
+    mediaForTransmission.pop();
+
+    // right now its pointing in the same direction as v, so negate it
+    nNormalized = -nNormalized;
+  } else {
+    // We're outside, moving into the object
+    mediaForTransmission.push(curMedium);
+  }
+
+  const double vNormLen = glm::abs(glm::dot(nNormalized, vNormalized));
+  glm::dvec3 vNorm = nNormalized * vNormLen;
+  glm::dvec3 vSurf = vNormalized + vNorm;
+
+  // lets use this to compute tSurf first, then get tNorm using t=1 and tSurf
+  // given
+  //      n2 sin O_t = n1 sin O_i
+  //    n2 | tSurf | = n1 | vSurf |
+  //       | tSurf | = n1 / n2 | vSurf |
+  const double tSurfLen = (n1 / n2) * glm::length(vSurf);
+
+  //     tNorm = t - tSurf
+  // | tNorm | = | t - tSurf |
+  //           = sqrt( | t |^2 - | tSurf |^2 )
+  //           = sqrt( 1 - | tSurf | ^2 )
+  // total internal reflection when the tNorm is in the same direction as the normal, ie. facing back into the material
+  // when our computed tSurf > 1 then we cannot compute | tNorm |, which is when we have total internal reflection
+  const double tSurfLenSqr = tSurfLen * tSurfLen;
+  if (tSurfLenSqr > 1.0) {
+    // total internal reflection
+    return reflectedColor;
+  }
+
+  const double tNormLen = glm::sqrt(1.0 - tSurfLenSqr);
+
+  // same direction as vsurf, but with tSurf magnitude
+  glm::dvec3 tSurf = maths::normalize3d(vSurf) * tSurfLen;
+  // opposite direction as the normal with tNorm magnitude
+  glm::dvec3 tNorm = -nNormalized * tNormLen;
+
+  const double testT = glm::dot(tNorm, tSurf);
+
+  Ray transmittedRay(intersection.p, glm::dvec4(tSurf + tNorm, 0.0));
+
+
+  // TODO assert mediaForTransmission is non-empty
+  glm::dvec3 transmittedColor = getColor(transmittedRay, depth - 1 , mediaForTransmission);
+
+  const double R_0 = std::pow((n1 - n2) / (n1 + n2), 2);
+  const double R_schlick = R_0 + (1.0 - R_0) * std::pow((1-vNormLen), 5);
+
+  const glm::dvec3 finalColor = R_schlick * reflectedColor + (1- R_schlick) * transmittedColor;
+  return finalColor;
 }
 
 glm::dvec3

@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Material.hpp"
-
+// Just reflects
 struct ReflectiveMaterial : public Material {
-  ~ReflectiveMaterial() override {}
+  ReflectiveMaterial() {}
+  ~ReflectiveMaterial() {}
 };
 

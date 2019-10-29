@@ -66,7 +66,9 @@ extern "C" {
 #include "Log.hpp"
 #include "UVSphere.hpp"
 #include "Texture.hpp"
-#include "MirrorMaterial.hpp"
+#include "ReflectiveMaterial.hpp"
+#include "Medium.hpp"
+#include "RefractiveMaterial.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 typedef std::map<std::string,Texture*> TextureMap;
@@ -287,7 +289,11 @@ int gr_render_cmd(lua_State* L)
   }
 
   Image im( width, height);
-  RayTracer::render(root->node, im, eye, view, up, fov, ambient, lights);
+
+  // TODO: also set the initial Media, for now just assume its air, who's
+  // index of refraction is 1.0
+  Medium startingMedium(1.0);
+  RayTracer::render(root->node, im, eye, view, up, fov, ambient, &startingMedium, lights);
   im.savePng( filename );
 
   return 0;
@@ -353,16 +359,33 @@ int gr_material_cmd(lua_State* L)
   return 1;
 }
 
-// Create a mirror
+// Create a refractive material
 extern "C"
-int gr_mirror_cmd(lua_State* L)
+int gr_refractive_material_cmd(lua_State* L)
 {
   GRLUA_DEBUG_CALL;
 
   gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
   data->material = 0;
 
-  data->material = new MirrorMaterial();
+  double indexOfRefraction = luaL_checknumber(L, 1);
+
+  data->material = new RefractiveMaterial(new Medium(indexOfRefraction));
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+  return 1;
+}
+
+// Create a REflective
+extern "C"
+int gr_reflective_material_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  data->material = new ReflectiveMaterial();
   luaL_newmetatable(L, "gr.material");
   lua_setmetatable(L, -2);
 
@@ -534,7 +557,8 @@ static const luaL_Reg grlib_functions[] = {
   {"uvsphere", gr_uvsphere_cmd},
   {"cube", gr_cube_cmd},
   {"material", gr_material_cmd},
-  {"mirror", gr_mirror_cmd},
+  {"reflective", gr_reflective_material_cmd},
+  {"refractive", gr_refractive_material_cmd},
   {"texture", gr_texture_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},

@@ -11,7 +11,7 @@ sphere:translate(-2,0,0)
 root:add_child(sphere)
 
 --reflective
-mirror = gr.reflective()
+mirror = gr.refractive(2)
 mirror_sphere = gr.sphere("mirror")
 mirror_sphere:set_material(mirror)
 mirror_sphere:scale(1,1,1)
@@ -44,5 +44,5 @@ l1 = gr.light({-1,2,-5}, {1,1,1}, {1,1,1})
 
 lights = {l1}
 
-tracer = gr.render(root, 'mirror.png', 256, 256,
+tracer = gr.render(root, 'refractive.png', 256, 256,
     {0,0,-5},{0,0,1},{0,1,0},50,{0.3,0.3,0.3},lights)

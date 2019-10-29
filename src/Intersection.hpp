@@ -9,6 +9,7 @@
 
 struct GeometryNode;
 
+// TODO If we separate hits/misses we'd get the majority of the space improvements
 struct Intersection {
   enum Type {
     CompleteMiss,

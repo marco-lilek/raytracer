@@ -7,6 +7,7 @@
 #include "Camera.hpp"
 #include "Scene.hpp"
 #include "RuntimeConfig.hpp"
+#include "Medium.hpp"
 
 void RayTracer::render(
         const Node *rootNode,
@@ -16,6 +17,7 @@ void RayTracer::render(
         const glm::dvec3 &up,
         const double &fov,
         const glm::dvec3 &ambient,
+        const Medium *startingMedium,
         const std::vector<const Light *> lights) {
   Camera camera(eye, up, view, image.width, image.height, fov);
   Scene scene(rootNode, lights, ambient);
@@ -36,7 +38,7 @@ void RayTracer::render(
     for (int y = sy; y < ey; y++) {
       Ray ray = camera.getRayFromEyeToScreen(x, y);
       spdlog::trace("x {} y {}", x, y);
-      glm::dvec3 color = scene.getColor(ray);
+      glm::dvec3 color = scene.getColor(ray, startingMedium);
       image.draw(color, x, y);
     }
   }

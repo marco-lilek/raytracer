@@ -9,7 +9,9 @@
 #include "Node.hpp"
 #include "Light.hpp"
 #include "PhongMaterial.hpp"
-#include "MirrorMaterial.hpp"
+#include "ReflectiveMaterial.hpp"
+#include "Medium.hpp"
+#include "RefractiveMaterial.hpp"
 
 class Scene {
   const Node *root;
@@ -17,7 +19,7 @@ class Scene {
   glm::dvec3 globalIllumination;
 
 public:
-  glm::dvec3 getColor(const Ray &r);
+  glm::dvec3 getColor(const Ray &r, const Medium *startingMedium);
 
   Scene(const Node *const root,
         const std::vector<const Light *> lights,
@@ -26,7 +28,8 @@ public:
 private:
   glm::dvec3 getColor(
           const Ray &r,
-          int depth) const;
+          int depth,
+          std::stack<const Medium*> &media) const;
 
   glm::dvec3
   getColorOfRayOnPhongMaterial(
@@ -35,9 +38,16 @@ private:
           const Intersection &intersection) const;
 
   glm::dvec3
-  getColorOfRayOnMirror(const MirrorMaterial *material,
+  getColorOfRayOnMirror(const Ray &rayFromEye,
+          const Intersection &intersection,
+          const int depth,
+          std::stack<const Medium *> &media) const;
+
+  glm::dvec3 getColorOfRayOnRefractiveMaterial(
+          const RefractiveMaterial *material,
           const Ray &rayFromEye,
           const Intersection &intersection,
-          const int depth) const;
+          const int depth,
+          std::stack<const Medium *> &media) const;
 };
 

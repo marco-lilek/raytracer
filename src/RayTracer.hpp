@@ -7,6 +7,7 @@
 #include "Node.hpp"
 #include "Light.hpp"
 #include "Image.hpp"
+#include "Medium.hpp"
 
 struct RayTracer {
   bool renderReflection;
@@ -21,5 +22,6 @@ struct RayTracer {
           const glm::dvec3 &up,
           const double &fov,
           const glm::dvec3 &ambient,
+          const Medium *startingMedium,
           std::vector<const Light *> lights);
 };
