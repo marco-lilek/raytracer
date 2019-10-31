@@ -548,6 +548,21 @@ int gr_node_gc_cmd(lua_State* L)
   return 0;
 }
 
+int gr_material_gloss_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)luaL_checkudata(L, 1, "gr.material");
+  luaL_argcheck(L, data != 0, 1, "Material expected");
+
+  GlossyMaterial *m = dynamic_cast<GlossyMaterial *>(data->material);
+
+  double glossiness = luaL_checknumber(L, 2);
+  m->glossiness = glossiness;
+
+  return 0;
+}
+
 // This is where all the "global" functions in our library are
 // declared.
 // If you want to add a new non-member function, add it here.
@@ -590,6 +605,11 @@ static const luaL_Reg grlib_node_methods[] = {
   {0, 0}
 };
 
+static const luaL_Reg grlib_material_methods[] = {
+        {"gloss", gr_material_gloss_cmd},
+        {0, 0}
+};
+
 // This function calls the lua interpreter to define the scene and
 // raytrace it as appropriate.
 bool run_lua(const std::string& filename)
@@ -614,6 +634,14 @@ bool run_lua(const std::string& filename)
 
   // Load the gr.node methods
   luaL_setfuncs( L, grlib_node_methods, 0 );
+
+  luaL_newmetatable(L, "gr.material");
+  lua_pushstring(L, "__index");
+  lua_pushvalue(L, -2);
+  lua_settable(L, -3);
+
+  // Load the material methods
+  luaL_setfuncs( L, grlib_material_methods, 0 );
 
   // Load the gr functions
   luaL_setfuncs(L, grlib_functions, 0);

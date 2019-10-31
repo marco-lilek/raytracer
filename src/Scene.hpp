@@ -38,7 +38,9 @@ private:
           const Intersection &intersection) const;
 
   glm::dvec3
-  getColorOfRayOnMirror(const Ray &rayFromEye,
+  getColorOfRayOnMirror(
+          const GlossyMaterial *m,
+          const Ray &rayFromEye,
           const Intersection &intersection,
           const int depth,
           std::stack<const Medium *> &media) const;

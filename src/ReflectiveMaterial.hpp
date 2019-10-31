@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include "GlossyMaterial.hpp"
+
 // Just reflects
-struct ReflectiveMaterial : public Material {
-  ReflectiveMaterial() {}
-  ~ReflectiveMaterial() {}
+struct ReflectiveMaterial : public GlossyMaterial {
+  ReflectiveMaterial() : GlossyMaterial() {}
+  virtual ~ReflectiveMaterial() {}
 };
 

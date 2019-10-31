@@ -5,6 +5,7 @@
 #pragma once
 
 #include <glm/geometric.hpp>
+#include <random>
 
 namespace maths {
   double distance3d(const glm::dvec3 &a, const glm::dvec3 &b);
@@ -25,5 +26,9 @@ namespace maths {
   glm::dvec3 reflect3d(const glm::dvec3 &a, const glm::dvec3 &n);
 
   double angle3d(const glm::dvec3 &a, const glm::dvec3 &b);
+
+  glm::dvec3 cosineDist(const glm::dvec3 &n);
+
+  double random0_1();
 }
 

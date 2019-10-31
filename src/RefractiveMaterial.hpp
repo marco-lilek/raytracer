@@ -6,9 +6,9 @@
 
 #include "Medium.hpp"
 
-struct RefractiveMaterial : public Material {
+struct RefractiveMaterial : public GlossyMaterial {
   std::unique_ptr<Medium> medium;
-  RefractiveMaterial(Medium *m) : medium(m) {}
-  ~RefractiveMaterial() {}
+  RefractiveMaterial(Medium *m) : GlossyMaterial(), medium(m) {}
+  virtual ~RefractiveMaterial() {}
 };
 

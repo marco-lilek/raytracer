@@ -4,6 +4,7 @@ gre = {0,1,0};
 blu = {0,0,1};
 
 material = gr.reflective()
+material:gloss(0.1)
 sphere = gr.sphere("sphere")
 sphere:set_material(material)
 sphere:scale(1,1,1)
@@ -12,6 +13,7 @@ root:add_child(sphere)
 
 --reflective
 mirror = gr.refractive(2)
+mirror:gloss(0.01)
 mirror_sphere = gr.sphere("mirror")
 mirror_sphere:set_material(mirror)
 mirror_sphere:scale(1,1,1)
