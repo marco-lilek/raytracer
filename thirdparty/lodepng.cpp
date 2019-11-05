@@ -441,7 +441,7 @@ lodepng_filesize(const char *filename)
   return size;
 }
 
-/* load file into buffer that already has the correct
+/* initScene file into buffer that already has the correct
  * allocated size. Returns error code.*/
 static unsigned
 lodepng_buffer_file(

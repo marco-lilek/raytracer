@@ -3,21 +3,13 @@ red = {1,0,0};
 gre = {0,1,0};
 blu = {0,0,1};
 
-material = gr.reflective()
-material:gloss(0.1)
-sphere = gr.sphere("sphere")
-sphere:set_material(material)
-sphere:scale(1,1,1)
-sphere:translate(-2,0,0)
-root:add_child(sphere)
-
-translucent = gr.refractive(2)
-translucent:gloss(0.01)
-translucent_sphere = gr.sphere("trans")
-translucent_sphere:set_material(translucent)
-translucent_sphere:scale(1,1,1)
-translucent_sphere:translate(2,0,5)
-root:add_child(mirror_sphere)
+red_mat = gr.material({1,0,1}, gre, 5)
+mesh = gr.mesh("mesh", 'buckyball')
+mesh:set_material(red_mat)
+mesh:scale(0.3,0.3,0.3)
+mesh:rotate('x', 45)
+mesh:rotate('y', 45)
+root:add_child(mesh)
 
 --backwall
 bwall_mat = gr.material({0.5,0.5,0.5}, blu, 55)
@@ -45,5 +37,5 @@ l1 = gr.light({-1,2,-5}, {1,1,1}, {1,1,1})
 
 lights = {l1}
 
-tracer = gr.render(root, 'refractive.png', 256, 256,
+tracer = gr.render(root, 'mesh.png', 256, 256,
     {0,0,-5},{0,0,1},{0,1,0},50,{0.3,0.3,0.3},lights)

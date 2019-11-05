@@ -11,11 +11,14 @@
 
 struct Mesh : public Geometry {
   std::string name;
+  std::string fname;
   std::vector<glm::dvec3> positions;
 
-  Mesh(const std::string &name);
+  Mesh(const std::string &name, const std::string &fname);
 
   Intersection intersect(const Ray &incomingRay) const override;
+
+  void load();
 
   virtual ~Mesh() {};
 };

@@ -208,7 +208,8 @@ int gr_mesh_cmd(lua_State* L) {
   Mesh *mesh = nullptr;
 
   if( i == mesh_map.end() ) {
-    mesh = new Mesh( obj_fname );
+    mesh = new Mesh( name, obj_fname );
+    mesh->load();
   } else {
     mesh = i->second;
   }

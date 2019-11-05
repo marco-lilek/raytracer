@@ -102,7 +102,7 @@ glm::dvec3 Scene::getColorOfRayOnMirror(
   glm::dvec3 specularR = maths::reflect3d(rayFromEye.v, intersection.n);
 
   double glossiness = m->glossiness;
-  glm::dvec3 perturbedR = specularR * (1.0 - glossiness) + diffuseR * glossiness;
+  glm::dvec3 perturbedR = specularR;//specularR * (1.0 - glossiness) + diffuseR * glossiness;
 
   Ray reflectedRay(intersection.p, glm::dvec4(perturbedR, 0.0));
   // Medium has not changed

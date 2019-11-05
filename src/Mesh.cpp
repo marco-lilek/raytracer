@@ -4,10 +4,12 @@
 
 #include "Mesh.hpp"
 #include "maths.hpp"
+#include "Obj.hpp"
+#include "constants.hpp"
 
-Mesh::Mesh(const std::string &name) : name(name) {
-
-}
+Mesh::Mesh(const std::string &name, const std::string &fname) :
+  name(name),
+  fname(Obj::fullPath(fname)) {}
 
 Intersection Mesh::intersect(const Ray &incomingRay) const {
   Intersection intersection;
@@ -41,7 +43,7 @@ Intersection Mesh::intersect(const Ray &incomingRay) const {
             e * (j * c - a * l) +
             d * (b * l - k * c)) / M;
 
-    if (distToIntersect < 0.0) {
+    if (distToIntersect < constants::EPSILON) {
       // Doesnt intersect this plane
       continue;
     }
@@ -102,3 +104,15 @@ Intersection Mesh::intersect(const Ray &incomingRay) const {
   return intersection;
 }
 
+void Mesh::load() {
+  Assimp::Importer importer;
+  const aiScene * aiScene = importer.ReadFile(fname, 0);
+  const aiMesh *aiMesh = aiScene->mMeshes[0];
+  int numVertices = aiMesh->mNumVertices;
+
+  positions.resize(numVertices);
+  for (int i = 0; i < numVertices; i++) {
+    auto vertex = aiMesh->mVertices[i];
+    positions[i] = glm::dvec3(vertex.x, vertex.y, vertex.z);
+  }
+}
